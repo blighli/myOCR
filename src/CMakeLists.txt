@@ -1,7 +1,7 @@
 #设定项目名称
 SET(THIS_PROJECT_NAME myOCR)
 
-#设定QT4环境
+#设定QT4环境 AUTOMOC???
 FIND_PACKAGE(Qt4 REQUIRED)
 INCLUDE(${QT_USE_FILE})  # include UseQt4.cmake
 MESSAGE(STATUS "QT_USE_FILE=" ${QT_USE_FILE})
@@ -27,9 +27,9 @@ SET(HeadersFilesPath ${PROJECT_SOURCE_DIR}/inc)
 MESSAGE(STATUS "HeadersFilesPath=" ${HeadersFilesPath})
   
 # 2. Add items into current project  
-SET(SourceFiles main.cpp mainwindow.cpp AutoNDE2DPanel.cpp rawdatapanel.cpp)  
-SET(UIFiles mainwindow.ui)  
-SET(HeadersFiles mainwindow.h AutoNDE2DPanel.h rawdatapanel.h)  
+SET(SourceFiles main.cpp) 
+SET(UIFiles)
+SET(HeadersFiles) 
   
 # 3. Concatenate items and their paths  
 FOREACH(SrcFile ${SourceFiles})  
@@ -60,11 +60,10 @@ SOURCE_GROUP("Generated" FILES
   ${MOCSrcs}  
 )  
 
-SET(SRC_LIST main.cpp)
-
-ADD_EXECUTABLE(${THIS_PROJECT_NAME} ${SRC_LIST})
+ADD_EXECUTABLE(${THIS_PROJECT_NAME} ${SimpleViewSrcs} ${UISrcs} ${MOCSrcs})
 TARGET_LINK_LIBRARIES(${THIS_PROJECT_NAME} ${QT_QTMAIN_LIBRARY} ${QT_LIBRARIES})
 
+#避免启动时出现命令行窗口
 IF(WIN32)
     SET_TARGET_PROPERTIES(${THIS_PROJECT_NAME} PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
 ENDIF()

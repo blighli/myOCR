@@ -1,8 +1,9 @@
-#include <iostream>
+#include <QtCore/QCoreApplication>
+#include <QtCore/QDebug>
 
-using namespace std;
-
-int main(){
-    cout<<"Hello, World"<<endl;
-    return 0;
+int main(int argc, char** argv)
+{
+	QCoreApplication app(argc, argv);
+	qDebug()<<"hello qt!";
+	app.exec();
 }
