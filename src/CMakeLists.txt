@@ -1,5 +1,5 @@
 #设定项目名称
-SET(THIS_PROJECT_NAME myOCR)
+SET(THIS_PROJECT_NAME MyOCR)
 
 #设定QT4环境,参考FindQt4.cmake
 FIND_PACKAGE(Qt4 REQUIRED)
@@ -14,28 +14,30 @@ INCLUDE(${QT_USE_FILE})
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 
 #设定源文件
-SET(sourceFiles main.cpp)
-SET(headerFiles) #包含Q_OBJECT的头文件
-SET(uiFiles)
-SET(resourceFiles)
+FILE(GLOB CPP_FILES "*.cpp")
+MESSAGE(STATUS "CPP_FILES=" ${CPP_FILES})
+
+SET(HEADER_FILES) #包含Q_OBJECT的头文件
+SET(UI_FILES)
+SET(QRC_FILES)
 
 #对Qt源文件进行处理
-QT4_WRAP_CPP(mocCpps ${headerFiles} )
-QT4_WRAP_UI(uicHeaders ${uiFiles})
-QT4_ADD_RESOURCES(qrcCpps ${resourceFiles})
+QT4_WRAP_CPP(MOC_FILES ${HEADER_FILES} )
+QT4_WRAP_UI(UIC_FILES ${UI_FILES})
+QT4_ADD_RESOURCES(RES_FILES ${QRC_FILES})
 
 #对生成文件分组
-SOURCE_GROUP("Resources" FILES  
-  ${uiFiles}  
+SOURCE_GROUP("UI" FILES  
+  ${UI_FILES}  
 )
 SOURCE_GROUP("Generated" FILES  
-  ${uicHeaders}
-  ${mocCpps}
-  ${qrcCpps}
+  ${MOC_FILES}
+  ${UIC_FILES}
+  ${RES_FILES}
 )
 
 #目标文件和链接文件
-ADD_EXECUTABLE(${THIS_PROJECT_NAME} ${sourceFiles} ${uicHeaders} ${mocCpps} ${qrcCpps})
+ADD_EXECUTABLE(${THIS_PROJECT_NAME} ${CPP_FILES} ${MOC_FILES} ${UIC_FILES} ${RES_FILES})
 TARGET_LINK_LIBRARIES(${THIS_PROJECT_NAME} ${QT_LIBRARIES})
 
 #避免启动时出现命令行窗口
