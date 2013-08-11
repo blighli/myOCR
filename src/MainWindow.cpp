@@ -4,6 +4,9 @@
 
 #include <tesseract/baseapi.h>
 #include <leptonica/allheaders.h>
+#include "ImageAdapter.h"
+
+#include <QDebug>
 
 MainWindow::MainWindow()
 {
@@ -67,12 +70,9 @@ void MainWindow::startOCR()
 			exit(1);
 		}
 
-		QByteArray ba;
-		QBuffer buffer(&ba);
-		buffer.open(QIODevice::WriteOnly);
-		image->save(&buffer, "BMP");
+		ImageAdapter ia;
+		PIX * pix = ia.qImage2PIX(*image);
 
-		Pix *pix = pixReadMemBmp((const l_uint8*)ba.data(), ba.size());
 		api->SetImage(pix);
 		// Get OCR result
 		outText = api->GetUTF8Text();
@@ -80,7 +80,6 @@ void MainWindow::startOCR()
 
 		// Destroy used object and release memory
 		api->End();
-		//delete [] outText;
 		pixDestroy(&pix);
 	}
 }

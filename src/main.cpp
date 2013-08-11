@@ -1,7 +1,5 @@
 #include <QApplication>
 #include <QTextCodec>
-#include <tesseract/baseapi.h>
-#include <leptonica/allheaders.h>
 
 #include "MainWindow.h"
 
