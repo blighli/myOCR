@@ -1,4 +1,10 @@
-class MainWindow
+#include <QMainWindow>
+
+class MainWindow : public QMainWindow
 {
-	//Q_OBJECT
+	Q_OBJECT
+
+public:
+	MainWindow();
+
 };
