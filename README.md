@@ -1,5 +1,5 @@
 myOCR
 =====
-save github password
+save github password:
 
 git config --global credential.helper store 
