@@ -7,6 +7,7 @@ class ImageWidget;
 class QAction;
 class QMenu;
 class QTooBar;
+class QLabel;
 
 class MainWindow : public QMainWindow
 {
@@ -16,11 +17,18 @@ public:
 	MainWindow();
 private slots:
 	void openFile();
+	void startOCR();
+private:
+	void openImage(const QString& fileName);
 private:
 	ImageWidget* imageWidget;
 	QMenu* menuFile;
 	QToolBar* toolBarFile;
 	QAction* actionFileOpen;
+	QAction* actionFileOCR;
+
+	QImage* image;
+	QLabel* labelOCRText;
 
 };
 

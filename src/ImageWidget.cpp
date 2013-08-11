@@ -3,19 +3,19 @@
 
 ImageWidget::ImageWidget()
 {
-	image = new QImage();
+	image = NULL;
 }
 
-void ImageWidget::openImage(const QString& fileName)
+void ImageWidget::setImage(QImage* image)
 {
-	image->load(fileName);
+	this->image = image;
 	update();
 }
 
 void ImageWidget::paintEvent(QPaintEvent *event)
 {
 	QPainter painter(this);
-	if(!image->isNull())
+	if(image)
 	{
 		painter.drawImage(0, 0, *image);
 	}

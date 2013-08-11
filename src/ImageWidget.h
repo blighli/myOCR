@@ -7,7 +7,7 @@ class ImageWidget : public QWidget
 	Q_OBJECT
 public:
 	ImageWidget();
-	void openImage(const QString& fileName);
+	void setImage(QImage* image);
 
 protected:
 	void paintEvent(QPaintEvent *event);
