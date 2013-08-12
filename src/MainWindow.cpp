@@ -63,16 +63,17 @@ void MainWindow::startOCR()
 		labelOCRText->resize(400, 300);
 		labelOCRText->show();
 
-		char *outText;
-		tesseract::TessBaseAPI *api = new tesseract::TessBaseAPI();
+		//设置环境变量TESSDATA_PREFIX
+		tesseract::TessBaseAPI* api = new tesseract::TessBaseAPI(); 
+		//或者在Init函数中设置datapath
 		if (api->Init(NULL, "chi_sim")) {
 			fprintf(stderr, "Could not initialize tesseract.\n");
 			exit(1);
 		}
 
 		api->SetImage((uchar*)cvImage->imageData, cvImage->width, cvImage->height, cvImage->nChannels, cvImage->widthStep);
-		// Get OCR result
-		outText = api->GetUTF8Text();
+
+		char *outText = api->GetUTF8Text();
 
 		QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf-8"));
 		labelOCRText->setText(outText);
