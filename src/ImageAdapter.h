@@ -7,8 +7,8 @@
 class ImageAdapter
 {
 public:
-	PIX* qImage2PIX(const QImage& qImage);
-	QImage PIX2qImage(PIX* pixImage);
+	static PIX* qImage2PIX(const QImage& qImage);
+	static QImage PIX2qImage(PIX* pixImage);
 };
 
 #endif //IMAGEADAPTER_H

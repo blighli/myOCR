@@ -3,13 +3,12 @@
 
 #include <QWidget>
 
-class QImage;
-
 class ImageWidget : public QWidget
 {
 	Q_OBJECT
 public:
 	ImageWidget();
+	~ImageWidget();
 	void setImage(QImage* image);
 
 protected:

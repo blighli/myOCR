@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <opencv2/opencv.hpp>
 
 class ImageWidget;
 class QAction;
@@ -19,15 +20,13 @@ private slots:
 	void openFile();
 	void startOCR();
 private:
-	void openImage(const QString& fileName);
-private:
 	ImageWidget* imageWidget;
 	QMenu* menuFile;
 	QToolBar* toolBarFile;
 	QAction* actionFileOpen;
 	QAction* actionFileOCR;
 
-	QImage* image;
+	IplImage* cvImage;
 	QLabel* labelOCRText;
 
 };

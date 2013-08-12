@@ -10,7 +10,7 @@
 
 MainWindow::MainWindow()
 {
-	image = new QImage();
+	cvImage = NULL;
 	labelOCRText = new QLabel();
 
 	resize(800, 600);
@@ -38,22 +38,23 @@ void MainWindow::openFile()
 {
 	QString fileName = QFileDialog::getOpenFileName(this,
 		tr("Open Image"), ".",
-		tr("Image files (*.png)"));
+		tr("Image files (*.png *.jpg *.bmp *.tiff)"));
     if (!fileName.isEmpty())
 	{
-		openImage(fileName);
-		imageWidget->setImage(image);
+		QTextCodec::setCodecForCStrings(QTextCodec::codecForName("gbk"));
+		cvImage = cvLoadImage(fileName.toStdString().c_str());
+		if(cvImage)
+		{
+			QImage* image = new QImage(QImage((uchar*)cvImage->imageData, cvImage->width, cvImage->height, QImage::Format_RGB888).rgbSwapped());
+			imageWidget->setImage(image);
+		}
 	}
 }
 
-void MainWindow::openImage(const QString& fileName)
-{
-	image->load(fileName);
-}
 
 void MainWindow::startOCR()
 {
-	if(image->isNull())
+	if(!cvImage)
 	{
 		QMessageBox::information(this, "OCR not started", "No Image Found!");
 	}
@@ -70,16 +71,14 @@ void MainWindow::startOCR()
 			exit(1);
 		}
 
-		ImageAdapter ia;
-		PIX * pix = ia.qImage2PIX(*image);
-
-		api->SetImage(pix);
+		api->SetImage((uchar*)cvImage->imageData, cvImage->width, cvImage->height, cvImage->nChannels, cvImage->widthStep);
 		// Get OCR result
 		outText = api->GetUTF8Text();
+
+		QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf-8"));
 		labelOCRText->setText(outText);
 
 		// Destroy used object and release memory
 		api->End();
-		pixDestroy(&pix);
 	}
 }

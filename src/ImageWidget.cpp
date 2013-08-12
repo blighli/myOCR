@@ -1,9 +1,14 @@
-#include <QtGui>
 #include "ImageWidget.h"
+#include <QtGui>
 
 ImageWidget::ImageWidget()
 {
 	image = NULL;
+}
+
+ImageWidget::~ImageWidget()
+{
+	delete image;
 }
 
 void ImageWidget::setImage(QImage* image)
@@ -17,6 +22,6 @@ void ImageWidget::paintEvent(QPaintEvent *event)
 	QPainter painter(this);
 	if(image)
 	{
-		painter.drawImage(0, 0, *image);
+		painter.drawImage(0,0, *image);
 	}
 }
