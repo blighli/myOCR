@@ -1,12 +1,11 @@
-#include <QtGui>
 #include "MainWindow.h"
+
+#include <QtGui>
+#include <leptonica/allheaders.h>
+#include <tesseract/baseapi.h>
+
 #include "ImageWidget.h"
 
-#include <tesseract/baseapi.h>
-#include <leptonica/allheaders.h>
-#include "ImageAdapter.h"
-
-#include <QDebug>
 
 MainWindow::MainWindow()
 {
@@ -41,7 +40,7 @@ void MainWindow::openFile()
 		tr("Image files (*.png *.jpg *.bmp *.tiff)"));
     if (!fileName.isEmpty())
 	{
-		QTextCodec::setCodecForCStrings(QTextCodec::codecForName("gbk"));
+		QTextCodec::setCodecForCStrings(QTextCodec::codecForName("gbk"));//解决中文路径的问题
 		cvImage = cvLoadImage(fileName.toStdString().c_str());
 		if(cvImage)
 		{

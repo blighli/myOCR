@@ -1,6 +1,4 @@
 #include <QApplication>
-#include <QTextCodec>
-
 #include "MainWindow.h"
 
 int main(int argc, char** argv)
