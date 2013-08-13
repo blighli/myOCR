@@ -2,6 +2,7 @@
 
 #include <QtGui>
 #include "ImageWidget.h"
+#include "ImageAdapter.h"
 
 
 MainWindow::MainWindow()
@@ -10,7 +11,7 @@ MainWindow::MainWindow()
 	boxes = NULL;
 	tessBaseAPI = NULL;
 
-	resize(800, 600);
+	resize(960, 600);
 
 	imageWidget = new ImageWidget();
 	textEdit = new QTextEdit();
@@ -39,19 +40,26 @@ MainWindow::MainWindow()
 	toolBarImage->setMovable(false);
 
 	actionFileOpen = new QAction(tr("&Open"), this);
-	actionFileOCR = new QAction(tr("&OCR"), this);
+	actionImageOCR = new QAction(tr("&OCR"), this);
+	actionImageCV = new QAction(tr("&CV"), this);
+	actionHelpAbout = new QAction(tr("&About"), this);
 
 	actionFileOpen->setIcon(QIcon(":/open.png"));
-	actionFileOCR->setIcon(QIcon(":/ocr.png"));
+	actionImageOCR->setIcon(QIcon(":/ocr.png"));
+	actionImageCV->setIcon(QIcon(":/paint.png"));
 
 	connect(actionFileOpen, SIGNAL(triggered()), this, SLOT(openFile()));
-	connect(actionFileOCR, SIGNAL(triggered()), this, SLOT(startOCR()));
+	connect(actionImageOCR, SIGNAL(triggered()), this, SLOT(startOCR()));
+	connect(actionImageCV, SIGNAL(triggered()), this, SLOT(startCV()));
 
 	menuFile->addAction(actionFileOpen);
-	menuImage->addAction(actionFileOCR);
+	menuImage->addAction(actionImageCV);
+	menuImage->addAction(actionImageOCR);
+	menuHelp->addAction(actionHelpAbout);
 
 	toolBarFile->addAction(actionFileOpen);
-	toolBarImage->addAction(actionFileOCR);
+	toolBarImage->addAction(actionImageCV);
+	toolBarImage->addAction(actionImageOCR);
 }
 
 MainWindow::~MainWindow()
@@ -81,12 +89,27 @@ void MainWindow::openFile()
 		cvImage = cvLoadImage(fileName.toStdString().c_str());
 		if(cvImage)
 		{
-			QImage* image = new QImage(QImage((uchar*)cvImage->imageData, cvImage->width, cvImage->height, QImage::Format_RGB888).rgbSwapped());
+			QImage* image = ImageAdapter::IplImage2QImage(cvImage);
 			imageWidget->setImage(image);
 		}
 	}
 }
 
+void MainWindow::startCV()
+{
+	IplImage* grayImage = cvCreateImage(cvGetSize(cvImage), 8, 1);
+	if(cvImage->nChannels == 3)
+	{
+		cvCvtColor(cvImage, grayImage, CV_RGB2GRAY);
+		cvReleaseImage(&cvImage);
+		cvImage = grayImage;
+	}
+	
+	cvAdaptiveThreshold(cvImage, cvImage, 255);
+
+	QImage* image = ImageAdapter::IplImage2QImage(cvImage);
+	imageWidget->setImage(image);
+}
 
 void MainWindow::startOCR()
 {

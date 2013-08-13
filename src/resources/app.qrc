@@ -3,5 +3,6 @@
     <file>open.png</file>
     <file>save.png</file>
     <file>ocr.png</file>
+    <file>paint.png</file>
   </qresource>
 </RCC>

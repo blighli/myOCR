@@ -23,6 +23,7 @@ public:
 private slots:
 	void openFile();
 	void startOCR();
+	void startCV();
 private:
 	ImageWidget* imageWidget;
 	QTextEdit* textEdit;
@@ -35,7 +36,9 @@ private:
 	QToolBar* toolBarImage;
 
 	QAction* actionFileOpen;
-	QAction* actionFileOCR;
+	QAction* actionImageOCR;
+	QAction* actionImageCV;
+	QAction* actionHelpAbout;
 
 	IplImage* cvImage;
 	tesseract::TessBaseAPI* tessBaseAPI;
