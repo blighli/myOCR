@@ -15,6 +15,7 @@ protected:
 	void paintEvent(QPaintEvent *event);
 private:
 	void drawRule(QPainter* painter);
+	void drawImage(QPainter* painter);
 
 private:
 	QImage* image;
