@@ -10,12 +10,25 @@
 MainWindow::MainWindow()
 {
 	cvImage = NULL;
-	labelOCRText = new QLabel();
 
 	resize(800, 600);
 
 	imageWidget = new ImageWidget();
-	setCentralWidget(imageWidget);
+	textEdit = new QTextEdit();
+	textEdit->setMinimumWidth(200);
+	textEdit->setMaximumWidth(600);
+	QFont fontTextEdit = textEdit->font();
+	fontTextEdit.setPixelSize(18);
+	textEdit->setFont(fontTextEdit);
+
+	QHBoxLayout* hbox = new QHBoxLayout();
+	hbox->addWidget(imageWidget,2);
+	hbox->addWidget(textEdit,1);
+	
+	QWidget* centerWidget = new QWidget();
+	centerWidget->setLayout(hbox);
+
+	this->setCentralWidget(centerWidget);
 
 	menuFile = menuBar()->addMenu(tr("&File"));
 	toolBarFile = addToolBar(tr("&File"));
@@ -58,20 +71,23 @@ void MainWindow::startOCR()
 {
 	if(!cvImage)
 	{
-		QMessageBox::information(this, "OCR not started", "No Image Found!");
+		QMessageBox msgBox;
+		msgBox.setIcon(QMessageBox::Warning);
+		msgBox.setText(tr("No image loaded.\nPlease load an image file before OCR."));
+		msgBox.exec();
+		return;
 	}
 	else
 	{
-		labelOCRText->setText("Starting OCR ...");
-		labelOCRText->resize(400, 300);
-		labelOCRText->show();
-
 		//设置环境变量TESSDATA_PREFIX
 		tesseract::TessBaseAPI* api = new tesseract::TessBaseAPI(); 
 		//或者在Init函数中设置datapath
 		if (api->Init(NULL, "chi_sim")) {
-			fprintf(stderr, "Could not initialize tesseract.\n");
-			exit(1);
+			QMessageBox msgBox;
+			msgBox.setIcon(QMessageBox::Critical);
+			msgBox.setText(tr("Could not initialize tesseract."));
+			msgBox.exec();
+			return;
 		}
 
 		api->SetImage((uchar*)cvImage->imageData, cvImage->width, cvImage->height, cvImage->nChannels, cvImage->widthStep);
@@ -79,7 +95,7 @@ void MainWindow::startOCR()
 		char *outText = api->GetUTF8Text();
 
 		QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf-8"));
-		labelOCRText->setText(outText);
+		textEdit->setText(outText);
 
 		// Destroy used object and release memory
 		api->End();

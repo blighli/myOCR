@@ -5,6 +5,7 @@
 #include <opencv2/opencv.hpp>
 
 class ImageWidget;
+class QTextEdit;
 class QAction;
 class QMenu;
 class QTooBar;
@@ -21,14 +22,14 @@ private slots:
 	void startOCR();
 private:
 	ImageWidget* imageWidget;
+	QTextEdit* textEdit;
+
 	QMenu* menuFile;
 	QToolBar* toolBarFile;
 	QAction* actionFileOpen;
 	QAction* actionFileOCR;
 
 	IplImage* cvImage;
-	QLabel* labelOCRText;
-
 };
 
 #endif //MAINWINDOW_H
