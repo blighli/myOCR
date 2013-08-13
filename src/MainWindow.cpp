@@ -23,6 +23,9 @@ MainWindow::MainWindow()
 	actionFileOpen = new QAction(tr("&Open"), this);
 	actionFileOCR = new QAction(tr("&OCR"), this);
 
+	actionFileOpen->setIcon(QIcon(":/open.png"));
+	actionFileOCR->setIcon(QIcon(":/ocr.png"));
+
 	connect(actionFileOpen, SIGNAL(triggered()), this, SLOT(openFile()));
 	connect(actionFileOCR, SIGNAL(triggered()), this, SLOT(startOCR()));
 
