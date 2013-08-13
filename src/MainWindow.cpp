@@ -137,6 +137,16 @@ void MainWindow::startOCR()
 			return;
 		}
 
+		if(true)
+		{
+			tessBaseAPI->SetVariable("chop_enable", "T");
+			tessBaseAPI->SetVariable("use_new_state_cost", "F");
+			tessBaseAPI->SetVariable("segment_segcost_rating", "F");
+			tessBaseAPI->SetVariable("enable_new_segsearch", "0");
+			tessBaseAPI->SetVariable("language_model_ngram_on", "0");
+			tessBaseAPI->SetVariable("textord_force_make_prop_words", "F");
+		}
+
 		tessBaseAPI->SetImage((uchar*)cvImage->imageData, cvImage->width, cvImage->height, cvImage->nChannels, cvImage->widthStep);
 
 		boxes = tessBaseAPI->GetComponentImages(tesseract::RIL_SYMBOL, true, NULL, NULL);
