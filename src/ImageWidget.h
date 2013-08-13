@@ -13,6 +13,10 @@ public:
 
 protected:
 	void paintEvent(QPaintEvent *event);
+	void mousePressEvent(QMouseEvent *event);
+	void mouseReleaseEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
+
 private:
 	void drawRule(QPainter* painter);
 	void drawImage(QPainter* painter);
@@ -26,6 +30,9 @@ private:
 	int m_nTickSizeSmall;
 	int m_nTickSizeMedium;
 	int m_nTickSizeLarge;
+
+	int m_bDrawPosLine;
+	QPoint m_mousePos;
 };
 
 #endif //IMAGEWIDGET_H

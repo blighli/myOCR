@@ -4,6 +4,8 @@
 ImageWidget::ImageWidget()
 {
 	image = NULL;
+	m_bDrawPosLine = false;
+
 	m_nImagePadding = 20;
 	m_nTickStepSmall = 10;
 	m_nTickStepMedium = 50;
@@ -44,10 +46,10 @@ void ImageWidget::drawRule(QPainter* painter)
 	painter->setFont(font);
 
 	int nTickTextPadding = m_nTickSizeSmall;
-	for(int tickX = ruleTopBegin.rx(); tickX <= ruleTopEnd.rx(); tickX += m_nTickStepSmall)
+	for(int tickX = ruleTopBegin.x(); tickX <= ruleTopEnd.x(); tickX += m_nTickStepSmall)
 	{
 		int nTickSize = m_nTickSizeSmall;
-		int nCurrentTick = tickX - ruleTopBegin.rx();
+		int nCurrentTick = tickX - ruleTopBegin.x();
 		if(nCurrentTick % m_nTickStepLarge == 0)
 		{
 			nTickSize = m_nTickSizeLarge;
@@ -58,14 +60,14 @@ void ImageWidget::drawRule(QPainter* painter)
 		{
 			nTickSize = m_nTickSizeMedium;
 		}
-		QPoint tickHead = QPoint(tickX, ruleTopBegin.ry());
-		QPoint tickTail = QPoint(tickX, ruleTopBegin.ry() - nTickSize);
+		QPoint tickHead = QPoint(tickX, ruleTopBegin.y());
+		QPoint tickTail = QPoint(tickX, ruleTopBegin.y() - nTickSize);
 		painter->drawLine(tickHead, tickTail);
 	}
-	for(int tickY = ruleLeftBegin.ry(); tickY <= ruleLeftEnd.ry(); tickY += m_nTickStepSmall)
+	for(int tickY = ruleLeftBegin.y(); tickY <= ruleLeftEnd.y(); tickY += m_nTickStepSmall)
 	{
 		int nTickSize = m_nTickSizeSmall;
-		int nCurrentTick = tickY - ruleLeftBegin.ry();
+		int nCurrentTick = tickY - ruleLeftBegin.y();
 		if(nCurrentTick % m_nTickStepLarge == 0)
 		{
 			nTickSize = m_nTickSizeLarge;
@@ -81,9 +83,30 @@ void ImageWidget::drawRule(QPainter* painter)
 		{
 			nTickSize = m_nTickSizeMedium;
 		}
-		QPoint tickHead = QPoint(ruleLeftBegin.rx(), tickY);
-		QPoint tickTail = QPoint(ruleLeftBegin.rx() - nTickSize, tickY);
+		QPoint tickHead = QPoint(ruleLeftBegin.x(), tickY);
+		QPoint tickTail = QPoint(ruleLeftBegin.x() - nTickSize, tickY);
 		painter->drawLine(tickHead, tickTail);
+	}
+
+	if(m_bDrawPosLine)
+	{
+
+		QPoint vLineHead(m_mousePos.x(), ruleTopBegin.y());
+		QPoint hLineHead(ruleLeftBegin.x(), m_mousePos.y());
+
+		painter->save();
+
+		QPen pen = painter->pen();
+		pen.setStyle(Qt::DashLine);
+		painter->setPen(pen);
+
+		painter->drawLine(vLineHead, m_mousePos);
+		painter->drawLine(hLineHead, m_mousePos);
+
+		QString posText = QString("(%1,%2)").arg(m_mousePos.x() - m_nImagePadding).arg(m_mousePos.y() - m_nImagePadding);
+		painter->drawText(m_mousePos, posText);
+
+		painter->restore();
 	}
 }
 
@@ -101,4 +124,24 @@ void ImageWidget::paintEvent(QPaintEvent *event)
 
 	drawImage(&painter);
 	drawRule(&painter);
+}
+
+void ImageWidget::mousePressEvent(QMouseEvent *event)
+{
+	m_bDrawPosLine = true;
+	m_mousePos = event->pos();
+	update();
+}
+
+
+void ImageWidget::mouseReleaseEvent(QMouseEvent *event)
+{
+	m_bDrawPosLine = false;
+	update();
+}
+
+void ImageWidget::mouseMoveEvent(QMouseEvent *event)
+{
+	m_mousePos = event->pos();
+	update();
 }
