@@ -10,6 +10,7 @@ public:
 	ImageWidget();
 	~ImageWidget();
 	void setImage(QImage* image);
+	void setBoxes(QRect* boxes, int nBoxCount);
 
 protected:
 	void paintEvent(QPaintEvent *event);
@@ -20,6 +21,7 @@ protected:
 private:
 	void drawRule(QPainter* painter);
 	void drawImage(QPainter* painter);
+	void drawBoxes(QPainter* painter);
 
 private:
 	QImage* image;
@@ -33,6 +35,9 @@ private:
 
 	int m_bDrawPosLine;
 	QPoint m_mousePos;
+	
+	QRect* boxes;
+	int m_nBoxCount;
 };
 
 #endif //IMAGEWIDGET_H

@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include <opencv2/opencv.hpp>
+#include <leptonica/allheaders.h>
+#include <tesseract/baseapi.h>
 
 class ImageWidget;
 class QTextEdit;
@@ -17,6 +19,7 @@ class MainWindow : public QMainWindow
 
 public:
 	MainWindow();
+	~MainWindow();
 private slots:
 	void openFile();
 	void startOCR();
@@ -35,6 +38,8 @@ private:
 	QAction* actionFileOCR;
 
 	IplImage* cvImage;
+	tesseract::TessBaseAPI* tessBaseAPI;
+	Boxa* boxes;
 };
 
 #endif //MAINWINDOW_H

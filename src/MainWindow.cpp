@@ -1,15 +1,14 @@
 #include "MainWindow.h"
 
 #include <QtGui>
-#include <leptonica/allheaders.h>
-#include <tesseract/baseapi.h>
-
 #include "ImageWidget.h"
 
 
 MainWindow::MainWindow()
 {
 	cvImage = NULL;
+	boxes = NULL;
+	tessBaseAPI = NULL;
 
 	resize(800, 600);
 
@@ -55,6 +54,18 @@ MainWindow::MainWindow()
 	toolBarImage->addAction(actionFileOCR);
 }
 
+MainWindow::~MainWindow()
+{
+	if(cvImage)
+	{
+		cvReleaseImage(&cvImage);
+	}
+	if(tessBaseAPI)
+	{
+		tessBaseAPI->End();
+	}
+}
+
 void MainWindow::openFile()
 {
 	QString fileName = QFileDialog::getOpenFileName(this,
@@ -63,6 +74,10 @@ void MainWindow::openFile()
     if (!fileName.isEmpty())
 	{
 		QTextCodec::setCodecForCStrings(QTextCodec::codecForName("gbk"));//解决中文路径的问题
+		if(cvImage)
+		{
+			cvReleaseImage(&cvImage);
+		}
 		cvImage = cvLoadImage(fileName.toStdString().c_str());
 		if(cvImage)
 		{
@@ -86,9 +101,12 @@ void MainWindow::startOCR()
 	else
 	{
 		//设置环境变量TESSDATA_PREFIX
-		tesseract::TessBaseAPI* api = new tesseract::TessBaseAPI(); 
+		if(tessBaseAPI == NULL)
+		{
+			tessBaseAPI = new tesseract::TessBaseAPI(); 
+		}
 		//或者在Init函数中设置datapath
-		if (api->Init(NULL, "chi_sim")) {
+		if (tessBaseAPI->Init(NULL, "chi_sim")) {
 			QMessageBox msgBox;
 			msgBox.setIcon(QMessageBox::Critical);
 			msgBox.setText(tr("Could not initialize tesseract."));
@@ -96,14 +114,23 @@ void MainWindow::startOCR()
 			return;
 		}
 
-		api->SetImage((uchar*)cvImage->imageData, cvImage->width, cvImage->height, cvImage->nChannels, cvImage->widthStep);
+		tessBaseAPI->SetImage((uchar*)cvImage->imageData, cvImage->width, cvImage->height, cvImage->nChannels, cvImage->widthStep);
 
-		char *outText = api->GetUTF8Text();
+		boxes = tessBaseAPI->GetComponentImages(tesseract::RIL_SYMBOL, true, NULL, NULL);
+		
+		QRect* rects = new QRect[boxes->n];
+		for(int i = 0; i< boxes->n; i++)
+		{
+			rects[i].setX(boxes->box[i]->x);
+			rects[i].setY(boxes->box[i]->y);
+			rects[i].setWidth(boxes->box[i]->w);
+			rects[i].setHeight(boxes->box[i]->h);
+		}
+		imageWidget->setBoxes(rects, boxes->n);
+
+		char *outText = tessBaseAPI->GetUTF8Text();
 
 		QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf-8"));
 		textEdit->setText(outText);
-
-		// Destroy used object and release memory
-		api->End();
 	}
 }

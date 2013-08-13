@@ -4,6 +4,9 @@
 ImageWidget::ImageWidget()
 {
 	image = NULL;
+	boxes = NULL;
+	m_nBoxCount = 0;
+
 	m_bDrawPosLine = false;
 
 	m_nImagePadding = 20;
@@ -18,11 +21,35 @@ ImageWidget::ImageWidget()
 ImageWidget::~ImageWidget()
 {
 	delete image;
+	delete[] boxes;
 }
 
 void ImageWidget::setImage(QImage* image)
 {
+	if(this->image)
+	{
+		delete this->image;
+	}
 	this->image = image;
+	setBoxes(NULL, 0);
+	update();
+}
+
+void ImageWidget::setBoxes(QRect* boxes, int nBoxCount)
+{
+	if(this->boxes)
+	{
+		delete[] this->boxes;
+		this->m_nBoxCount = 0;
+	}
+	this->boxes = boxes;
+	this->m_nBoxCount = nBoxCount;
+
+	for(int i = 0; i< this->m_nBoxCount; i++)
+	{
+		this->boxes[i].translate(m_nImagePadding, m_nImagePadding);
+	}
+
 	update();
 }
 
@@ -118,12 +145,22 @@ void ImageWidget::drawImage(QPainter* painter)
 	}
 }
 
+
+void ImageWidget::drawBoxes(QPainter* painter)
+{
+	if(boxes)
+	{
+		painter->drawRects(boxes, m_nBoxCount);
+	}
+}
+
 void ImageWidget::paintEvent(QPaintEvent *event)
 {
 	QPainter painter(this);
 
 	drawImage(&painter);
 	drawRule(&painter);
+	drawBoxes(&painter);
 }
 
 void ImageWidget::mousePressEvent(QMouseEvent *event)
