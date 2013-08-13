@@ -22,8 +22,15 @@ public:
 	~MainWindow();
 private slots:
 	void openFile();
+	void saveFile();
 	void startOCR();
 	void startCV();
+
+	void newChop();
+	void saveChop();
+	void loadChop();
+	void viewChop();
+
 private:
 	ImageWidget* imageWidget;
 	QTextEdit* textEdit;
@@ -34,10 +41,15 @@ private:
 
 	QToolBar* toolBarFile;
 	QToolBar* toolBarImage;
-
+	
 	QAction* actionFileOpen;
+	QAction* actionFileSave;
 	QAction* actionImageOCR;
 	QAction* actionImageCV;
+	QAction* actionImageNewChop;
+	QAction* actionImageSaveChop;
+	QAction* actionImageLoadChop;
+	QAction* actionImageViewChop;
 	QAction* actionHelpAbout;
 
 	IplImage* cvImage;

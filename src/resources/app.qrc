@@ -4,5 +4,9 @@
     <file>save.png</file>
     <file>ocr.png</file>
     <file>paint.png</file>
+    <file>new2.png</file>
+    <file>save2.png</file>
+    <file>load2.png</file>
+    <file>view2.png</file>
   </qresource>
 </RCC>

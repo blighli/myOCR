@@ -30,34 +30,61 @@ MainWindow::MainWindow()
 
 	this->setCentralWidget(centerWidget);
 
-	menuFile = menuBar()->addMenu(tr("&File"));
-	menuImage = menuBar()->addMenu(tr("&Image"));
-	menuHelp = menuBar()->addMenu(tr("&Help"));
+	menuFile = menuBar()->addMenu(tr("File"));
+	menuImage = menuBar()->addMenu(tr("Image"));
+	menuHelp = menuBar()->addMenu(tr("Help"));
 
-	toolBarFile = addToolBar(tr("&File"));
+	toolBarFile = addToolBar(tr("File"));
 	toolBarFile->setMovable(false);
-	toolBarImage = addToolBar(tr("&Image"));
+	toolBarImage = addToolBar(tr("Image"));
 	toolBarImage->setMovable(false);
-
-	actionFileOpen = new QAction(tr("&Open"), this);
-	actionImageOCR = new QAction(tr("&OCR"), this);
-	actionImageCV = new QAction(tr("&CV"), this);
-	actionHelpAbout = new QAction(tr("&About"), this);
-
+	
+	actionFileOpen = new QAction(tr("Open"), this);
+	actionFileSave = new QAction(tr("Save"), this);
+	actionImageOCR = new QAction(tr("OCR"), this);
+	actionImageCV = new QAction(tr("CV"), this);
+	actionHelpAbout = new QAction(tr("About"), this);
+	actionImageNewChop = new QAction(tr("New Chop"), this);
+	actionImageSaveChop = new QAction(tr("Save Chop"), this);
+	actionImageLoadChop = new QAction(tr("Load Chop"), this);
+	actionImageViewChop = new QAction(tr("View Chop"), this);
+	
 	actionFileOpen->setIcon(QIcon(":/open.png"));
+	actionFileSave->setIcon(QIcon(":/save.png"));
 	actionImageOCR->setIcon(QIcon(":/ocr.png"));
 	actionImageCV->setIcon(QIcon(":/paint.png"));
+	actionImageNewChop->setIcon(QIcon(":/new2.png"));
+	actionImageSaveChop->setIcon(QIcon(":/save2.png"));
+	actionImageLoadChop->setIcon(QIcon(":/load2.png"));
+	actionImageViewChop->setIcon(QIcon(":/view2.png"));
 
 	connect(actionFileOpen, SIGNAL(triggered()), this, SLOT(openFile()));
+	connect(actionFileSave, SIGNAL(triggered()), this, SLOT(saveFile()));
 	connect(actionImageOCR, SIGNAL(triggered()), this, SLOT(startOCR()));
 	connect(actionImageCV, SIGNAL(triggered()), this, SLOT(startCV()));
-
+	connect(actionImageNewChop, SIGNAL(triggered()), this, SLOT(newChop()));
+	connect(actionImageSaveChop, SIGNAL(triggered()), this, SLOT(saveChop()));
+	connect(actionImageLoadChop, SIGNAL(triggered()), this, SLOT(loadChop()));
+	connect(actionImageViewChop, SIGNAL(triggered()), this, SLOT(viewChop()));
+	
 	menuFile->addAction(actionFileOpen);
+	menuFile->addAction(actionFileSave);
+	menuImage->addAction(actionImageNewChop);
+	menuImage->addAction(actionImageSaveChop);
+	menuImage->addAction(actionImageLoadChop);
+	menuImage->addAction(actionImageViewChop);
+	menuImage->addSeparator();
 	menuImage->addAction(actionImageCV);
 	menuImage->addAction(actionImageOCR);
 	menuHelp->addAction(actionHelpAbout);
-
+	
 	toolBarFile->addAction(actionFileOpen);
+	toolBarFile->addAction(actionFileSave);
+	toolBarImage->addAction(actionImageNewChop);
+	toolBarImage->addAction(actionImageSaveChop);
+	toolBarImage->addAction(actionImageLoadChop);
+	toolBarImage->addAction(actionImageViewChop);
+	toolBarImage->addSeparator();
 	toolBarImage->addAction(actionImageCV);
 	toolBarImage->addAction(actionImageOCR);
 }
@@ -95,8 +122,39 @@ void MainWindow::openFile()
 	}
 }
 
+void MainWindow::saveFile()
+{
+	
+}
+
+void MainWindow::newChop()
+{
+
+}
+void MainWindow::saveChop()
+{
+
+}
+void MainWindow::loadChop()
+{
+
+}
+void MainWindow::viewChop()
+{
+
+}
+
 void MainWindow::startCV()
 {
+	if(cvImage == NULL)
+	{
+		QMessageBox msgBox;
+		msgBox.setIcon(QMessageBox::Warning);
+		msgBox.setText(tr("No image loaded.\nPlease load an image file before OpenCV."));
+		msgBox.exec();
+		return;
+	}
+
 	IplImage* grayImage = cvCreateImage(cvGetSize(cvImage), 8, 1);
 	if(cvImage->nChannels == 3)
 	{
