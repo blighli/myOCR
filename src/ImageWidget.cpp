@@ -8,6 +8,11 @@ ImageWidget::ImageWidget()
 	m_nBoxCount = 0;
 
 	m_bDrawPosLine = false;
+	m_bTracked =false;
+
+	mAllowNewChop = false;
+	mChops = new QVector<QRect>();
+	mCurrentChop = NULL;
 
 	m_nImagePadding = 20;
 	m_nTickStepSmall = 10;
@@ -22,6 +27,22 @@ ImageWidget::~ImageWidget()
 {
 	delete image;
 	delete[] boxes;
+	delete mChops;
+}
+
+void ImageWidget::allowTrack(bool enabled)
+{
+	m_bTracked = enabled;
+}
+
+void ImageWidget::allowNewChop(bool enabled)
+{
+	mAllowNewChop = enabled;
+}
+
+QVector<QRect>* ImageWidget::getChops()
+{
+	return mChops;
 }
 
 void ImageWidget::setImage(QImage* image)
@@ -115,7 +136,7 @@ void ImageWidget::drawRule(QPainter* painter)
 		painter->drawLine(tickHead, tickTail);
 	}
 
-	if(m_bDrawPosLine)
+	if(m_bDrawPosLine && m_bTracked)
 	{
 
 		QPoint vLineHead(m_mousePos.x(), ruleTopBegin.y());
@@ -161,12 +182,34 @@ void ImageWidget::paintEvent(QPaintEvent *event)
 	drawImage(&painter);
 	drawRule(&painter);
 	drawBoxes(&painter);
+
+
+	for(int i=0;i<mChops->size();i++)
+	{
+		QRect rect = mChops->at(i);
+		rect.translate(m_nImagePadding, m_nImagePadding);
+		painter.drawRect(rect);
+	}
+	if(mAllowNewChop && mCurrentChop)
+	{
+		QRect rect = *mCurrentChop;
+		rect.translate(m_nImagePadding, m_nImagePadding);
+		painter.drawRect(rect);
+	}
+
 }
 
 void ImageWidget::mousePressEvent(QMouseEvent *event)
 {
 	m_bDrawPosLine = true;
 	m_mousePos = event->pos();
+
+	if(mAllowNewChop && mCurrentChop == NULL)
+	{
+		QPoint chopCorner(m_mousePos.x() - m_nImagePadding, m_mousePos.y() - m_nImagePadding);
+		mCurrentChop = new QRect(chopCorner, chopCorner);
+	}
+
 	update();
 }
 
@@ -174,11 +217,26 @@ void ImageWidget::mousePressEvent(QMouseEvent *event)
 void ImageWidget::mouseReleaseEvent(QMouseEvent *event)
 {
 	m_bDrawPosLine = false;
+
+	if(mAllowNewChop && mCurrentChop)
+	{
+		mChops->push_back(*mCurrentChop);
+		delete mCurrentChop;
+		mCurrentChop = NULL;
+	}
+
 	update();
 }
 
 void ImageWidget::mouseMoveEvent(QMouseEvent *event)
 {
 	m_mousePos = event->pos();
+
+	if(mAllowNewChop && mCurrentChop)
+	{
+		QPoint chopCorner(m_mousePos.x() - m_nImagePadding, m_mousePos.y() - m_nImagePadding);
+		mCurrentChop->setBottomRight(chopCorner);
+	}
+
 	update();
 }

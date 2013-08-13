@@ -10,6 +10,7 @@ MainWindow::MainWindow()
 	cvImage = NULL;
 	boxes = NULL;
 	tessBaseAPI = NULL;
+	m_bNewChop = false;
 
 	resize(960, 600);
 
@@ -45,9 +46,12 @@ MainWindow::MainWindow()
 	actionImageCV = new QAction(tr("CV"), this);
 	actionHelpAbout = new QAction(tr("About"), this);
 	actionImageNewChop = new QAction(tr("New Chop"), this);
+	actionImageNewChop->setCheckable(true);
 	actionImageSaveChop = new QAction(tr("Save Chop"), this);
 	actionImageLoadChop = new QAction(tr("Load Chop"), this);
 	actionImageViewChop = new QAction(tr("View Chop"), this);
+	actionImageTrack = new QAction(tr("Track"), this);
+	actionImageTrack->setCheckable(true);
 	
 	actionFileOpen->setIcon(QIcon(":/open.png"));
 	actionFileSave->setIcon(QIcon(":/save.png"));
@@ -57,6 +61,7 @@ MainWindow::MainWindow()
 	actionImageSaveChop->setIcon(QIcon(":/save2.png"));
 	actionImageLoadChop->setIcon(QIcon(":/load2.png"));
 	actionImageViewChop->setIcon(QIcon(":/view2.png"));
+	actionImageTrack->setIcon(QIcon(":/track.png"));
 
 	connect(actionFileOpen, SIGNAL(triggered()), this, SLOT(openFile()));
 	connect(actionFileSave, SIGNAL(triggered()), this, SLOT(saveFile()));
@@ -66,9 +71,12 @@ MainWindow::MainWindow()
 	connect(actionImageSaveChop, SIGNAL(triggered()), this, SLOT(saveChop()));
 	connect(actionImageLoadChop, SIGNAL(triggered()), this, SLOT(loadChop()));
 	connect(actionImageViewChop, SIGNAL(triggered()), this, SLOT(viewChop()));
+	connect(actionImageTrack, SIGNAL(triggered()), this, SLOT(track()));
 	
 	menuFile->addAction(actionFileOpen);
 	menuFile->addAction(actionFileSave);
+	menuImage->addAction(actionImageTrack);
+	menuImage->addSeparator();
 	menuImage->addAction(actionImageNewChop);
 	menuImage->addAction(actionImageSaveChop);
 	menuImage->addAction(actionImageLoadChop);
@@ -80,6 +88,8 @@ MainWindow::MainWindow()
 	
 	toolBarFile->addAction(actionFileOpen);
 	toolBarFile->addAction(actionFileSave);
+	toolBarImage->addAction(actionImageTrack);
+	toolBarImage->addSeparator();
 	toolBarImage->addAction(actionImageNewChop);
 	toolBarImage->addAction(actionImageSaveChop);
 	toolBarImage->addAction(actionImageLoadChop);
@@ -125,7 +135,7 @@ void MainWindow::openFile()
 void MainWindow::saveFile()
 {
 	QString fileName = QFileDialog::getSaveFileName(this,
-		tr("Open Image"), ".",
+		tr("Save Image"), ".",
 		tr("Image files (*.png *.jpg *.bmp *.tiff)"));
     if (!fileName.isEmpty())
 	{
@@ -137,18 +147,127 @@ void MainWindow::saveFile()
 	}
 }
 
+void MainWindow::track()
+{
+	imageWidget->allowTrack(actionImageTrack->isChecked());
+}
+
 void MainWindow::newChop()
 {
-
+	m_bNewChop = actionImageNewChop->isChecked();
+	imageWidget->allowNewChop(m_bNewChop);
 }
+
 void MainWindow::saveChop()
 {
+	QVector<QRect>* chops = imageWidget->getChops();
+	if(chops->size() == 0)
+	{
+		QMessageBox msgBox;
+		msgBox.setIcon(QMessageBox::Warning);
+		msgBox.setText(tr("No chops exists.\nPlease add some chops before save."));
+		msgBox.exec();
+		return;
+	}
+	QString fileName = QFileDialog::getSaveFileName(this,
+		tr("Save Chops"), ".",
+		tr("XML files (*.xml)"));
+    if (!fileName.isEmpty())
+	{
+		QFile file(fileName);
+		if(!file.open(QIODevice::WriteOnly))
+		{
+			QMessageBox msgBox;
+			msgBox.setIcon(QMessageBox::Warning);
+			msgBox.setText(tr("Cannot open file to write.\nMaybe this file is read only."));
+			msgBox.exec();
+			return;
+		}
+		QXmlStreamWriter* xmlWriter = new QXmlStreamWriter();
+		xmlWriter->setDevice(&file);
+		xmlWriter->writeStartDocument();
+		xmlWriter->writeStartElement("chops");
 
+		for(int i=0; i<chops->size(); i++)
+		{
+			QRect rect = chops->at(i);
+			xmlWriter->writeStartElement("chop");
+
+			xmlWriter->writeAttribute("x", QString::number(rect.x()));
+			xmlWriter->writeAttribute("y", QString::number(rect.y()));
+			xmlWriter->writeAttribute("w", QString::number(rect.width()));
+			xmlWriter->writeAttribute("h", QString::number(rect.height()));
+
+			xmlWriter->writeEndElement();
+		}
+
+		xmlWriter->writeEndElement();
+		xmlWriter->writeEndDocument();
+        delete xmlWriter;
+	}
 }
+
 void MainWindow::loadChop()
 {
+	QString fileName = QFileDialog::getOpenFileName(this,
+		tr("Load Chops"), ".",
+		tr("XML files (*.xml)"));
+    if (!fileName.isEmpty())
+	{
+		QFile file(fileName);
+		if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
+		{
+			QMessageBox msgBox;
+			msgBox.setIcon(QMessageBox::Warning);
+			msgBox.setText(tr("Cannot open file to read.\nMaybe this file does not exist."));
+			msgBox.exec();
+			return;
+		}
 
+		QVector<QRect>* chops = imageWidget->getChops();
+		chops->clear();
+
+		QXmlStreamReader xml;
+		xml.setDevice(&file);
+
+		while(!xml.atEnd() && !xml.hasError())
+		{
+			QXmlStreamReader::TokenType token = xml.readNext();
+			if(token == QXmlStreamReader::StartDocument)
+			{
+				continue;
+			}
+			if(token == QXmlStreamReader::StartElement)
+			{
+				if(xml.name() == "chops")
+				{
+					continue;
+				}
+				if(xml.name() == "chop")
+				{
+					QRect rect;
+					QXmlStreamAttributes attributes = xml.attributes();
+					rect.setX(attributes.value("x").toString().toInt());
+					rect.setY(attributes.value("y").toString().toInt());
+					rect.setWidth(attributes.value("w").toString().toInt());
+					rect.setHeight(attributes.value("h").toString().toInt());
+
+					chops->push_back(rect);
+				}
+			}
+		}
+		if(xml.hasError())
+		{
+			QMessageBox msgBox;
+			msgBox.setIcon(QMessageBox::Warning);
+			msgBox.setText(tr("Parse XML failed.\nMaybe this file is not the right one."));
+			msgBox.exec();
+		}
+		xml.clear();
+		imageWidget->update();
+	}
 }
+
 void MainWindow::viewChop()
 {
 

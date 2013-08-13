@@ -31,6 +31,7 @@ private slots:
 	void loadChop();
 	void viewChop();
 
+	void track();
 private:
 	ImageWidget* imageWidget;
 	QTextEdit* textEdit;
@@ -50,11 +51,14 @@ private:
 	QAction* actionImageSaveChop;
 	QAction* actionImageLoadChop;
 	QAction* actionImageViewChop;
+	QAction* actionImageTrack;
 	QAction* actionHelpAbout;
 
 	IplImage* cvImage;
 	tesseract::TessBaseAPI* tessBaseAPI;
 	Boxa* boxes;
+
+	bool m_bNewChop;
 };
 
 #endif //MAINWINDOW_H

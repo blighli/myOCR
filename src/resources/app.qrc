@@ -8,5 +8,6 @@
     <file>save2.png</file>
     <file>load2.png</file>
     <file>view2.png</file>
+    <file>track.png</file>
   </qresource>
 </RCC>

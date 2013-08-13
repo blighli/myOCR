@@ -11,6 +11,10 @@ public:
 	~ImageWidget();
 	void setImage(QImage* image);
 	void setBoxes(QRect* boxes, int nBoxCount);
+	void allowTrack(bool enabled);
+	void allowNewChop(bool enabled);
+
+	QVector<QRect>* getChops();
 
 protected:
 	void paintEvent(QPaintEvent *event);
@@ -33,8 +37,13 @@ private:
 	int m_nTickSizeMedium;
 	int m_nTickSizeLarge;
 
-	int m_bDrawPosLine;
+	bool m_bTracked;
+	bool m_bDrawPosLine;
 	QPoint m_mousePos;
+
+	bool mAllowNewChop;
+	QVector<QRect>* mChops;
+	QRect* mCurrentChop;
 	
 	QRect* boxes;
 	int m_nBoxCount;
