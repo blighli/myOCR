@@ -336,21 +336,40 @@ void MainWindow::startOCR()
 
 		tessBaseAPI->SetImage((uchar*)cvImage->imageData, cvImage->width, cvImage->height, cvImage->nChannels, cvImage->widthStep);
 
-		boxes = tessBaseAPI->GetComponentImages(tesseract::RIL_SYMBOL, true, NULL, NULL);
-		
-		QRect* rects = new QRect[boxes->n];
-		for(int i = 0; i< boxes->n; i++)
+		QVector<QRect>* chops = imageWidget->getChops();
+		if(chops->size() == 0)
 		{
-			rects[i].setX(boxes->box[i]->x);
-			rects[i].setY(boxes->box[i]->y);
-			rects[i].setWidth(boxes->box[i]->w);
-			rects[i].setHeight(boxes->box[i]->h);
+
+			boxes = tessBaseAPI->GetComponentImages(tesseract::RIL_SYMBOL, true, NULL, NULL);
+		
+			QRect* rects = new QRect[boxes->n];
+			for(int i = 0; i< boxes->n; i++)
+			{
+				rects[i].setX(boxes->box[i]->x);
+				rects[i].setY(boxes->box[i]->y);
+				rects[i].setWidth(boxes->box[i]->w);
+				rects[i].setHeight(boxes->box[i]->h);
+			}
+			imageWidget->setBoxes(rects, boxes->n);
+
+			char *outText = tessBaseAPI->GetUTF8Text();
+
+			QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf-8"));
+			textEdit->setText(outText);
 		}
-		imageWidget->setBoxes(rects, boxes->n);
+		else
+		{
+			textEdit->clear();
 
-		char *outText = tessBaseAPI->GetUTF8Text();
-
-		QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf-8"));
-		textEdit->setText(outText);
+			for(int i=0;i<chops->size();i++)
+			{
+				QRect rect = chops->at(i);
+				tessBaseAPI->SetRectangle(rect.x(), rect.y(), rect.width(), rect.height());
+				char* ocrResult = tessBaseAPI->GetUTF8Text();
+				int conf = tessBaseAPI->MeanTextConf();
+				QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf-8"));
+				textEdit->setText(QString("%1%2%3").arg(textEdit->toPlainText(),"\n",ocrResult));
+			}
+		}
 	}
 }
