@@ -25,7 +25,12 @@ private:
 	QTextEdit* textEdit;
 
 	QMenu* menuFile;
+	QMenu* menuImage;
+	QMenu* menuHelp;
+
 	QToolBar* toolBarFile;
+	QToolBar* toolBarImage;
+
 	QAction* actionFileOpen;
 	QAction* actionFileOCR;
 

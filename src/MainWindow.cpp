@@ -31,7 +31,13 @@ MainWindow::MainWindow()
 	this->setCentralWidget(centerWidget);
 
 	menuFile = menuBar()->addMenu(tr("&File"));
+	menuImage = menuBar()->addMenu(tr("&Image"));
+	menuHelp = menuBar()->addMenu(tr("&Help"));
+
 	toolBarFile = addToolBar(tr("&File"));
+	toolBarFile->setMovable(false);
+	toolBarImage = addToolBar(tr("&Image"));
+	toolBarImage->setMovable(false);
 
 	actionFileOpen = new QAction(tr("&Open"), this);
 	actionFileOCR = new QAction(tr("&OCR"), this);
@@ -43,10 +49,10 @@ MainWindow::MainWindow()
 	connect(actionFileOCR, SIGNAL(triggered()), this, SLOT(startOCR()));
 
 	menuFile->addAction(actionFileOpen);
-	menuFile->addAction(actionFileOCR);
+	menuImage->addAction(actionFileOCR);
 
 	toolBarFile->addAction(actionFileOpen);
-	toolBarFile->addAction(actionFileOCR);
+	toolBarImage->addAction(actionFileOCR);
 }
 
 void MainWindow::openFile()
