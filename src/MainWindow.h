@@ -29,7 +29,7 @@ private slots:
 	void newChop();
 	void saveChop();
 	void loadChop();
-	void viewChop();
+	void clearChop();
 
 	void track();
 private:
@@ -50,7 +50,7 @@ private:
 	QAction* actionImageNewChop;
 	QAction* actionImageSaveChop;
 	QAction* actionImageLoadChop;
-	QAction* actionImageViewChop;
+	QAction* actionImageClearChop;
 	QAction* actionImageTrack;
 	QAction* actionHelpAbout;
 

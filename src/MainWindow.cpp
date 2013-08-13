@@ -49,7 +49,7 @@ MainWindow::MainWindow()
 	actionImageNewChop->setCheckable(true);
 	actionImageSaveChop = new QAction(tr("Save Chop"), this);
 	actionImageLoadChop = new QAction(tr("Load Chop"), this);
-	actionImageViewChop = new QAction(tr("View Chop"), this);
+	actionImageClearChop = new QAction(tr("Clear Chop"), this);
 	actionImageTrack = new QAction(tr("Track"), this);
 	actionImageTrack->setCheckable(true);
 	
@@ -60,7 +60,7 @@ MainWindow::MainWindow()
 	actionImageNewChop->setIcon(QIcon(":/new2.png"));
 	actionImageSaveChop->setIcon(QIcon(":/save2.png"));
 	actionImageLoadChop->setIcon(QIcon(":/load2.png"));
-	actionImageViewChop->setIcon(QIcon(":/view2.png"));
+	actionImageClearChop->setIcon(QIcon(":/clear2.png"));
 	actionImageTrack->setIcon(QIcon(":/track.png"));
 
 	connect(actionFileOpen, SIGNAL(triggered()), this, SLOT(openFile()));
@@ -70,7 +70,7 @@ MainWindow::MainWindow()
 	connect(actionImageNewChop, SIGNAL(triggered()), this, SLOT(newChop()));
 	connect(actionImageSaveChop, SIGNAL(triggered()), this, SLOT(saveChop()));
 	connect(actionImageLoadChop, SIGNAL(triggered()), this, SLOT(loadChop()));
-	connect(actionImageViewChop, SIGNAL(triggered()), this, SLOT(viewChop()));
+	connect(actionImageClearChop, SIGNAL(triggered()), this, SLOT(clearChop()));
 	connect(actionImageTrack, SIGNAL(triggered()), this, SLOT(track()));
 	
 	menuFile->addAction(actionFileOpen);
@@ -80,7 +80,7 @@ MainWindow::MainWindow()
 	menuImage->addAction(actionImageNewChop);
 	menuImage->addAction(actionImageSaveChop);
 	menuImage->addAction(actionImageLoadChop);
-	menuImage->addAction(actionImageViewChop);
+	menuImage->addAction(actionImageClearChop);
 	menuImage->addSeparator();
 	menuImage->addAction(actionImageCV);
 	menuImage->addAction(actionImageOCR);
@@ -93,7 +93,7 @@ MainWindow::MainWindow()
 	toolBarImage->addAction(actionImageNewChop);
 	toolBarImage->addAction(actionImageSaveChop);
 	toolBarImage->addAction(actionImageLoadChop);
-	toolBarImage->addAction(actionImageViewChop);
+	toolBarImage->addAction(actionImageClearChop);
 	toolBarImage->addSeparator();
 	toolBarImage->addAction(actionImageCV);
 	toolBarImage->addAction(actionImageOCR);
@@ -268,9 +268,10 @@ void MainWindow::loadChop()
 	}
 }
 
-void MainWindow::viewChop()
+void MainWindow::clearChop()
 {
-
+	imageWidget->getChops()->clear();
+	imageWidget->update();
 }
 
 void MainWindow::startCV()
