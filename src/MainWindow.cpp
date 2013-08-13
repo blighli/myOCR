@@ -124,7 +124,17 @@ void MainWindow::openFile()
 
 void MainWindow::saveFile()
 {
-	
+	QString fileName = QFileDialog::getSaveFileName(this,
+		tr("Open Image"), ".",
+		tr("Image files (*.png *.jpg *.bmp *.tiff)"));
+    if (!fileName.isEmpty())
+	{
+		QTextCodec::setCodecForCStrings(QTextCodec::codecForName("gbk"));//解决中文路径的问题
+		if(cvImage)
+		{
+			cvSaveImage(fileName.toStdString().c_str(), cvImage);
+		}
+	}
 }
 
 void MainWindow::newChop()
