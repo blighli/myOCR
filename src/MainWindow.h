@@ -32,6 +32,7 @@ private slots:
 	void clearChop();
 
 	void track();
+	void chinese();
 private:
 	ImageWidget* imageWidget;
 	QTextEdit* textEdit;
@@ -52,6 +53,7 @@ private:
 	QAction* actionImageLoadChop;
 	QAction* actionImageClearChop;
 	QAction* actionImageTrack;
+	QAction* actionImageChinese;
 	QAction* actionHelpAbout;
 
 	IplImage* cvImage;

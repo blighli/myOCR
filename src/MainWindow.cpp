@@ -52,6 +52,8 @@ MainWindow::MainWindow()
 	actionImageClearChop = new QAction(tr("Clear Chop"), this);
 	actionImageTrack = new QAction(tr("Track"), this);
 	actionImageTrack->setCheckable(true);
+	actionImageChinese = new QAction(tr("Chinese"), this);
+	actionImageChinese->setCheckable(true);
 	
 	actionFileOpen->setIcon(QIcon(":/open.png"));
 	actionFileSave->setIcon(QIcon(":/save.png"));
@@ -62,6 +64,7 @@ MainWindow::MainWindow()
 	actionImageLoadChop->setIcon(QIcon(":/load2.png"));
 	actionImageClearChop->setIcon(QIcon(":/clear2.png"));
 	actionImageTrack->setIcon(QIcon(":/track.png"));
+	actionImageChinese->setIcon(QIcon(":/chinese.png"));
 
 	connect(actionFileOpen, SIGNAL(triggered()), this, SLOT(openFile()));
 	connect(actionFileSave, SIGNAL(triggered()), this, SLOT(saveFile()));
@@ -72,6 +75,7 @@ MainWindow::MainWindow()
 	connect(actionImageLoadChop, SIGNAL(triggered()), this, SLOT(loadChop()));
 	connect(actionImageClearChop, SIGNAL(triggered()), this, SLOT(clearChop()));
 	connect(actionImageTrack, SIGNAL(triggered()), this, SLOT(track()));
+	connect(actionImageChinese, SIGNAL(triggered()), this, SLOT(chinese()));
 	
 	menuFile->addAction(actionFileOpen);
 	menuFile->addAction(actionFileSave);
@@ -84,6 +88,8 @@ MainWindow::MainWindow()
 	menuImage->addSeparator();
 	menuImage->addAction(actionImageCV);
 	menuImage->addAction(actionImageOCR);
+	menuImage->addSeparator();
+	menuImage->addAction(actionImageChinese);
 	menuHelp->addAction(actionHelpAbout);
 	
 	toolBarFile->addAction(actionFileOpen);
@@ -97,6 +103,8 @@ MainWindow::MainWindow()
 	toolBarImage->addSeparator();
 	toolBarImage->addAction(actionImageCV);
 	toolBarImage->addAction(actionImageOCR);
+	toolBarImage->addSeparator();
+	toolBarImage->addAction(actionImageChinese);
 }
 
 MainWindow::~MainWindow()
@@ -150,6 +158,11 @@ void MainWindow::saveFile()
 void MainWindow::track()
 {
 	imageWidget->allowTrack(actionImageTrack->isChecked());
+}
+
+void MainWindow::chinese()
+{
+	
 }
 
 void MainWindow::newChop()
@@ -317,22 +330,34 @@ void MainWindow::startOCR()
 			tessBaseAPI = new tesseract::TessBaseAPI(); 
 		}
 		//或者在Init函数中设置datapath
-		if (tessBaseAPI->Init(NULL, "chi_sim")) {
-			QMessageBox msgBox;
-			msgBox.setIcon(QMessageBox::Critical);
-			msgBox.setText(tr("Could not initialize tesseract."));
-			msgBox.exec();
-			return;
-		}
-
-		if(true)
+		if(actionImageChinese->isChecked())
 		{
-			tessBaseAPI->SetVariable("chop_enable", "T");
-			tessBaseAPI->SetVariable("use_new_state_cost", "F");
-			tessBaseAPI->SetVariable("segment_segcost_rating", "F");
-			tessBaseAPI->SetVariable("enable_new_segsearch", "0");
-			tessBaseAPI->SetVariable("language_model_ngram_on", "0");
-			tessBaseAPI->SetVariable("textord_force_make_prop_words", "F");
+			if (tessBaseAPI->Init(NULL, "chi_sim")) {
+				QMessageBox msgBox;
+				msgBox.setIcon(QMessageBox::Critical);
+				msgBox.setText(tr("Could not initialize tesseract:chinese"));
+				msgBox.exec();
+				return;
+			}
+			if(true)
+			{
+				tessBaseAPI->SetVariable("chop_enable", "T");
+				tessBaseAPI->SetVariable("use_new_state_cost", "F");
+				tessBaseAPI->SetVariable("segment_segcost_rating", "F");
+				tessBaseAPI->SetVariable("enable_new_segsearch", "0");
+				tessBaseAPI->SetVariable("language_model_ngram_on", "0");
+				tessBaseAPI->SetVariable("textord_force_make_prop_words", "F");
+			}
+		}
+		else
+		{
+			if (tessBaseAPI->Init(NULL, "eng")) {
+				QMessageBox msgBox;
+				msgBox.setIcon(QMessageBox::Critical);
+				msgBox.setText(tr("Could not initialize tesseract:english"));
+				msgBox.exec();
+				return;
+			}
 		}
 
 		tessBaseAPI->SetImage((uchar*)cvImage->imageData, cvImage->width, cvImage->height, cvImage->nChannels, cvImage->widthStep);

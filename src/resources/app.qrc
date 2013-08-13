@@ -9,5 +9,6 @@
     <file>load2.png</file>
     <file>clear2.png</file>
     <file>track.png</file>
+    <file>chinese.png</file>
   </qresource>
 </RCC>
