@@ -17,13 +17,17 @@ MainWindow::MainWindow()
 	imageWidget = new ImageWidget();
 	textEdit = new QTextEdit();
 	textEdit->setMinimumWidth(200);
-	textEdit->setMaximumWidth(600);
+	textEdit->setMaximumWidth(300);
 	QFont fontTextEdit = textEdit->font();
 	fontTextEdit.setPixelSize(18);
 	textEdit->setFont(fontTextEdit);
 
 	QHBoxLayout* hbox = new QHBoxLayout();
-	hbox->addWidget(imageWidget,2);
+
+	QScrollArea* scrollArea = new QScrollArea();
+	scrollArea->setWidget(imageWidget);
+	scrollArea->setWidgetResizable(true);
+	hbox->addWidget(scrollArea,2);
 	hbox->addWidget(textEdit,1);
 	
 	QWidget* centerWidget = new QWidget();

@@ -53,6 +53,9 @@ void ImageWidget::setImage(QImage* image)
 	}
 	this->image = image;
 	setBoxes(NULL, 0);
+
+	this->setMinimumSize(image->width() + m_nImagePadding, image->height() + m_nImagePadding);
+
 	update();
 }
 
