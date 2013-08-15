@@ -22,10 +22,10 @@ private slots:
 	void recognizeText();
 	void processImage();
 
-	void enableMarks();
-	void saveMarks();
-	void loadMarks();
-	void clearMarks();
+	void enableMasks();
+	void saveMasks();
+	void loadMasks();
+	void clearMasks();
 
 	void enableMesure();
 	void enableChinese();
@@ -45,20 +45,20 @@ private:
 	QAction* actionSaveImage;
 	QAction* actionRecognizeText;
 	QAction* actionProcessImage;
-	QAction* actionToggleMarks;
-	QAction* actionSaveMarks;
-	QAction* actionLoadMarks;
-	QAction* actionClearMarks;
-	QAction* actionToggleMesure;
-	QAction* actionToggleChinese;
+	QAction* actionEnableMasks;
+	QAction* actionSaveMasks;
+	QAction* actionLoadMasks;
+	QAction* actionClearMasks;
+	QAction* actionEnableMesure;
+	QAction* actionEnableChinese;
 	QAction* actionAbout;
 
 	//internal variables
-	IplImage* cvImage;
+	IplImage* mImage;
 	tesseract::TessBaseAPI* tessBaseAPI;
 	Boxa* boxes;
 
-	bool m_bNewChop;
+	bool mEnableMasks;
 };
 
 #endif //MAINWINDOW_H

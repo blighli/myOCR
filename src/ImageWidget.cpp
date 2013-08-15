@@ -3,75 +3,76 @@
 
 ImageWidget::ImageWidget()
 {
-	image = NULL;
-	boxes = NULL;
-	m_nBoxCount = 0;
+	mImage = NULL;
+	mBoxes = NULL;
+	mBoxCount = 0;
 
-	m_bDrawPosLine = false;
-	m_bTracked =false;
+	mDrawMesureLines = false;
+	mEnbaleMesure =false;
 
-	mAllowNewChop = false;
-	mChops = new QVector<QRect>();
-	mCurrentChop = NULL;
+	mEnbaleMasks = false;
+	mMasks = new QVector<QRect>();
+	mCurrentMask = NULL;
 
-	m_nImagePadding = 20;
-	m_nTickStepSmall = 10;
-	m_nTickStepMedium = 50;
-	m_nTickStepLarge = 100;
-	m_nTickSizeSmall = 4;
-	m_nTickSizeMedium = 10;
-	m_nTickSizeLarge = 20;
+	mImagePadding = 20;
+	mTickStepSmall = 10;
+	mTickStepMedium = 50;
+	mTickStepLarge = 100;
+	mTickSizeSmall = 4;
+	mTickSizeMedium = 10;
+	mTickSizeLarge = 20;
 }
 
 ImageWidget::~ImageWidget()
 {
-	delete image;
-	delete[] boxes;
-	delete mChops;
+	delete mImage;
+	delete[] mBoxes;
+	delete mMasks;
 }
 
-void ImageWidget::allowTrack(bool enabled)
+void ImageWidget::enableMesure(bool enabled)
 {
-	m_bTracked = enabled;
+	mEnbaleMesure = enabled;
 }
 
-void ImageWidget::allowNewChop(bool enabled)
+void ImageWidget::enableMasks(bool enabled)
 {
-	mAllowNewChop = enabled;
+	mEnbaleMasks = enabled;
 }
 
-QVector<QRect>* ImageWidget::getChops()
+QVector<QRect>* ImageWidget::getMasks()
 {
-	return mChops;
+	return mMasks;
 }
 
 void ImageWidget::setImage(QImage* image)
 {
-	if(this->image)
+	if(mImage)
 	{
-		delete this->image;
+		delete mImage;
 	}
-	this->image = image;
+	mImage = image;
 	setBoxes(NULL, 0);
 
-	this->setMinimumSize(image->width() + m_nImagePadding, image->height() + m_nImagePadding);
+	setMinimumSize(mImage->width() + mImagePadding, mImage->height() + mImagePadding);
 
 	update();
 }
 
-void ImageWidget::setBoxes(QRect* boxes, int nBoxCount)
+void ImageWidget::setBoxes(QRect* boxes, int boxCount)
 {
-	if(this->boxes)
+	if(mBoxes)
 	{
-		delete[] this->boxes;
-		this->m_nBoxCount = 0;
+		delete[] mBoxes;
+		mBoxCount = 0;
 	}
-	this->boxes = boxes;
-	this->m_nBoxCount = nBoxCount;
 
-	for(int i = 0; i< this->m_nBoxCount; i++)
+	mBoxes = boxes;
+	mBoxCount = boxCount;
+
+	for(int i = 0; i< mBoxCount; i++)
 	{
-		this->boxes[i].translate(m_nImagePadding, m_nImagePadding);
+		mBoxes[i].translate(mImagePadding, mImagePadding);
 	}
 
 	update();
@@ -79,13 +80,13 @@ void ImageWidget::setBoxes(QRect* boxes, int nBoxCount)
 
 void ImageWidget::drawRule(QPainter* painter)
 {
-	int nWindowWidth = this->size().width();
-	int nWindowHeight = this->size().height();
+	int windowWidth = width();
+	int windowHeight = height();
 
-	QPoint ruleTopBegin = QPoint(m_nImagePadding, m_nImagePadding);
-	QPoint ruleTopEnd = QPoint(nWindowWidth, m_nImagePadding);
-	QPoint ruleLeftBegin = QPoint(m_nImagePadding, m_nImagePadding);
-	QPoint ruleLeftEnd = QPoint(m_nImagePadding, nWindowHeight);
+	QPoint ruleTopBegin = QPoint(mImagePadding, mImagePadding);
+	QPoint ruleTopEnd = QPoint(windowWidth, mImagePadding);
+	QPoint ruleLeftBegin = QPoint(mImagePadding, mImagePadding);
+	QPoint ruleLeftEnd = QPoint(mImagePadding, windowHeight);
 
 	//绘制标尺的外廓线
 	painter->drawLine(ruleTopBegin, ruleTopEnd);
@@ -96,54 +97,54 @@ void ImageWidget::drawRule(QPainter* painter)
 	font.setPixelSize(nFontSize);
 	painter->setFont(font);
 
-	int nTickTextPadding = m_nTickSizeSmall;
-	for(int tickX = ruleTopBegin.x(); tickX <= ruleTopEnd.x(); tickX += m_nTickStepSmall)
+	int nTickTextPadding = mTickSizeSmall;
+	for(int tickX = ruleTopBegin.x(); tickX <= ruleTopEnd.x(); tickX += mTickStepSmall)
 	{
-		int nTickSize = m_nTickSizeSmall;
+		int nTickSize = mTickSizeSmall;
 		int nCurrentTick = tickX - ruleTopBegin.x();
-		if(nCurrentTick % m_nTickStepLarge == 0)
+		if(nCurrentTick % mTickStepLarge == 0)
 		{
-			nTickSize = m_nTickSizeLarge;
+			nTickSize = mTickSizeLarge;
 			QString tickText = QString::number(nCurrentTick);
 			painter->drawText(tickX + nTickTextPadding, nFontSize, tickText);
 		}
-		else if(nCurrentTick % m_nTickStepMedium == 0)
+		else if(nCurrentTick % mTickStepMedium == 0)
 		{
-			nTickSize = m_nTickSizeMedium;
+			nTickSize = mTickSizeMedium;
 		}
 		QPoint tickHead = QPoint(tickX, ruleTopBegin.y());
 		QPoint tickTail = QPoint(tickX, ruleTopBegin.y() - nTickSize);
 		painter->drawLine(tickHead, tickTail);
 	}
-	for(int tickY = ruleLeftBegin.y(); tickY <= ruleLeftEnd.y(); tickY += m_nTickStepSmall)
+	for(int tickY = ruleLeftBegin.y(); tickY <= ruleLeftEnd.y(); tickY += mTickStepSmall)
 	{
-		int nTickSize = m_nTickSizeSmall;
+		int nTickSize = mTickSizeSmall;
 		int nCurrentTick = tickY - ruleLeftBegin.y();
-		if(nCurrentTick % m_nTickStepLarge == 0)
+		if(nCurrentTick % mTickStepLarge == 0)
 		{
-			nTickSize = m_nTickSizeLarge;
+			nTickSize = mTickSizeLarge;
 			QString tickText = QString::number(nCurrentTick);
 			
 			painter->save();
-			painter->translate(m_nTickSizeLarge - nFontSize, tickY + nTickTextPadding);
+			painter->translate(mTickSizeLarge - nFontSize, tickY + nTickTextPadding);
 			painter->rotate(90);
 			painter->drawText(0, 0, tickText);
 			painter->restore();
 		}
-		else if(nCurrentTick % m_nTickStepMedium == 0)
+		else if(nCurrentTick % mTickStepMedium == 0)
 		{
-			nTickSize = m_nTickSizeMedium;
+			nTickSize = mTickSizeMedium;
 		}
 		QPoint tickHead = QPoint(ruleLeftBegin.x(), tickY);
 		QPoint tickTail = QPoint(ruleLeftBegin.x() - nTickSize, tickY);
 		painter->drawLine(tickHead, tickTail);
 	}
 
-	if(m_bDrawPosLine && m_bTracked)
+	if(mDrawMesureLines && mEnbaleMesure)
 	{
 
-		QPoint vLineHead(m_mousePos.x(), ruleTopBegin.y());
-		QPoint hLineHead(ruleLeftBegin.x(), m_mousePos.y());
+		QPoint vLineHead(mCurrentMousePos.x(), ruleTopBegin.y());
+		QPoint hLineHead(ruleLeftBegin.x(), mCurrentMousePos.y());
 
 		painter->save();
 
@@ -151,11 +152,11 @@ void ImageWidget::drawRule(QPainter* painter)
 		pen.setStyle(Qt::DashLine);
 		painter->setPen(pen);
 
-		painter->drawLine(vLineHead, m_mousePos);
-		painter->drawLine(hLineHead, m_mousePos);
+		painter->drawLine(vLineHead, mCurrentMousePos);
+		painter->drawLine(hLineHead, mCurrentMousePos);
 
-		QString posText = QString("(%1,%2)").arg(m_mousePos.x() - m_nImagePadding).arg(m_mousePos.y() - m_nImagePadding);
-		painter->drawText(m_mousePos, posText);
+		QString posText = QString("(%1,%2)").arg(mCurrentMousePos.x() - mImagePadding).arg(mCurrentMousePos.y() - mImagePadding);
+		painter->drawText(mCurrentMousePos, posText);
 
 		painter->restore();
 	}
@@ -163,18 +164,18 @@ void ImageWidget::drawRule(QPainter* painter)
 
 void ImageWidget::drawImage(QPainter* painter)
 {
-	if(image)
+	if(mImage)
 	{
-		painter->drawImage(m_nImagePadding,m_nImagePadding, *image);
+		painter->drawImage(mImagePadding,mImagePadding, *mImage);
 	}
 }
 
 
-void ImageWidget::drawBoxes(QPainter* painter)
+void ImageWidget::drawMasks(QPainter* painter)
 {
-	if(boxes)
+	if(mBoxes)
 	{
-		painter->drawRects(boxes, m_nBoxCount);
+		painter->drawRects(mBoxes, mBoxCount);
 	}
 }
 
@@ -184,19 +185,19 @@ void ImageWidget::paintEvent(QPaintEvent *event)
 
 	drawImage(&painter);
 	drawRule(&painter);
-	drawBoxes(&painter);
+	drawMasks(&painter);
 
 
-	for(int i=0;i<mChops->size();i++)
+	for(int i=0;i<mMasks->size();i++)
 	{
-		QRect rect = mChops->at(i);
-		rect.translate(m_nImagePadding, m_nImagePadding);
+		QRect rect = mMasks->at(i);
+		rect.translate(mImagePadding, mImagePadding);
 		painter.drawRect(rect);
 	}
-	if(mAllowNewChop && mCurrentChop)
+	if(mEnbaleMasks && mCurrentMask)
 	{
-		QRect rect = *mCurrentChop;
-		rect.translate(m_nImagePadding, m_nImagePadding);
+		QRect rect = *mCurrentMask;
+		rect.translate(mImagePadding, mImagePadding);
 		painter.drawRect(rect);
 	}
 
@@ -204,13 +205,13 @@ void ImageWidget::paintEvent(QPaintEvent *event)
 
 void ImageWidget::mousePressEvent(QMouseEvent *event)
 {
-	m_bDrawPosLine = true;
-	m_mousePos = event->pos();
+	mDrawMesureLines = true;
+	mCurrentMousePos = event->pos();
 
-	if(mAllowNewChop && mCurrentChop == NULL)
+	if(mEnbaleMasks && mCurrentMask == NULL)
 	{
-		QPoint chopCorner(m_mousePos.x() - m_nImagePadding, m_mousePos.y() - m_nImagePadding);
-		mCurrentChop = new QRect(chopCorner, chopCorner);
+		QPoint chopCorner(mCurrentMousePos.x() - mImagePadding, mCurrentMousePos.y() - mImagePadding);
+		mCurrentMask = new QRect(chopCorner, chopCorner);
 	}
 
 	update();
@@ -219,13 +220,13 @@ void ImageWidget::mousePressEvent(QMouseEvent *event)
 
 void ImageWidget::mouseReleaseEvent(QMouseEvent *event)
 {
-	m_bDrawPosLine = false;
+	mDrawMesureLines = false;
 
-	if(mAllowNewChop && mCurrentChop)
+	if(mEnbaleMasks && mCurrentMask)
 	{
-		mChops->push_back(*mCurrentChop);
-		delete mCurrentChop;
-		mCurrentChop = NULL;
+		mMasks->push_back(*mCurrentMask);
+		delete mCurrentMask;
+		mCurrentMask = NULL;
 	}
 
 	update();
@@ -233,12 +234,12 @@ void ImageWidget::mouseReleaseEvent(QMouseEvent *event)
 
 void ImageWidget::mouseMoveEvent(QMouseEvent *event)
 {
-	m_mousePos = event->pos();
+	mCurrentMousePos = event->pos();
 
-	if(mAllowNewChop && mCurrentChop)
+	if(mEnbaleMasks && mCurrentMask)
 	{
-		QPoint chopCorner(m_mousePos.x() - m_nImagePadding, m_mousePos.y() - m_nImagePadding);
-		mCurrentChop->setBottomRight(chopCorner);
+		QPoint chopCorner(mCurrentMousePos.x() - mImagePadding, mCurrentMousePos.y() - mImagePadding);
+		mCurrentMask->setBottomRight(chopCorner);
 	}
 
 	update();

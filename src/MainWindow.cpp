@@ -7,10 +7,10 @@
 
 MainWindow::MainWindow()
 {
-	cvImage = NULL;
-	boxes = NULL;
+	mImage = NULL;
 	tessBaseAPI = NULL;
-	m_bNewChop = false;
+	boxes = NULL;
+	mEnableMasks = false;
 
 	resize(960, 600);
 
@@ -47,73 +47,73 @@ MainWindow::MainWindow()
 	actionRecognizeText = new QAction(tr("Recognize Text"), this);
 	actionProcessImage = new QAction(tr("Process Image"), this);
 	actionAbout = new QAction(tr("About"), this);
-	actionToggleMarks = new QAction(tr("Enable Marks"), this);
-	actionToggleMarks->setCheckable(true);
-	actionSaveMarks = new QAction(tr("Save Marks"), this);
-	actionLoadMarks = new QAction(tr("Load Marks"), this);
-	actionClearMarks = new QAction(tr("Clear Marks"), this);
-	actionToggleMesure = new QAction(tr("Enable Mesure"), this);
-	actionToggleMesure->setCheckable(true);
-	actionToggleChinese = new QAction(tr("Enable Chinese"), this);
-	actionToggleChinese->setCheckable(true);
+	actionEnableMasks = new QAction(tr("Enable Masks"), this);
+	actionEnableMasks->setCheckable(true);
+	actionSaveMasks = new QAction(tr("Save Masks"), this);
+	actionLoadMasks = new QAction(tr("Load Masks"), this);
+	actionClearMasks = new QAction(tr("Clear Masks"), this);
+	actionEnableMesure = new QAction(tr("Enable Mesure"), this);
+	actionEnableMesure->setCheckable(true);
+	actionEnableChinese = new QAction(tr("Enable Chinese"), this);
+	actionEnableChinese->setCheckable(true);
 	
 	actionOpenImage->setIcon(QIcon(":/open.png"));
 	actionSaveImage->setIcon(QIcon(":/save.png"));
 	actionRecognizeText->setIcon(QIcon(":/ocr.png"));
 	actionProcessImage->setIcon(QIcon(":/paint.png"));
-	actionToggleMarks->setIcon(QIcon(":/new2.png"));
-	actionSaveMarks->setIcon(QIcon(":/save2.png"));
-	actionLoadMarks->setIcon(QIcon(":/load2.png"));
-	actionClearMarks->setIcon(QIcon(":/clear2.png"));
-	actionToggleMesure->setIcon(QIcon(":/mesure.png"));
-	actionToggleChinese->setIcon(QIcon(":/chinese.png"));
+	actionEnableMasks->setIcon(QIcon(":/new2.png"));
+	actionSaveMasks->setIcon(QIcon(":/save2.png"));
+	actionLoadMasks->setIcon(QIcon(":/load2.png"));
+	actionClearMasks->setIcon(QIcon(":/clear2.png"));
+	actionEnableMesure->setIcon(QIcon(":/mesure.png"));
+	actionEnableChinese->setIcon(QIcon(":/chinese.png"));
 
 	connect(actionOpenImage, SIGNAL(triggered()), this, SLOT(openImageFile()));
 	connect(actionSaveImage, SIGNAL(triggered()), this, SLOT(saveImageFile()));
 	connect(actionRecognizeText, SIGNAL(triggered()), this, SLOT(recognizeText()));
 	connect(actionProcessImage, SIGNAL(triggered()), this, SLOT(processImage()));
-	connect(actionToggleMarks, SIGNAL(triggered()), this, SLOT(enableMarks()));
-	connect(actionSaveMarks, SIGNAL(triggered()), this, SLOT(saveMarks()));
-	connect(actionLoadMarks, SIGNAL(triggered()), this, SLOT(loadMarks()));
-	connect(actionClearMarks, SIGNAL(triggered()), this, SLOT(clearMarks()));
-	connect(actionToggleMesure, SIGNAL(triggered()), this, SLOT(enableMesure()));
-	connect(actionToggleChinese, SIGNAL(triggered()), this, SLOT(enableChinese()));
+	connect(actionEnableMasks, SIGNAL(triggered()), this, SLOT(enableMasks()));
+	connect(actionSaveMasks, SIGNAL(triggered()), this, SLOT(saveMasks()));
+	connect(actionLoadMasks, SIGNAL(triggered()), this, SLOT(loadMasks()));
+	connect(actionClearMasks, SIGNAL(triggered()), this, SLOT(clearMasks()));
+	connect(actionEnableMesure, SIGNAL(triggered()), this, SLOT(enableMesure()));
+	connect(actionEnableChinese, SIGNAL(triggered()), this, SLOT(enableChinese()));
 	
 	menuFile->addAction(actionOpenImage);
 	menuFile->addAction(actionSaveImage);
-	menuImage->addAction(actionToggleMesure);
+	menuImage->addAction(actionEnableMesure);
 	menuImage->addSeparator();
-	menuImage->addAction(actionToggleMarks);
-	menuImage->addAction(actionSaveMarks);
-	menuImage->addAction(actionLoadMarks);
-	menuImage->addAction(actionClearMarks);
+	menuImage->addAction(actionEnableMasks);
+	menuImage->addAction(actionSaveMasks);
+	menuImage->addAction(actionLoadMasks);
+	menuImage->addAction(actionClearMasks);
 	menuImage->addSeparator();
 	menuImage->addAction(actionProcessImage);
 	menuImage->addAction(actionRecognizeText);
 	menuImage->addSeparator();
-	menuImage->addAction(actionToggleChinese);
+	menuImage->addAction(actionEnableChinese);
 	menuHelp->addAction(actionAbout);
 	
 	toolBarFile->addAction(actionOpenImage);
 	toolBarFile->addAction(actionSaveImage);
-	toolBarImage->addAction(actionToggleMesure);
+	toolBarImage->addAction(actionEnableMesure);
 	toolBarImage->addSeparator();
-	toolBarImage->addAction(actionToggleMarks);
-	toolBarImage->addAction(actionSaveMarks);
-	toolBarImage->addAction(actionLoadMarks);
-	toolBarImage->addAction(actionClearMarks);
+	toolBarImage->addAction(actionEnableMasks);
+	toolBarImage->addAction(actionSaveMasks);
+	toolBarImage->addAction(actionLoadMasks);
+	toolBarImage->addAction(actionClearMasks);
 	toolBarImage->addSeparator();
 	toolBarImage->addAction(actionProcessImage);
 	toolBarImage->addAction(actionRecognizeText);
 	toolBarImage->addSeparator();
-	toolBarImage->addAction(actionToggleChinese);
+	toolBarImage->addAction(actionEnableChinese);
 }
 
 MainWindow::~MainWindow()
 {
-	if(cvImage)
+	if(mImage)
 	{
-		cvReleaseImage(&cvImage);
+		cvReleaseImage(&mImage);
 	}
 	if(tessBaseAPI)
 	{
@@ -129,14 +129,14 @@ void MainWindow::openImageFile()
     if (!fileName.isEmpty())
 	{
 		QTextCodec::setCodecForCStrings(QTextCodec::codecForName("gbk"));//解决中文路径的问题
-		if(cvImage)
+		if(mImage)
 		{
-			cvReleaseImage(&cvImage);
+			cvReleaseImage(&mImage);
 		}
-		cvImage = cvLoadImage(fileName.toStdString().c_str());
-		if(cvImage)
+		mImage = cvLoadImage(fileName.toStdString().c_str());
+		if(mImage)
 		{
-			QImage* image = ImageAdapter::IplImage2QImage(cvImage);
+			QImage* image = ImageAdapter::IplImage2QImage(mImage);
 			imageWidget->setImage(image);
 		}
 	}
@@ -150,16 +150,16 @@ void MainWindow::saveImageFile()
     if (!fileName.isEmpty())
 	{
 		QTextCodec::setCodecForCStrings(QTextCodec::codecForName("gbk"));//解决中文路径的问题
-		if(cvImage)
+		if(mImage)
 		{
-			cvSaveImage(fileName.toStdString().c_str(), cvImage);
+			cvSaveImage(fileName.toStdString().c_str(), mImage);
 		}
 	}
 }
 
 void MainWindow::enableMesure()
 {
-	imageWidget->allowTrack(actionToggleMesure->isChecked());
+	imageWidget->enableMesure(actionEnableMesure->isChecked());
 }
 
 void MainWindow::enableChinese()
@@ -167,15 +167,15 @@ void MainWindow::enableChinese()
 	
 }
 
-void MainWindow::enableMarks()
+void MainWindow::enableMasks()
 {
-	m_bNewChop = actionToggleMarks->isChecked();
-	imageWidget->allowNewChop(m_bNewChop);
+	mEnableMasks = actionEnableMasks->isChecked();
+	imageWidget->enableMasks(mEnableMasks);
 }
 
-void MainWindow::saveMarks()
+void MainWindow::saveMasks()
 {
-	QVector<QRect>* chops = imageWidget->getChops();
+	QVector<QRect>* chops = imageWidget->getMasks();
 	if(chops->size() == 0)
 	{
 		QMessageBox msgBox;
@@ -222,7 +222,7 @@ void MainWindow::saveMarks()
 	}
 }
 
-void MainWindow::loadMarks()
+void MainWindow::loadMasks()
 {
 	QString fileName = QFileDialog::getOpenFileName(this,
 		tr("Load Chops"), ".",
@@ -239,7 +239,7 @@ void MainWindow::loadMarks()
 			return;
 		}
 
-		QVector<QRect>* chops = imageWidget->getChops();
+		QVector<QRect>* chops = imageWidget->getMasks();
 		chops->clear();
 
 		QXmlStreamReader xml;
@@ -283,15 +283,15 @@ void MainWindow::loadMarks()
 	}
 }
 
-void MainWindow::clearMarks()
+void MainWindow::clearMasks()
 {
-	imageWidget->getChops()->clear();
+	imageWidget->getMasks()->clear();
 	imageWidget->update();
 }
 
 void MainWindow::processImage()
 {
-	if(cvImage == NULL)
+	if(mImage == NULL)
 	{
 		QMessageBox msgBox;
 		msgBox.setIcon(QMessageBox::Warning);
@@ -300,23 +300,23 @@ void MainWindow::processImage()
 		return;
 	}
 
-	IplImage* grayImage = cvCreateImage(cvGetSize(cvImage), 8, 1);
-	if(cvImage->nChannels == 3)
+	IplImage* grayImage = cvCreateImage(cvGetSize(mImage), 8, 1);
+	if(mImage->nChannels == 3)
 	{
-		cvCvtColor(cvImage, grayImage, CV_RGB2GRAY);
-		cvReleaseImage(&cvImage);
-		cvImage = grayImage;
+		cvCvtColor(mImage, grayImage, CV_RGB2GRAY);
+		cvReleaseImage(&mImage);
+		mImage = grayImage;
 	}
 	
-	//cvAdaptiveThreshold(cvImage, cvImage, 255);
+	//cvAdaptiveThreshold(mImage, mImage, 255);
 
-	QImage* image = ImageAdapter::IplImage2QImage(cvImage);
+	QImage* image = ImageAdapter::IplImage2QImage(mImage);
 	imageWidget->setImage(image);
 }
 
 void MainWindow::recognizeText()
 {
-	if(!cvImage)
+	if(!mImage)
 	{
 		QMessageBox msgBox;
 		msgBox.setIcon(QMessageBox::Warning);
@@ -332,7 +332,7 @@ void MainWindow::recognizeText()
 			tessBaseAPI = new tesseract::TessBaseAPI(); 
 		}
 		//或者在Init函数中设置datapath
-		if(actionToggleChinese->isChecked())
+		if(actionEnableChinese->isChecked())
 		{
 			if (tessBaseAPI->Init(NULL, "chi_sim")) {
 				QMessageBox msgBox;
@@ -362,9 +362,9 @@ void MainWindow::recognizeText()
 			}
 		}
 
-		tessBaseAPI->SetImage((uchar*)cvImage->imageData, cvImage->width, cvImage->height, cvImage->nChannels, cvImage->widthStep);
+		tessBaseAPI->SetImage((uchar*)mImage->imageData, mImage->width, mImage->height, mImage->nChannels, mImage->widthStep);
 
-		QVector<QRect>* chops = imageWidget->getChops();
+		QVector<QRect>* chops = imageWidget->getMasks();
 		if(chops->size() == 0)
 		{
 

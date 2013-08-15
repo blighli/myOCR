@@ -10,11 +10,11 @@ public:
 	ImageWidget();
 	~ImageWidget();
 	void setImage(QImage* image);
-	void setBoxes(QRect* boxes, int nBoxCount);
-	void allowTrack(bool enabled);
-	void allowNewChop(bool enabled);
+	void setBoxes(QRect* mBoxes, int boxCount);
+	void enableMesure(bool enabled);
+	void enableMasks(bool enabled);
 
-	QVector<QRect>* getChops();
+	QVector<QRect>* getMasks();
 
 protected:
 	void paintEvent(QPaintEvent *event);
@@ -25,28 +25,28 @@ protected:
 private:
 	void drawRule(QPainter* painter);
 	void drawImage(QPainter* painter);
-	void drawBoxes(QPainter* painter);
+	void drawMasks(QPainter* painter);
 
 private:
-	QImage* image;
-	int m_nImagePadding;
-	int m_nTickStepSmall;
-	int m_nTickStepMedium;
-	int m_nTickStepLarge;
-	int m_nTickSizeSmall;
-	int m_nTickSizeMedium;
-	int m_nTickSizeLarge;
+	QImage* mImage;
+	int mImagePadding;
+	int mTickStepSmall;
+	int mTickStepMedium;
+	int mTickStepLarge;
+	int mTickSizeSmall;
+	int mTickSizeMedium;
+	int mTickSizeLarge;
 
-	bool m_bTracked;
-	bool m_bDrawPosLine;
-	QPoint m_mousePos;
+	bool mEnbaleMesure;
+	bool mDrawMesureLines;
+	QPoint mCurrentMousePos;
 
-	bool mAllowNewChop;
-	QVector<QRect>* mChops;
-	QRect* mCurrentChop;
+	bool mEnbaleMasks;
+	QVector<QRect>* mMasks;
+	QRect* mCurrentMask;
 	
-	QRect* boxes;
-	int m_nBoxCount;
+	QRect* mBoxes;
+	int mBoxCount;
 };
 
 #endif //IMAGEWIDGET_H
