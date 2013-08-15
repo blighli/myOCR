@@ -16,8 +16,7 @@ MainWindow::MainWindow()
 
 	imageWidget = new ImageWidget();
 	textEdit = new QTextEdit();
-	textEdit->setMinimumWidth(200);
-	textEdit->setMaximumWidth(300);
+	textEdit->setFixedWidth(200);
 	QFont fontTextEdit = textEdit->font();
 	fontTextEdit.setPixelSize(18);
 	textEdit->setFont(fontTextEdit);
@@ -27,13 +26,12 @@ MainWindow::MainWindow()
 	QScrollArea* scrollArea = new QScrollArea();
 	scrollArea->setWidget(imageWidget);
 	scrollArea->setWidgetResizable(true);
-	hbox->addWidget(scrollArea,2);
-	hbox->addWidget(textEdit,1);
+	hbox->addWidget(scrollArea,1);
+	hbox->addWidget(textEdit);
 	
 	QWidget* centerWidget = new QWidget();
 	centerWidget->setLayout(hbox);
-
-	this->setCentralWidget(centerWidget);
+	setCentralWidget(centerWidget);
 
 	menuFile = menuBar()->addMenu(tr("File"));
 	menuImage = menuBar()->addMenu(tr("Image"));
@@ -44,71 +42,71 @@ MainWindow::MainWindow()
 	toolBarImage = addToolBar(tr("Image"));
 	toolBarImage->setMovable(false);
 	
-	actionFileOpen = new QAction(tr("Open"), this);
-	actionFileSave = new QAction(tr("Save"), this);
-	actionImageOCR = new QAction(tr("OCR"), this);
-	actionImageCV = new QAction(tr("CV"), this);
-	actionHelpAbout = new QAction(tr("About"), this);
-	actionImageNewChop = new QAction(tr("New Chop"), this);
-	actionImageNewChop->setCheckable(true);
-	actionImageSaveChop = new QAction(tr("Save Chop"), this);
-	actionImageLoadChop = new QAction(tr("Load Chop"), this);
-	actionImageClearChop = new QAction(tr("Clear Chop"), this);
-	actionImageTrack = new QAction(tr("Track"), this);
-	actionImageTrack->setCheckable(true);
-	actionImageChinese = new QAction(tr("Chinese"), this);
-	actionImageChinese->setCheckable(true);
+	actionOpenImage = new QAction(tr("Open Image"), this);
+	actionSaveImage = new QAction(tr("Save Image"), this);
+	actionRecognizeText = new QAction(tr("Recognize Text"), this);
+	actionProcessImage = new QAction(tr("Process Image"), this);
+	actionAbout = new QAction(tr("About"), this);
+	actionToggleMarks = new QAction(tr("Enable Marks"), this);
+	actionToggleMarks->setCheckable(true);
+	actionSaveMarks = new QAction(tr("Save Marks"), this);
+	actionLoadMarks = new QAction(tr("Load Marks"), this);
+	actionClearMarks = new QAction(tr("Clear Marks"), this);
+	actionToggleMesure = new QAction(tr("Enable Mesure"), this);
+	actionToggleMesure->setCheckable(true);
+	actionToggleChinese = new QAction(tr("Enable Chinese"), this);
+	actionToggleChinese->setCheckable(true);
 	
-	actionFileOpen->setIcon(QIcon(":/open.png"));
-	actionFileSave->setIcon(QIcon(":/save.png"));
-	actionImageOCR->setIcon(QIcon(":/ocr.png"));
-	actionImageCV->setIcon(QIcon(":/paint.png"));
-	actionImageNewChop->setIcon(QIcon(":/new2.png"));
-	actionImageSaveChop->setIcon(QIcon(":/save2.png"));
-	actionImageLoadChop->setIcon(QIcon(":/load2.png"));
-	actionImageClearChop->setIcon(QIcon(":/clear2.png"));
-	actionImageTrack->setIcon(QIcon(":/track.png"));
-	actionImageChinese->setIcon(QIcon(":/chinese.png"));
+	actionOpenImage->setIcon(QIcon(":/open.png"));
+	actionSaveImage->setIcon(QIcon(":/save.png"));
+	actionRecognizeText->setIcon(QIcon(":/ocr.png"));
+	actionProcessImage->setIcon(QIcon(":/paint.png"));
+	actionToggleMarks->setIcon(QIcon(":/new2.png"));
+	actionSaveMarks->setIcon(QIcon(":/save2.png"));
+	actionLoadMarks->setIcon(QIcon(":/load2.png"));
+	actionClearMarks->setIcon(QIcon(":/clear2.png"));
+	actionToggleMesure->setIcon(QIcon(":/mesure.png"));
+	actionToggleChinese->setIcon(QIcon(":/chinese.png"));
 
-	connect(actionFileOpen, SIGNAL(triggered()), this, SLOT(openFile()));
-	connect(actionFileSave, SIGNAL(triggered()), this, SLOT(saveFile()));
-	connect(actionImageOCR, SIGNAL(triggered()), this, SLOT(startOCR()));
-	connect(actionImageCV, SIGNAL(triggered()), this, SLOT(startCV()));
-	connect(actionImageNewChop, SIGNAL(triggered()), this, SLOT(newChop()));
-	connect(actionImageSaveChop, SIGNAL(triggered()), this, SLOT(saveChop()));
-	connect(actionImageLoadChop, SIGNAL(triggered()), this, SLOT(loadChop()));
-	connect(actionImageClearChop, SIGNAL(triggered()), this, SLOT(clearChop()));
-	connect(actionImageTrack, SIGNAL(triggered()), this, SLOT(track()));
-	connect(actionImageChinese, SIGNAL(triggered()), this, SLOT(chinese()));
+	connect(actionOpenImage, SIGNAL(triggered()), this, SLOT(openImageFile()));
+	connect(actionSaveImage, SIGNAL(triggered()), this, SLOT(saveImageFile()));
+	connect(actionRecognizeText, SIGNAL(triggered()), this, SLOT(recognizeText()));
+	connect(actionProcessImage, SIGNAL(triggered()), this, SLOT(processImage()));
+	connect(actionToggleMarks, SIGNAL(triggered()), this, SLOT(enableMarks()));
+	connect(actionSaveMarks, SIGNAL(triggered()), this, SLOT(saveMarks()));
+	connect(actionLoadMarks, SIGNAL(triggered()), this, SLOT(loadMarks()));
+	connect(actionClearMarks, SIGNAL(triggered()), this, SLOT(clearMarks()));
+	connect(actionToggleMesure, SIGNAL(triggered()), this, SLOT(enableMesure()));
+	connect(actionToggleChinese, SIGNAL(triggered()), this, SLOT(enableChinese()));
 	
-	menuFile->addAction(actionFileOpen);
-	menuFile->addAction(actionFileSave);
-	menuImage->addAction(actionImageTrack);
+	menuFile->addAction(actionOpenImage);
+	menuFile->addAction(actionSaveImage);
+	menuImage->addAction(actionToggleMesure);
 	menuImage->addSeparator();
-	menuImage->addAction(actionImageNewChop);
-	menuImage->addAction(actionImageSaveChop);
-	menuImage->addAction(actionImageLoadChop);
-	menuImage->addAction(actionImageClearChop);
+	menuImage->addAction(actionToggleMarks);
+	menuImage->addAction(actionSaveMarks);
+	menuImage->addAction(actionLoadMarks);
+	menuImage->addAction(actionClearMarks);
 	menuImage->addSeparator();
-	menuImage->addAction(actionImageCV);
-	menuImage->addAction(actionImageOCR);
+	menuImage->addAction(actionProcessImage);
+	menuImage->addAction(actionRecognizeText);
 	menuImage->addSeparator();
-	menuImage->addAction(actionImageChinese);
-	menuHelp->addAction(actionHelpAbout);
+	menuImage->addAction(actionToggleChinese);
+	menuHelp->addAction(actionAbout);
 	
-	toolBarFile->addAction(actionFileOpen);
-	toolBarFile->addAction(actionFileSave);
-	toolBarImage->addAction(actionImageTrack);
+	toolBarFile->addAction(actionOpenImage);
+	toolBarFile->addAction(actionSaveImage);
+	toolBarImage->addAction(actionToggleMesure);
 	toolBarImage->addSeparator();
-	toolBarImage->addAction(actionImageNewChop);
-	toolBarImage->addAction(actionImageSaveChop);
-	toolBarImage->addAction(actionImageLoadChop);
-	toolBarImage->addAction(actionImageClearChop);
+	toolBarImage->addAction(actionToggleMarks);
+	toolBarImage->addAction(actionSaveMarks);
+	toolBarImage->addAction(actionLoadMarks);
+	toolBarImage->addAction(actionClearMarks);
 	toolBarImage->addSeparator();
-	toolBarImage->addAction(actionImageCV);
-	toolBarImage->addAction(actionImageOCR);
+	toolBarImage->addAction(actionProcessImage);
+	toolBarImage->addAction(actionRecognizeText);
 	toolBarImage->addSeparator();
-	toolBarImage->addAction(actionImageChinese);
+	toolBarImage->addAction(actionToggleChinese);
 }
 
 MainWindow::~MainWindow()
@@ -123,7 +121,7 @@ MainWindow::~MainWindow()
 	}
 }
 
-void MainWindow::openFile()
+void MainWindow::openImageFile()
 {
 	QString fileName = QFileDialog::getOpenFileName(this,
 		tr("Open Image"), ".",
@@ -144,7 +142,7 @@ void MainWindow::openFile()
 	}
 }
 
-void MainWindow::saveFile()
+void MainWindow::saveImageFile()
 {
 	QString fileName = QFileDialog::getSaveFileName(this,
 		tr("Save Image"), ".",
@@ -159,23 +157,23 @@ void MainWindow::saveFile()
 	}
 }
 
-void MainWindow::track()
+void MainWindow::enableMesure()
 {
-	imageWidget->allowTrack(actionImageTrack->isChecked());
+	imageWidget->allowTrack(actionToggleMesure->isChecked());
 }
 
-void MainWindow::chinese()
+void MainWindow::enableChinese()
 {
 	
 }
 
-void MainWindow::newChop()
+void MainWindow::enableMarks()
 {
-	m_bNewChop = actionImageNewChop->isChecked();
+	m_bNewChop = actionToggleMarks->isChecked();
 	imageWidget->allowNewChop(m_bNewChop);
 }
 
-void MainWindow::saveChop()
+void MainWindow::saveMarks()
 {
 	QVector<QRect>* chops = imageWidget->getChops();
 	if(chops->size() == 0)
@@ -224,7 +222,7 @@ void MainWindow::saveChop()
 	}
 }
 
-void MainWindow::loadChop()
+void MainWindow::loadMarks()
 {
 	QString fileName = QFileDialog::getOpenFileName(this,
 		tr("Load Chops"), ".",
@@ -285,13 +283,13 @@ void MainWindow::loadChop()
 	}
 }
 
-void MainWindow::clearChop()
+void MainWindow::clearMarks()
 {
 	imageWidget->getChops()->clear();
 	imageWidget->update();
 }
 
-void MainWindow::startCV()
+void MainWindow::processImage()
 {
 	if(cvImage == NULL)
 	{
@@ -310,13 +308,13 @@ void MainWindow::startCV()
 		cvImage = grayImage;
 	}
 	
-	cvAdaptiveThreshold(cvImage, cvImage, 255);
+	//cvAdaptiveThreshold(cvImage, cvImage, 255);
 
 	QImage* image = ImageAdapter::IplImage2QImage(cvImage);
 	imageWidget->setImage(image);
 }
 
-void MainWindow::startOCR()
+void MainWindow::recognizeText()
 {
 	if(!cvImage)
 	{
@@ -334,12 +332,12 @@ void MainWindow::startOCR()
 			tessBaseAPI = new tesseract::TessBaseAPI(); 
 		}
 		//或者在Init函数中设置datapath
-		if(actionImageChinese->isChecked())
+		if(actionToggleChinese->isChecked())
 		{
 			if (tessBaseAPI->Init(NULL, "chi_sim")) {
 				QMessageBox msgBox;
 				msgBox.setIcon(QMessageBox::Critical);
-				msgBox.setText(tr("Could not initialize tesseract:chinese"));
+				msgBox.setText(tr("Could not initialize tesseract: chinese"));
 				msgBox.exec();
 				return;
 			}
@@ -358,7 +356,7 @@ void MainWindow::startOCR()
 			if (tessBaseAPI->Init(NULL, "eng")) {
 				QMessageBox msgBox;
 				msgBox.setIcon(QMessageBox::Critical);
-				msgBox.setText(tr("Could not initialize tesseract:english"));
+				msgBox.setText(tr("Could not initialize tesseract: english"));
 				msgBox.exec();
 				return;
 			}

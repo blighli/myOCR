@@ -8,10 +8,6 @@
 
 class ImageWidget;
 class QTextEdit;
-class QAction;
-class QMenu;
-class QTooBar;
-class QLabel;
 
 class MainWindow : public QMainWindow
 {
@@ -21,19 +17,20 @@ public:
 	MainWindow();
 	~MainWindow();
 private slots:
-	void openFile();
-	void saveFile();
-	void startOCR();
-	void startCV();
+	void openImageFile();
+	void saveImageFile();
+	void recognizeText();
+	void processImage();
 
-	void newChop();
-	void saveChop();
-	void loadChop();
-	void clearChop();
+	void enableMarks();
+	void saveMarks();
+	void loadMarks();
+	void clearMarks();
 
-	void track();
-	void chinese();
+	void enableMesure();
+	void enableChinese();
 private:
+	//user interface components
 	ImageWidget* imageWidget;
 	QTextEdit* textEdit;
 
@@ -44,18 +41,19 @@ private:
 	QToolBar* toolBarFile;
 	QToolBar* toolBarImage;
 	
-	QAction* actionFileOpen;
-	QAction* actionFileSave;
-	QAction* actionImageOCR;
-	QAction* actionImageCV;
-	QAction* actionImageNewChop;
-	QAction* actionImageSaveChop;
-	QAction* actionImageLoadChop;
-	QAction* actionImageClearChop;
-	QAction* actionImageTrack;
-	QAction* actionImageChinese;
-	QAction* actionHelpAbout;
+	QAction* actionOpenImage;
+	QAction* actionSaveImage;
+	QAction* actionRecognizeText;
+	QAction* actionProcessImage;
+	QAction* actionToggleMarks;
+	QAction* actionSaveMarks;
+	QAction* actionLoadMarks;
+	QAction* actionClearMarks;
+	QAction* actionToggleMesure;
+	QAction* actionToggleChinese;
+	QAction* actionAbout;
 
+	//internal variables
 	IplImage* cvImage;
 	tesseract::TessBaseAPI* tessBaseAPI;
 	Boxa* boxes;
