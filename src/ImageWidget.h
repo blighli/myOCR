@@ -18,6 +18,8 @@ public:
 
 protected:
 	void paintEvent(QPaintEvent *event);
+
+
 	void mousePressEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
@@ -25,6 +27,7 @@ protected:
 private:
 	void drawRule(QPainter* painter);
 	void drawImage(QPainter* painter);
+	void drawBoxes(QPainter* painter);
 	void drawMasks(QPainter* painter);
 
 private:
@@ -37,11 +40,11 @@ private:
 	int mTickSizeMedium;
 	int mTickSizeLarge;
 
-	bool mEnbaleMesure;
+	bool mEnableMesure;
 	bool mDrawMesureLines;
 	QPoint mCurrentMousePos;
 
-	bool mEnbaleMasks;
+	bool mEnableMasks;
 	QVector<QRect>* mMasks;
 	QRect* mCurrentMask;
 	

@@ -8,9 +8,9 @@ ImageWidget::ImageWidget()
 	mBoxCount = 0;
 
 	mDrawMesureLines = false;
-	mEnbaleMesure =false;
+	mEnableMesure =false;
 
-	mEnbaleMasks = false;
+	mEnableMasks = false;
 	mMasks = new QVector<QRect>();
 	mCurrentMask = NULL;
 
@@ -32,12 +32,12 @@ ImageWidget::~ImageWidget()
 
 void ImageWidget::enableMesure(bool enabled)
 {
-	mEnbaleMesure = enabled;
+	mEnableMesure = enabled;
 }
 
 void ImageWidget::enableMasks(bool enabled)
 {
-	mEnbaleMasks = enabled;
+	mEnableMasks = enabled;
 }
 
 QVector<QRect>* ImageWidget::getMasks()
@@ -140,7 +140,7 @@ void ImageWidget::drawRule(QPainter* painter)
 		painter->drawLine(tickHead, tickTail);
 	}
 
-	if(mDrawMesureLines && mEnbaleMesure)
+	if(mDrawMesureLines && mEnableMesure)
 	{
 
 		QPoint vLineHead(mCurrentMousePos.x(), ruleTopBegin.y());
@@ -170,12 +170,27 @@ void ImageWidget::drawImage(QPainter* painter)
 	}
 }
 
-
-void ImageWidget::drawMasks(QPainter* painter)
+void ImageWidget::drawBoxes(QPainter* painter)
 {
 	if(mBoxes)
 	{
 		painter->drawRects(mBoxes, mBoxCount);
+	}
+}
+
+void ImageWidget::drawMasks(QPainter* painter)
+{
+	for(int i=0;i<mMasks->size();i++)
+	{
+		QRect rect = mMasks->at(i);
+		rect.translate(mImagePadding, mImagePadding);
+		painter->drawRect(rect);
+	}
+	if(mEnableMasks && mCurrentMask)
+	{
+		QRect rect = *mCurrentMask;
+		rect.translate(mImagePadding, mImagePadding);
+		painter->drawRect(rect);
 	}
 }
 
@@ -185,22 +200,8 @@ void ImageWidget::paintEvent(QPaintEvent *event)
 
 	drawImage(&painter);
 	drawRule(&painter);
+	drawBoxes(&painter);
 	drawMasks(&painter);
-
-
-	for(int i=0;i<mMasks->size();i++)
-	{
-		QRect rect = mMasks->at(i);
-		rect.translate(mImagePadding, mImagePadding);
-		painter.drawRect(rect);
-	}
-	if(mEnbaleMasks && mCurrentMask)
-	{
-		QRect rect = *mCurrentMask;
-		rect.translate(mImagePadding, mImagePadding);
-		painter.drawRect(rect);
-	}
-
 }
 
 void ImageWidget::mousePressEvent(QMouseEvent *event)
@@ -208,7 +209,7 @@ void ImageWidget::mousePressEvent(QMouseEvent *event)
 	mDrawMesureLines = true;
 	mCurrentMousePos = event->pos();
 
-	if(mEnbaleMasks && mCurrentMask == NULL)
+	if(mEnableMasks && mCurrentMask == NULL)
 	{
 		QPoint maskCorner(mCurrentMousePos.x() - mImagePadding, mCurrentMousePos.y() - mImagePadding);
 		mCurrentMask = new QRect(maskCorner, maskCorner);
@@ -222,7 +223,7 @@ void ImageWidget::mouseReleaseEvent(QMouseEvent *event)
 {
 	mDrawMesureLines = false;
 
-	if(mEnbaleMasks && mCurrentMask)
+	if(mEnableMasks && mCurrentMask)
 	{
 		mMasks->push_back(*mCurrentMask);
 		delete mCurrentMask;
@@ -236,7 +237,7 @@ void ImageWidget::mouseMoveEvent(QMouseEvent *event)
 {
 	mCurrentMousePos = event->pos();
 
-	if(mEnbaleMasks && mCurrentMask)
+	if(mEnableMasks && mCurrentMask)
 	{
 		QPoint maskCorner(mCurrentMousePos.x() - mImagePadding, mCurrentMousePos.y() - mImagePadding);
 		mCurrentMask->setBottomRight(maskCorner);
