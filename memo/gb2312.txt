@@ -1,0 +1,33 @@
+int count = 0;
+
+QString allChars;
+for(int x=0xB;x<=0xF;x++)
+{
+	for(int y=0x0;y<=0xF;y++)
+	{
+		for(int z=0xA;z<=0xF;z++)
+		{
+			for(int w=0x0;w<=0xF;w++)
+			{
+				int code = ((x * 16 + y) * 16 + z) * 16 + w;
+				int highCode = x * 16 + y;
+				int lowCode = z * 16 + w;
+
+				if(lowCode != 0xA0 && lowCode != 0xFF && code > 0xB0A0 && code < 0xF7FF)
+				{
+					char hanzi[3];
+					hanzi[0] = (char)highCode;
+					hanzi[1] = (char)lowCode;
+					hanzi[2] = 0;
+
+					QString zi = QTextCodec::codecForName("GB2312")->toUnicode(hanzi);
+					allChars += zi;
+
+					count++;
+				}
+			}
+		}
+	}
+}
+textEdit->setText(QString::number(count) + "\n" + allChars);
+
