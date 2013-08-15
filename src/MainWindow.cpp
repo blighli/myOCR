@@ -334,6 +334,7 @@ void MainWindow::recognizeText()
 		//或者在Init函数中设置datapath
 		if(actionEnableChinese->isChecked())
 		{
+
 			if (tessBaseAPI->Init(NULL, "chi_sim")) {
 				QMessageBox msgBox;
 				msgBox.setIcon(QMessageBox::Critical);
@@ -359,6 +360,10 @@ void MainWindow::recognizeText()
 				msgBox.setText(tr("Could not initialize tesseract: english"));
 				msgBox.exec();
 				return;
+			}
+			if(true)
+			{
+				tessBaseAPI->SetVariable("tessedit_char_whitelist", "0123456789.+-*/<>");
 			}
 		}
 
