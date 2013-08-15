@@ -175,17 +175,17 @@ void MainWindow::enableMasks()
 
 void MainWindow::saveMasks()
 {
-	QVector<QRect>* chops = imageWidget->getMasks();
-	if(chops->size() == 0)
+	QVector<QRect>* masks = imageWidget->getMasks();
+	if(masks->size() == 0)
 	{
 		QMessageBox msgBox;
 		msgBox.setIcon(QMessageBox::Warning);
-		msgBox.setText(tr("No chops exists.\nPlease add some chops before save."));
+		msgBox.setText(tr("No masks exists.\nPlease add some masks before save."));
 		msgBox.exec();
 		return;
 	}
 	QString fileName = QFileDialog::getSaveFileName(this,
-		tr("Save Chops"), ".",
+		tr("Save Masks"), ".",
 		tr("XML files (*.xml)"));
     if (!fileName.isEmpty())
 	{
@@ -201,12 +201,12 @@ void MainWindow::saveMasks()
 		QXmlStreamWriter* xmlWriter = new QXmlStreamWriter();
 		xmlWriter->setDevice(&file);
 		xmlWriter->writeStartDocument();
-		xmlWriter->writeStartElement("chops");
+		xmlWriter->writeStartElement("masks");
 
-		for(int i=0; i<chops->size(); i++)
+		for(int i=0; i<masks->size(); i++)
 		{
-			QRect rect = chops->at(i);
-			xmlWriter->writeStartElement("chop");
+			QRect rect = masks->at(i);
+			xmlWriter->writeStartElement("mask");
 
 			xmlWriter->writeAttribute("x", QString::number(rect.x()));
 			xmlWriter->writeAttribute("y", QString::number(rect.y()));
@@ -225,7 +225,7 @@ void MainWindow::saveMasks()
 void MainWindow::loadMasks()
 {
 	QString fileName = QFileDialog::getOpenFileName(this,
-		tr("Load Chops"), ".",
+		tr("Load Masks"), ".",
 		tr("XML files (*.xml)"));
     if (!fileName.isEmpty())
 	{
@@ -239,8 +239,8 @@ void MainWindow::loadMasks()
 			return;
 		}
 
-		QVector<QRect>* chops = imageWidget->getMasks();
-		chops->clear();
+		QVector<QRect>* masks = imageWidget->getMasks();
+		masks->clear();
 
 		QXmlStreamReader xml;
 		xml.setDevice(&file);
@@ -254,11 +254,11 @@ void MainWindow::loadMasks()
 			}
 			if(token == QXmlStreamReader::StartElement)
 			{
-				if(xml.name() == "chops")
+				if(xml.name() == "masks")
 				{
 					continue;
 				}
-				if(xml.name() == "chop")
+				if(xml.name() == "mask")
 				{
 					QRect rect;
 					QXmlStreamAttributes attributes = xml.attributes();
@@ -267,7 +267,7 @@ void MainWindow::loadMasks()
 					rect.setWidth(attributes.value("w").toString().toInt());
 					rect.setHeight(attributes.value("h").toString().toInt());
 
-					chops->push_back(rect);
+					masks->push_back(rect);
 				}
 			}
 		}
@@ -364,8 +364,8 @@ void MainWindow::recognizeText()
 
 		tessBaseAPI->SetImage((uchar*)mImage->imageData, mImage->width, mImage->height, mImage->nChannels, mImage->widthStep);
 
-		QVector<QRect>* chops = imageWidget->getMasks();
-		if(chops->size() == 0)
+		QVector<QRect>* masks = imageWidget->getMasks();
+		if(masks->size() == 0)
 		{
 
 			boxes = tessBaseAPI->GetComponentImages(tesseract::RIL_SYMBOL, true, NULL, NULL);
@@ -389,9 +389,9 @@ void MainWindow::recognizeText()
 		{
 			textEdit->clear();
 
-			for(int i=0;i<chops->size();i++)
+			for(int i=0;i<masks->size();i++)
 			{
-				QRect rect = chops->at(i);
+				QRect rect = masks->at(i);
 				tessBaseAPI->SetRectangle(rect.x(), rect.y(), rect.width(), rect.height());
 				char* ocrResult = tessBaseAPI->GetUTF8Text();
 				int conf = tessBaseAPI->MeanTextConf();

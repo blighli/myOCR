@@ -210,8 +210,8 @@ void ImageWidget::mousePressEvent(QMouseEvent *event)
 
 	if(mEnbaleMasks && mCurrentMask == NULL)
 	{
-		QPoint chopCorner(mCurrentMousePos.x() - mImagePadding, mCurrentMousePos.y() - mImagePadding);
-		mCurrentMask = new QRect(chopCorner, chopCorner);
+		QPoint maskCorner(mCurrentMousePos.x() - mImagePadding, mCurrentMousePos.y() - mImagePadding);
+		mCurrentMask = new QRect(maskCorner, maskCorner);
 	}
 
 	update();
@@ -238,8 +238,8 @@ void ImageWidget::mouseMoveEvent(QMouseEvent *event)
 
 	if(mEnbaleMasks && mCurrentMask)
 	{
-		QPoint chopCorner(mCurrentMousePos.x() - mImagePadding, mCurrentMousePos.y() - mImagePadding);
-		mCurrentMask->setBottomRight(chopCorner);
+		QPoint maskCorner(mCurrentMousePos.x() - mImagePadding, mCurrentMousePos.y() - mImagePadding);
+		mCurrentMask->setBottomRight(maskCorner);
 	}
 
 	update();
