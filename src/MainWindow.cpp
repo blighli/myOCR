@@ -335,7 +335,7 @@ void MainWindow::recognizeText()
 		if(actionEnableChinese->isChecked())
 		{
 
-			if (tessBaseAPI->Init(NULL, "chi_sim")) {
+			if (tessBaseAPI->Init(NULL, "chi_sim+eng")) {
 				QMessageBox msgBox;
 				msgBox.setIcon(QMessageBox::Critical);
 				msgBox.setText(tr("Could not initialize tesseract: chinese"));
