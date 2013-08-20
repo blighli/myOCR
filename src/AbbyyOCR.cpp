@@ -22,9 +22,28 @@ void AbbyyOCR::setImage( IplImage* image )
 
 QString AbbyyOCR::recognizeText()
 {
-	TFinePatternsPtr englishPattern = readFile(mEnglishPatternPath).data();
-	TFinePatternsPtr chinesePattern = readFile(mChinesePatternPath).data();
-	TFineDictionaryPtr englishDict = readFile(mEnglishDictPath).data();
+	QFile englishPatternFile(mEnglishPatternPath);
+	englishPatternFile.open(QIODevice::ReadOnly);
+	QByteArray englishPatternByteArray = englishPatternFile.readAll();
+	englishPatternFile.close();
+	TFinePatternsPtr englishPattern = englishPatternByteArray.data();
+
+	QFile chinesePatternFile(mChinesePatternPath);
+	chinesePatternFile.open(QIODevice::ReadOnly);
+	QByteArray chinesePatternByteArray = chinesePatternFile.readAll();
+	chinesePatternFile.close();
+	TFinePatternsPtr chinesePattern = chinesePatternByteArray.data();
+
+	QFile englishDictFile(mEnglishDictPath);
+	englishDictFile.open(QIODevice::ReadOnly);
+	QByteArray englishDictByteArray = englishDictFile.readAll();
+	englishDictFile.close();
+	TFineDictionaryPtr englishDict = englishDictByteArray.data();
+
+	QFile licenseFile(mLicensePath);
+	licenseFile.open(QIODevice::ReadOnly);
+	QByteArray licenseByteArray = licenseFile.readAll();
+	licenseFile.close();
 
 	TLanguageID languages[3] = { LID_ChineseSimplified, LID_English, LID_Undefined };
 
@@ -36,7 +55,6 @@ QString AbbyyOCR::recognizeText()
 	dictionaries[0] = englishDict;
 	dictionaries[1] = 0;
 
-	QByteArray licenseByteArray = readFile(mLicensePath);
 	CFineLicenseInfo licenseInfo;
 	licenseInfo.LicenseData = (BYTE*)licenseByteArray.data();
 	licenseInfo.DataLength = licenseByteArray.size();

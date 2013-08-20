@@ -351,6 +351,10 @@ void MainWindow::recognizeText()
 		AbbyyOCR abbyyOCR;
 		abbyyOCR.setImage(mImage);
 		QString ret = abbyyOCR.recognizeText();
+		textEdit->clear();
+		textEdit->setText(QString("%1%2%3").arg(textEdit->toPlainText(),"\n",ret));
+		textEdit->setText(QString("%1%2%3").arg(textEdit->toPlainText(),"\n\n","////////////////////\n\n"));
+
 
 		//设置环境变量TESSDATA_PREFIX
 		if(tessBaseAPI == NULL)
@@ -414,12 +418,10 @@ void MainWindow::recognizeText()
 			char *outText = tessBaseAPI->GetUTF8Text();
 
 			QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf-8"));
-			textEdit->setText(outText);
+			textEdit->setText(QString("%1%2%3").arg(textEdit->toPlainText(),"\n",outText));
 		}
 		else
 		{
-			textEdit->clear();
-
 			for(int i=0;i<masks->size();i++)
 			{
 				QRect rect = masks->at(i);
