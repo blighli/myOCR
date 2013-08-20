@@ -228,8 +228,8 @@ void ImageWidget::mousePressEvent(QMouseEvent *event)
 			mCurrentMousePos.setY(mImagePadding);
 		}
 
-		QPoint maskCorner(mCurrentMousePos.x() - mImagePadding, mCurrentMousePos.y() - mImagePadding);
-		mCurrentMask = new QRect(maskCorner, maskCorner);
+		mFirstCorner = QPoint(mCurrentMousePos.x() - mImagePadding, mCurrentMousePos.y() - mImagePadding);
+		mCurrentMask = new QRect(mFirstCorner, mFirstCorner);
 	}
 
 	update();
@@ -273,11 +273,13 @@ void ImageWidget::mouseMoveEvent(QMouseEvent *event)
 			mCurrentMousePos.setY(mImagePadding);
 		}
 
-		QPoint maskCorner(mCurrentMousePos.x() - mImagePadding, mCurrentMousePos.y() - mImagePadding);
-		if(maskCorner.x() > mCurrentMask->topLeft().x() && maskCorner.y() >  mCurrentMask->topLeft().y())
-		{
-			mCurrentMask->setBottomRight(maskCorner);
-		}
+		QPoint lastCorner(mCurrentMousePos.x() - mImagePadding, mCurrentMousePos.y() - mImagePadding);
+
+		mCurrentMask->setLeft(mFirstCorner.x() < lastCorner.x() ? mFirstCorner.x() : lastCorner.x());
+		mCurrentMask->setRight(mFirstCorner.x() > lastCorner.x() ? mFirstCorner.x() : lastCorner.x());
+		mCurrentMask->setTop(mFirstCorner.y() < lastCorner.y() ? mFirstCorner.y() : lastCorner.y());
+		mCurrentMask->setBottom(mFirstCorner.y() > lastCorner.y() ? mFirstCorner.y() : lastCorner.y());
+
 	}
 
 	update();

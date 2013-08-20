@@ -43,6 +43,7 @@ private:
 	bool mEnableMesure;
 	bool mDrawMesureLines;
 	QPoint mCurrentMousePos;
+	QPoint mFirstCorner;
 
 	bool mEnableMasks;
 	QVector<QRect>* mMasks;
