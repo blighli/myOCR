@@ -361,14 +361,12 @@ void MainWindow::recognizeText()
 		}
 		mAbbyyOCR->setImage(mImage);
 
-		if(masks->size() > 0)
-		{
-			mAbbyyOCR->setMasks(masks);
-		}
+		mAbbyyOCR->setMasks(masks);
+
 		QString ret = mAbbyyOCR->recognizeText();
 		textEdit->clear();
 		textEdit->setText(QString("%1%2%3").arg(textEdit->toPlainText(),"Abbyy Result:\n",ret));
-		textEdit->setText(QString("%1%2%3").arg(textEdit->toPlainText(),"\n","////////////////////\nTesseract Result:\n"));
+		textEdit->setText(QString("%1%2%3").arg(textEdit->toPlainText(),"\n","/////////////////////////\n\nTesseract Result:\n"));
 
 
 		//设置环境变量TESSDATA_PREFIX

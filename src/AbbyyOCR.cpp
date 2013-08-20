@@ -67,7 +67,7 @@ QString AbbyyOCR::recognizeText()
 
 	CFineLayout* layout = 0;
 	QString recognizedText;
-	if(mMasks)
+	if(mMaskCount > 0)
 	{
 		for(int i=0;i<mMaskCount;i++)
 		{
