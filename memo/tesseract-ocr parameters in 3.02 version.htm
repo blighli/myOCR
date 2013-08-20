@@ -1,0 +1,3417 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta name="author" content="" />
+<meta name="rating" content="General" />
+<meta name="generator" content="Textpattern" />
+<link rel="alternate" type="application/rss+xml" title="RSS 0.92" href="/?rss=1" />
+<link rel="alternate" type="application/atom+xml" title="Atom 1.0" href="/?atom=1" />
+     <title>
+    
+		
+			
+				&#187; 
+				tesseract-ocr parameters in 3.02&#160;version
+			
+				&#187; 
+				29. December 2012
+			
+			
+	</title>
+
+
+<link rel="stylesheet" type="text/css" media="screen" href="http://www.sk-spell.sk.cx/css.php?n=clean" />
+
+</head>
+
+
+<body id="article_clean">
+
+
+<h1> &raquo; article_clean &raquo; tesseract-ocr parameters in 3.02&#160;version</h1>
+
+<div id="everything" class="frontpage">
+
+<div id="header">
+
+<a rel="home" href="http://www.sk-spell.sk.cx/"></a>
+</div> <!-- end header -->
+
+
+
+
+<div id="content">
+
+
+
+<div class="post">
+
+<h3><a rel="bookmark" href="http://www.sk-spell.sk.cx/tesseract-ocr-parameters-in-302-version">tesseract-ocr parameters in 3.02&#160;version</a>&nbsp;&nbsp;</h3>
+
+<div class="meta">29. December 2012</div>
+
+<div class="entrytext">
+
+	<p class="add"><script type="text/javascript" style="margin-left: -180px"><!--
+google_ad_client = "pub-4407908224822840";
+/* 728x90, bola vytvorená 12.7.2009 */
+google_ad_slot = "5249627313";
+google_ad_width = 728;
+google_ad_height = 90;
+//-->
+</script>
+<script type="text/javascript" style="margin-left: -180px"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script><br />
+<script src="files/sorttable.js"></script></p>
+
+	<h5><a href="http://www.sk-spell.sk.cx/tesseract-ocr-en">back to tesseract-ocr-en</a></h5>
+
+<br/>
+
+	<p><em>„Tesseract is extremely flexible, if you know how to control it. There is a large number of control parameters to modify its behaviour. While these change from time to time, most of them are fairly stable.“</em> (<a href="http://code.google.com/p/tesseract-ocr/wiki/ControlParams">Tesseract ControlParams wiki</a>)</p>
+
+	<p>If you want to get all list of parameters (variables) with its description and default values, you have to search tesseract code. Or continue reading… ;-)</p>
+
+	<p>There are two way how to set parameter:
+	<ul>
+		<li>config file</li>
+		<li>Tesseract-<span class="caps">OCR</span> <span class="caps">API</span></li>
+	</ul></p>
+
+	<h2>config file</h2>
+
+	<p>config file is simple text file without <a href="http://en.wikipedia.org/wiki/Byte_order_mark"><span class="caps">BOM</span></a> and with Unix <a href="http://en.wikipedia.org/wiki/End_of_line">end-of-line</a> mark (on Windows you can use some advanced text editor e.g. <a href="http://notepad-plus-plus.org/">Notepad++</a> to achieve this).</p>
+
+	<p>If you use tesseract executable this is only way how to change tesseract parameters.</p>
+
+	<p>config file should be located in your tessdata/configs directory. Have a look there for some examples.</p>
+
+	<h2>Tesseract-<span class="caps">OCR</span> <span class="caps">API</span></h2>
+
+	<p>You can set single parameter with <span class="caps">API</span> function <a href="http://code.google.com/p/tesseract-ocr/source/browse/trunk/api/baseapi.h?r=760#121">SetVariable</a>. E.g.<br />
+<pre>
+    tesseract::TessBaseAPI *api = new tesseract::TessBaseAPI();
+    api-&gt;Init(NULL, &quot;eng&quot;);
+    if (!api-&gt;SetVariable(&quot;save_blob_choices&quot;,&quot;T&quot;))
+        printf(&quot;Setting variable failed!!!\n&quot;);
+</pre></p>
+
+	<p>In case you want (need) to set parameter during tesseract init you need to create vectors for parameters and their values. Here is example how to turn off dictionaries:<br />
+<pre>
+    GenericVector<STRING> pars_vec;
+    pars_vec.push_back(&#8220;load_system_dawg&#8221;);
+    pars_vec.push_back(&#8220;load_freq_dawg&#8221;);
+    pars_vec.push_back(&#8220;load_punc_dawg&#8221;);
+    pars_vec.push_back(&#8220;load_number_dawg&#8221;);
+    pars_vec.push_back(&#8220;load_unambig_dawg&#8221;);
+    pars_vec.push_back(&#8220;load_bigram_dawg&#8221;);
+    pars_vec.push_back(&#8220;load_fixed_length_dawgs&#8221;);</p>
+
+    GenericVector<STRING> pars_values;
+    pars_values.push_back(&#8220;F&#8221;);
+    pars_values.push_back(&#8220;F&#8221;);
+    pars_values.push_back(&#8220;F&#8221;);
+    pars_values.push_back(&#8220;F&#8221;);
+    pars_values.push_back(&#8220;F&#8221;);
+    pars_values.push_back(&#8220;F&#8221;);
+    pars_values.push_back(&#8220;F&#8221;);
+
+    tesseract::TessBaseAPI *api = new tesseract::TessBaseAPI();
+    api-&gt;Init(&#8221;/usr/share/tesseract/&#8221;, &#8220;eng&#8221;, tesseract::OEM_DEFAULT,
+             <span class="caps">NULL</span>, 0, &amp;pars_vec, &amp;pars_values, false);
+ </pre>
+
+	<p>Of course you can use also <span class="caps">API</span> function <a href="http://code.google.com/p/tesseract-ocr/source/browse/trunk/api/baseapi.h?r=760#249">ReadConfigFile</a> (or <a href="http://code.google.com/p/tesseract-ocr/source/browse/trunk/api/baseapi.h?r=760#256">ReadDebugConfigFile</a>) to read tesseract config files with non-init parameters.</p>
+
+	<h2>parameters in 3.02 version</h2>
+
+	<table>
+		<tr style="background:#ddd;">
+			<td style="width:50px;"><b>name</b></td>
+			<td style="width:20px;"><b>value</b></td>
+			<td style="width:200px;"><b>description</b></td>
+		</tr>
+		<tr>
+			<td> editor_image_xpos </td>
+			<td> 590 </td>
+			<td>  Editor image X Pos </td>
+		</tr>
+		<tr>
+			<td> editor_image_ypos </td>
+			<td> 10 </td>
+			<td>  Editor image Y Pos </td>
+		</tr>
+		<tr>
+			<td> editor_image_menuheight </td>
+			<td> 50 </td>
+			<td>  Add to image height for menu bar </td>
+		</tr>
+		<tr>
+			<td> editor_image_word_bb_color </td>
+			<td> 7 </td>
+			<td>  Word bounding box colour </td>
+		</tr>
+		<tr>
+			<td> editor_image_blob_bb_color </td>
+			<td> 4 </td>
+			<td>  Blob bounding box colour </td>
+		</tr>
+		<tr>
+			<td> editor_image_text_color </td>
+			<td> 2 </td>
+			<td>  Correct text colour </td>
+		</tr>
+		<tr>
+			<td> editor_dbwin_xpos </td>
+			<td> 50 </td>
+			<td>  Editor debug window X Pos </td>
+		</tr>
+		<tr>
+			<td> editor_dbwin_ypos </td>
+			<td> 500 </td>
+			<td>  Editor debug window Y Pos </td>
+		</tr>
+		<tr>
+			<td> editor_dbwin_height </td>
+			<td> 24 </td>
+			<td>  Editor debug window height </td>
+		</tr>
+		<tr>
+			<td> editor_dbwin_width </td>
+			<td> 80 </td>
+			<td>  Editor debug window width </td>
+		</tr>
+		<tr>
+			<td> editor_word_xpos </td>
+			<td> 60 </td>
+			<td>  Word window X Pos </td>
+		</tr>
+		<tr>
+			<td> editor_word_ypos </td>
+			<td> 510 </td>
+			<td>  Word window Y Pos </td>
+		</tr>
+		<tr>
+			<td> editor_word_height </td>
+			<td> 240 </td>
+			<td>  Word window height </td>
+		</tr>
+		<tr>
+			<td> editor_word_width </td>
+			<td> 655 </td>
+			<td>  Word window width </td>
+		</tr>
+		<tr>
+			<td> textord_debug_tabfind </td>
+			<td> 0 </td>
+			<td>  Debug tab finding </td>
+		</tr>
+		<tr>
+			<td> textord_debug_bugs </td>
+			<td> 0 </td>
+			<td>  Turn on output related to bugs in tab finding </td>
+		</tr>
+		<tr>
+			<td> textord_testregion_left </td>
+			<td> -1 </td>
+			<td>  Left edge of debug reporting rectangle </td>
+		</tr>
+		<tr>
+			<td> textord_testregion_top </td>
+			<td> -1 </td>
+			<td>  Top edge of debug reporting rectangle </td>
+		</tr>
+		<tr>
+			<td> textord_testregion_right </td>
+			<td> 2147483647 </td>
+			<td>  Right edge of debug rectangle </td>
+		</tr>
+		<tr>
+			<td> textord_testregion_bottom </td>
+			<td> 2147483647 </td>
+			<td>  Bottom edge of debug rectangle </td>
+		</tr>
+		<tr>
+			<td> textord_tabfind_show_partitions </td>
+			<td> 0 </td>
+			<td>  Show partition bounds, waiting if &gt;1 </td>
+		</tr>
+		<tr>
+			<td> devanagari_split_debuglevel </td>
+			<td> 0 </td>
+			<td>  Debug level for split shiro-rekha process. </td>
+		</tr>
+		<tr>
+			<td> edges_max_children_per_outline </td>
+			<td> 10 </td>
+			<td>  Max number of children inside a character outline </td>
+		</tr>
+		<tr>
+			<td> edges_max_children_layers </td>
+			<td> 5 </td>
+			<td>  Max layers of nested children inside a character outline </td>
+		</tr>
+		<tr>
+			<td> edges_children_per_grandchild </td>
+			<td> 10 </td>
+			<td>  Importance ratio for chucking outlines </td>
+		</tr>
+		<tr>
+			<td> edges_children_count_limit </td>
+			<td> 45 </td>
+			<td>  Max holes allowed in blob </td>
+		</tr>
+		<tr>
+			<td> edges_min_nonhole </td>
+			<td> 12 </td>
+			<td>  Min pixels for potential char in box </td>
+		</tr>
+		<tr>
+			<td> edges_patharea_ratio </td>
+			<td> 40 </td>
+			<td>  Max lensq/area for acceptable child outline </td>
+		</tr>
+		<tr>
+			<td> edges_maxedgelength </td>
+			<td> 16000 </td>
+			<td>  Max steps in any outline </td>
+		</tr>
+		<tr>
+			<td> textord_fp_chop_error </td>
+			<td> 2 </td>
+			<td>  Max allowed bending of chop cells </td>
+		</tr>
+		<tr>
+			<td> textord_tabfind_show_images </td>
+			<td> 0 </td>
+			<td>  Show image blobs </td>
+		</tr>
+		<tr>
+			<td> textord_skewsmooth_offset </td>
+			<td> 2 </td>
+			<td>  For smooth factor </td>
+		</tr>
+		<tr>
+			<td> textord_skewsmooth_offset2 </td>
+			<td> 1 </td>
+			<td>  For smooth factor </td>
+		</tr>
+		<tr>
+			<td> textord_test_x </td>
+			<td> -1 </td>
+			<td>  coord of test pt </td>
+		</tr>
+		<tr>
+			<td> textord_test_y </td>
+			<td> -1 </td>
+			<td>  coord of test pt </td>
+		</tr>
+		<tr>
+			<td> textord_min_blobs_in_row </td>
+			<td> 4 </td>
+			<td>  Min blobs before gradient counted </td>
+		</tr>
+		<tr>
+			<td> textord_spline_minblobs </td>
+			<td> 8 </td>
+			<td>  Min blobs in each spline segment </td>
+		</tr>
+		<tr>
+			<td> textord_spline_medianwin </td>
+			<td> 6 </td>
+			<td>  Size of window for spline segmentation </td>
+		</tr>
+		<tr>
+			<td> textord_max_blob_overlaps </td>
+			<td> 4 </td>
+			<td>  Max number of blobs a big blob can overlap </td>
+		</tr>
+		<tr>
+			<td> textord_min_xheight </td>
+			<td> 10 </td>
+			<td>  Min credible pixel xheight </td>
+		</tr>
+		<tr>
+			<td> textord_lms_line_trials </td>
+			<td> 12 </td>
+			<td>  Number of linew fits to do </td>
+		</tr>
+		<tr>
+			<td> oldbl_holed_losscount </td>
+			<td> 10 </td>
+			<td>  Max lost before fallback line used </td>
+		</tr>
+		<tr>
+			<td> pitsync_linear_version </td>
+			<td> 6 </td>
+			<td>  Use new fast algorithm </td>
+		</tr>
+		<tr>
+			<td> pitsync_fake_depth </td>
+			<td> 1 </td>
+			<td>  Max advance fake generation </td>
+		</tr>
+		<tr>
+			<td> textord_tabfind_show_strokewidths </td>
+			<td> 0 </td>
+			<td>  Show stroke widths </td>
+		</tr>
+		<tr>
+			<td> textord_dotmatrix_gap </td>
+			<td> 3 </td>
+			<td>  Max pixel gap for broken pixed pitch </td>
+		</tr>
+		<tr>
+			<td> textord_debug_block </td>
+			<td> 0 </td>
+			<td>  Block to do debug on </td>
+		</tr>
+		<tr>
+			<td> textord_pitch_range </td>
+			<td> 2 </td>
+			<td>  Max range test on pitch </td>
+		</tr>
+		<tr>
+			<td> textord_words_veto_power </td>
+			<td> 5 </td>
+			<td>  Rows required to outvote a veto </td>
+		</tr>
+		<tr>
+			<td> wordrec_display_segmentations </td>
+			<td> 0 </td>
+			<td>  Display Segmentations </td>
+		</tr>
+		<tr>
+			<td> classify_radius_gyr_min_man </td>
+			<td> 255 </td>
+			<td>  Minimum Radius of Gyration Mantissa 0-255:         </td>
+		</tr>
+		<tr>
+			<td> classify_radius_gyr_min_exp </td>
+			<td> 0 </td>
+			<td>  Minimum Radius of Gyration Exponent 0-255:         </td>
+		</tr>
+		<tr>
+			<td> classify_radius_gyr_max_man </td>
+			<td> 158 </td>
+			<td>  Maximum Radius of Gyration Mantissa 0-255:         </td>
+		</tr>
+		<tr>
+			<td> classify_radius_gyr_max_exp </td>
+			<td> 8 </td>
+			<td>  Maximum Radius of Gyration Exponent 0-255:         </td>
+		</tr>
+		<tr>
+			<td> classify_num_cp_levels </td>
+			<td> 3 </td>
+			<td>  Number of Class Pruner Levels </td>
+		</tr>
+		<tr>
+			<td> image_default_resolution </td>
+			<td> 300 </td>
+			<td>  Image resolution dpi </td>
+		</tr>
+		<tr>
+			<td> equationdetect_save_bi_image </td>
+			<td> 0 </td>
+			<td>  Save input bi image </td>
+		</tr>
+		<tr>
+			<td> equationdetect_save_spt_image </td>
+			<td> 0 </td>
+			<td>  Save special character image </td>
+		</tr>
+		<tr>
+			<td> equationdetect_save_seed_image </td>
+			<td> 0 </td>
+			<td>  Save the seed image </td>
+		</tr>
+		<tr>
+			<td> equationdetect_save_merged_image </td>
+			<td> 0 </td>
+			<td>  Save the merged image </td>
+		</tr>
+		<tr>
+			<td> textord_debug_images </td>
+			<td> 0 </td>
+			<td>  Use greyed image background for debug </td>
+		</tr>
+		<tr>
+			<td> textord_debug_printable </td>
+			<td> 0 </td>
+			<td>  Make debug windows printable </td>
+		</tr>
+		<tr>
+			<td> textord_space_size_is_variable </td>
+			<td> 0 </td>
+			<td>  If true, word delimiter spaces are assumed to have variable width, even though characters have fixed pitch. </td>
+		</tr>
+		<tr>
+			<td> textord_tabfind_show_initial_partitions </td>
+			<td> 0 </td>
+			<td>  Show partition bounds </td>
+		</tr>
+		<tr>
+			<td> textord_tabfind_show_reject_blobs </td>
+			<td> 0 </td>
+			<td>  Show blobs rejected as noise </td>
+		</tr>
+		<tr>
+			<td> textord_tabfind_show_columns </td>
+			<td> 0 </td>
+			<td>  Show column bounds </td>
+		</tr>
+		<tr>
+			<td> textord_tabfind_show_blocks </td>
+			<td> 0 </td>
+			<td>  Show final block bounds </td>
+		</tr>
+		<tr>
+			<td> textord_tabfind_find_tables </td>
+			<td> 1 </td>
+			<td>  run table detection </td>
+		</tr>
+		<tr>
+			<td> textord_tabfind_show_color_fit </td>
+			<td> 0 </td>
+			<td>  Show stroke widths </td>
+		</tr>
+		<tr>
+			<td> devanagari_split_debugimage </td>
+			<td> 0 </td>
+			<td>  Whether to create a debug image for split shiro-rekha process. </td>
+		</tr>
+		<tr>
+			<td> textord_show_fixed_cuts </td>
+			<td> 0 </td>
+			<td>  Draw fixed pitch cell boundaries </td>
+		</tr>
+		<tr>
+			<td> edges_use_new_outline_complexity </td>
+			<td> 0 </td>
+			<td>  Use the new outline complexity module </td>
+		</tr>
+		<tr>
+			<td> edges_debug </td>
+			<td> 0 </td>
+			<td>  turn on debugging for this module </td>
+		</tr>
+		<tr>
+			<td> edges_children_fix </td>
+			<td> 0 </td>
+			<td>  Remove boxy parents of char-like children </td>
+		</tr>
+		<tr>
+			<td> gapmap_debug </td>
+			<td> 0 </td>
+			<td>  Say which blocks have tables </td>
+		</tr>
+		<tr>
+			<td> gapmap_use_ends </td>
+			<td> 0 </td>
+			<td>  Use large space at start and end of rows </td>
+		</tr>
+		<tr>
+			<td> gapmap_no_isolated_quanta </td>
+			<td> 0 </td>
+			<td>  Ensure gaps not less than 2quanta wide </td>
+		</tr>
+		<tr>
+			<td> textord_heavy_nr </td>
+			<td> 0 </td>
+			<td>  Vigorously remove noise </td>
+		</tr>
+		<tr>
+			<td> textord_show_initial_rows </td>
+			<td> 0 </td>
+			<td>  Display row accumulation </td>
+		</tr>
+		<tr>
+			<td> textord_show_parallel_rows </td>
+			<td> 0 </td>
+			<td>  Display page correlated rows </td>
+		</tr>
+		<tr>
+			<td> textord_show_expanded_rows </td>
+			<td> 0 </td>
+			<td>  Display rows after expanding </td>
+		</tr>
+		<tr>
+			<td> textord_show_final_rows </td>
+			<td> 0 </td>
+			<td>  Display rows after final fitting </td>
+		</tr>
+		<tr>
+			<td> textord_show_final_blobs </td>
+			<td> 0 </td>
+			<td>  Display blob bounds after pre-ass </td>
+		</tr>
+		<tr>
+			<td> textord_test_landscape </td>
+			<td> 0 </td>
+			<td>  Tests refer to land/port </td>
+		</tr>
+		<tr>
+			<td> textord_parallel_baselines </td>
+			<td> 1 </td>
+			<td>  Force parallel baselines </td>
+		</tr>
+		<tr>
+			<td> textord_straight_baselines </td>
+			<td> 0 </td>
+			<td>  Force straight baselines </td>
+		</tr>
+		<tr>
+			<td> textord_old_baselines </td>
+			<td> 1 </td>
+			<td>  Use old baseline algorithm </td>
+		</tr>
+		<tr>
+			<td> textord_old_xheight </td>
+			<td> 0 </td>
+			<td>  Use old xheight algorithm </td>
+		</tr>
+		<tr>
+			<td> textord_fix_xheight_bug </td>
+			<td> 1 </td>
+			<td>  Use spline baseline </td>
+		</tr>
+		<tr>
+			<td> textord_fix_makerow_bug </td>
+			<td> 1 </td>
+			<td>  Prevent multiple baselines </td>
+		</tr>
+		<tr>
+			<td> textord_debug_xheights </td>
+			<td> 0 </td>
+			<td>  Test xheight algorithms </td>
+		</tr>
+		<tr>
+			<td> textord_biased_skewcalc </td>
+			<td> 1 </td>
+			<td>  Bias skew estimates with line length </td>
+		</tr>
+		<tr>
+			<td> textord_interpolating_skew </td>
+			<td> 1 </td>
+			<td>  Interpolate across gaps </td>
+		</tr>
+		<tr>
+			<td> textord_new_initial_xheight </td>
+			<td> 1 </td>
+			<td>  Use test xheight mechanism </td>
+		</tr>
+		<tr>
+			<td> textord_really_old_xheight </td>
+			<td> 0 </td>
+			<td>  Use original wiseowl xheight </td>
+		</tr>
+		<tr>
+			<td> textord_oldbl_debug </td>
+			<td> 0 </td>
+			<td>  Debug old baseline generation </td>
+		</tr>
+		<tr>
+			<td> textord_debug_baselines </td>
+			<td> 0 </td>
+			<td>  Debug baseline generation </td>
+		</tr>
+		<tr>
+			<td> textord_oldbl_paradef </td>
+			<td> 1 </td>
+			<td>  Use para default mechanism </td>
+		</tr>
+		<tr>
+			<td> textord_oldbl_split_splines </td>
+			<td> 1 </td>
+			<td>  Split stepped splines </td>
+		</tr>
+		<tr>
+			<td> textord_oldbl_merge_parts </td>
+			<td> 1 </td>
+			<td>  Merge suspect partitions </td>
+		</tr>
+		<tr>
+			<td> oldbl_corrfix </td>
+			<td> 1 </td>
+			<td>  Improve correlation of heights </td>
+		</tr>
+		<tr>
+			<td> oldbl_xhfix </td>
+			<td> 0 </td>
+			<td>  Fix bug in modes threshold for xheights </td>
+		</tr>
+		<tr>
+			<td> textord_ocropus_mode </td>
+			<td> 0 </td>
+			<td>  Make baselines for ocropus </td>
+		</tr>
+		<tr>
+			<td> textord_tabfind_only_strokewidths </td>
+			<td> 0 </td>
+			<td>  Only run stroke widths </td>
+		</tr>
+		<tr>
+			<td> textord_tabfind_vertical_text </td>
+			<td> 1 </td>
+			<td>  Enable vertical detection </td>
+		</tr>
+		<tr>
+			<td> textord_tabfind_force_vertical_text </td>
+			<td> 0 </td>
+			<td>  Force using vertical text page mode </td>
+		</tr>
+		<tr>
+			<td> textord_tabfind_vertical_horizontal_mix </td>
+			<td> 1 </td>
+			<td>  find horizontal lines such as headers in vertical page mode </td>
+		</tr>
+		<tr>
+			<td> textord_tabfind_show_initialtabs </td>
+			<td> 0 </td>
+			<td>  Show tab candidates </td>
+		</tr>
+		<tr>
+			<td> textord_tabfind_show_finaltabs </td>
+			<td> 0 </td>
+			<td>  Show tab vectors </td>
+		</tr>
+		<tr>
+			<td> textord_dump_table_images </td>
+			<td> 0 </td>
+			<td>  Paint table detection output </td>
+		</tr>
+		<tr>
+			<td> textord_show_tables </td>
+			<td> 0 </td>
+			<td>  Show table regions </td>
+		</tr>
+		<tr>
+			<td> textord_tablefind_show_mark </td>
+			<td> 0 </td>
+			<td>  Debug table marking steps in detail </td>
+		</tr>
+		<tr>
+			<td> textord_tablefind_show_stats </td>
+			<td> 0 </td>
+			<td>  Show page stats used in table finding </td>
+		</tr>
+		<tr>
+			<td> textord_tablefind_recognize_tables </td>
+			<td> 0 </td>
+			<td>  Enables the table recognizer for table layout and filtering. </td>
+		</tr>
+		<tr>
+			<td> textord_all_prop </td>
+			<td> 0 </td>
+			<td>  All doc is proportial text </td>
+		</tr>
+		<tr>
+			<td> textord_debug_pitch_test </td>
+			<td> 0 </td>
+			<td>  Debug on fixed pitch test </td>
+		</tr>
+		<tr>
+			<td> textord_disable_pitch_test </td>
+			<td> 0 </td>
+			<td>  Turn off dp fixed pitch algorithm </td>
+		</tr>
+		<tr>
+			<td> textord_fast_pitch_test </td>
+			<td> 0 </td>
+			<td>  Do even faster pitch algorithm </td>
+		</tr>
+		<tr>
+			<td> textord_debug_pitch_metric </td>
+			<td> 0 </td>
+			<td>  Write full metric stuff </td>
+		</tr>
+		<tr>
+			<td> textord_show_row_cuts </td>
+			<td> 0 </td>
+			<td>  Draw row-level cuts </td>
+		</tr>
+		<tr>
+			<td> textord_show_page_cuts </td>
+			<td> 0 </td>
+			<td>  Draw page-level cuts </td>
+		</tr>
+		<tr>
+			<td> textord_pitch_cheat </td>
+			<td> 0 </td>
+			<td>  Use correct answer for fixed/prop </td>
+		</tr>
+		<tr>
+			<td> textord_blockndoc_fixed </td>
+			<td> 0 </td>
+			<td>  Attempt whole doc/block fixed pitch </td>
+		</tr>
+		<tr>
+			<td> textord_show_initial_words </td>
+			<td> 0 </td>
+			<td>  Display separate words </td>
+		</tr>
+		<tr>
+			<td> textord_show_new_words </td>
+			<td> 0 </td>
+			<td>  Display separate words </td>
+		</tr>
+		<tr>
+			<td> textord_show_fixed_words </td>
+			<td> 0 </td>
+			<td>  Display forced fixed pitch words </td>
+		</tr>
+		<tr>
+			<td> textord_blocksall_fixed </td>
+			<td> 0 </td>
+			<td>  Moan about prop blocks </td>
+		</tr>
+		<tr>
+			<td> textord_blocksall_prop </td>
+			<td> 0 </td>
+			<td>  Moan about fixed pitch blocks </td>
+		</tr>
+		<tr>
+			<td> textord_blocksall_testing </td>
+			<td> 0 </td>
+			<td>  Dump stats when moaning </td>
+		</tr>
+		<tr>
+			<td> textord_test_mode </td>
+			<td> 0 </td>
+			<td>  Do current test </td>
+		</tr>
+		<tr>
+			<td> textord_pitch_scalebigwords </td>
+			<td> 0 </td>
+			<td>  Scale scores on big words </td>
+		</tr>
+		<tr>
+			<td> textord_restore_underlines </td>
+			<td> 1 </td>
+			<td>  Chop underlines &amp; put back </td>
+		</tr>
+		<tr>
+			<td> textord_fp_chopping </td>
+			<td> 1 </td>
+			<td>  Do fixed pitch chopping </td>
+		</tr>
+		<tr>
+			<td> textord_force_make_prop_words </td>
+			<td> 0 </td>
+			<td>  Force proportional word segmentation on all rows </td>
+		</tr>
+		<tr>
+			<td> textord_chopper_test </td>
+			<td> 0 </td>
+			<td>  Chopper is being tested. </td>
+		</tr>
+		<tr>
+			<td> wordrec_display_all_blobs </td>
+			<td> 0 </td>
+			<td>  Display Blobs </td>
+		</tr>
+		<tr>
+			<td> wordrec_display_all_words </td>
+			<td> 0 </td>
+			<td>  Display Words </td>
+		</tr>
+		<tr>
+			<td> wordrec_blob_pause </td>
+			<td> 0 </td>
+			<td>  Blob pause </td>
+		</tr>
+		<tr>
+			<td> poly_debug </td>
+			<td> 0 </td>
+			<td>  Debug old poly </td>
+		</tr>
+		<tr>
+			<td> poly_wide_objects_better </td>
+			<td> 1 </td>
+			<td>  More accurate approx on wide things </td>
+		</tr>
+		<tr>
+			<td> wordrec_display_splits </td>
+			<td> 0 </td>
+			<td>  Display splits </td>
+		</tr>
+		<tr>
+			<td> editor_image_win_name </td>
+			<td> EditorImage </td>
+			<td>  Editor image window name </td>
+		</tr>
+		<tr>
+			<td> editor_dbwin_name </td>
+			<td> EditorDBWin </td>
+			<td>  Editor debug window name </td>
+		</tr>
+		<tr>
+			<td> editor_word_name </td>
+			<td> BlnWords </td>
+			<td>  BL normalized word window </td>
+		</tr>
+		<tr>
+			<td> editor_debug_config_file </td>
+			<td>  </td>
+			<td>  Config file to apply to single words </td>
+		</tr>
+		<tr>
+			<td> fx_debugfile </td>
+			<td> <span class="caps">FXD</span>ebug </td>
+			<td>  Name of debugfile </td>
+		</tr>
+		<tr>
+			<td> classify_font_name </td>
+			<td> UnknownFont </td>
+			<td>  Default font name to be used in training </td>
+		</tr>
+		<tr>
+			<td> classify_training_file </td>
+			<td> MicroFeatures </td>
+			<td>  Training file </td>
+		</tr>
+		<tr>
+			<td> debug_file </td>
+			<td>  </td>
+			<td>  File to send tprintf output to </td>
+		</tr>
+		<tr>
+			<td> textord_underline_threshold </td>
+			<td> 0.5 </td>
+			<td>  Fraction of width occupied </td>
+		</tr>
+		<tr>
+			<td> edges_childarea </td>
+			<td> 0.5 </td>
+			<td>  Min area fraction of child outline </td>
+		</tr>
+		<tr>
+			<td> edges_boxarea </td>
+			<td> 0.875 </td>
+			<td>  Min area fraction of grandchild for box </td>
+		</tr>
+		<tr>
+			<td> textord_fp_chop_snap </td>
+			<td> 0.5 </td>
+			<td>  Max distance of chop pt from vertex </td>
+		</tr>
+		<tr>
+			<td> gapmap_big_gaps </td>
+			<td> 1.75 </td>
+			<td>  xht multiplier </td>
+		</tr>
+		<tr>
+			<td> textord_spline_shift_fraction </td>
+			<td> 0.02 </td>
+			<td>  Fraction of line spacing for quad </td>
+		</tr>
+		<tr>
+			<td> textord_spline_outlier_fraction </td>
+			<td> 0.1 </td>
+			<td>  Fraction of line spacing for outlier </td>
+		</tr>
+		<tr>
+			<td> textord_skew_ile </td>
+			<td> 0.5 </td>
+			<td>  Ile of gradients for page skew </td>
+		</tr>
+		<tr>
+			<td> textord_skew_lag </td>
+			<td> 0.01 </td>
+			<td>  Lag for skew on row accumulation </td>
+		</tr>
+		<tr>
+			<td> textord_linespace_iqrlimit </td>
+			<td> 0.2 </td>
+			<td>  Max iqr/median for linespace </td>
+		</tr>
+		<tr>
+			<td> textord_width_limit </td>
+			<td> 8 </td>
+			<td>  Max width of blobs to make rows </td>
+		</tr>
+		<tr>
+			<td> textord_chop_width </td>
+			<td> 1.5 </td>
+			<td>  Max width before chopping </td>
+		</tr>
+		<tr>
+			<td> textord_expansion_factor </td>
+			<td> 1 </td>
+			<td>  Factor to expand rows by in expand_rows </td>
+		</tr>
+		<tr>
+			<td> textord_overlap_x </td>
+			<td> 0.5 </td>
+			<td>  Fraction of linespace for good overlap </td>
+		</tr>
+		<tr>
+			<td> textord_minxh </td>
+			<td> 0.25 </td>
+			<td>  fraction of linesize for min xheight </td>
+		</tr>
+		<tr>
+			<td> textord_min_linesize </td>
+			<td> 1.25 </td>
+			<td>  * blob height for initial linesize </td>
+		</tr>
+		<tr>
+			<td> textord_excess_blobsize </td>
+			<td> 1.3 </td>
+			<td>  New row made if blob makes row this big </td>
+		</tr>
+		<tr>
+			<td> textord_occupancy_threshold </td>
+			<td> 0.4 </td>
+			<td>  Fraction of neighbourhood </td>
+		</tr>
+		<tr>
+			<td> textord_underline_width </td>
+			<td> 2 </td>
+			<td>  Multiple of line_size for underline </td>
+		</tr>
+		<tr>
+			<td> textord_min_blob_height_fraction </td>
+			<td> 0.75 </td>
+			<td>  Min blob height/top to include blob top into xheight stats </td>
+		</tr>
+		<tr>
+			<td> textord_xheight_mode_fraction </td>
+			<td> 0.4 </td>
+			<td>  Min pile height to make xheight </td>
+		</tr>
+		<tr>
+			<td> textord_ascheight_mode_fraction </td>
+			<td> 0.08 </td>
+			<td>  Min pile height to make ascheight </td>
+		</tr>
+		<tr>
+			<td> textord_descheight_mode_fraction </td>
+			<td> 0.08 </td>
+			<td>  Min pile height to make descheight </td>
+		</tr>
+		<tr>
+			<td> textord_ascx_ratio_min </td>
+			<td> 1.25 </td>
+			<td>  Min cap/xheight </td>
+		</tr>
+		<tr>
+			<td> textord_ascx_ratio_max </td>
+			<td> 1.8 </td>
+			<td>  Max cap/xheight </td>
+		</tr>
+		<tr>
+			<td> textord_descx_ratio_min </td>
+			<td> 0.25 </td>
+			<td>  Min desc/xheight </td>
+		</tr>
+		<tr>
+			<td> textord_descx_ratio_max </td>
+			<td> 0.6 </td>
+			<td>  Max desc/xheight </td>
+		</tr>
+		<tr>
+			<td> textord_xheight_error_margin </td>
+			<td> 0.1 </td>
+			<td>  Accepted variation </td>
+		</tr>
+		<tr>
+			<td> oldbl_xhfract </td>
+			<td> 0.4 </td>
+			<td>  Fraction of est allowed in calc </td>
+		</tr>
+		<tr>
+			<td> oldbl_dot_error_size </td>
+			<td> 1.26 </td>
+			<td>  Max aspect ratio of a dot </td>
+		</tr>
+		<tr>
+			<td> textord_oldbl_jumplimit </td>
+			<td> 0.15 </td>
+			<td>  X fraction for new partition </td>
+		</tr>
+		<tr>
+			<td> pitsync_joined_edge </td>
+			<td> 0.75 </td>
+			<td>  Dist inside big blob for chopping </td>
+		</tr>
+		<tr>
+			<td> pitsync_offset_freecut_fraction </td>
+			<td> 0.25 </td>
+			<td>  Fraction of cut for free cuts </td>
+		</tr>
+		<tr>
+			<td> textord_tabfind_vertical_text_ratio </td>
+			<td> 0.5 </td>
+			<td>  Fraction of textlines deemed vertical to use vertical page mode </td>
+		</tr>
+		<tr>
+			<td> textord_tabfind_aligned_gap_fraction </td>
+			<td> 0.75 </td>
+			<td>  Fraction of height used as a minimum gap for aligned blobs. </td>
+		</tr>
+		<tr>
+			<td> textord_tabvector_vertical_gap_fraction </td>
+			<td> 0.5 </td>
+			<td>  max fraction of mean blob width allowed for vertical gaps in vertical text </td>
+		</tr>
+		<tr>
+			<td> textord_tabvector_vertical_box_ratio </td>
+			<td> 0.5 </td>
+			<td>  Fraction of box matches required to declare a line vertical </td>
+		</tr>
+		<tr>
+			<td> textord_projection_scale </td>
+			<td> 0.2 </td>
+			<td>  Ding rate for mid-cuts </td>
+		</tr>
+		<tr>
+			<td> textord_balance_factor </td>
+			<td> 1 </td>
+			<td>  Ding rate for unbalanced char cells </td>
+		</tr>
+		<tr>
+			<td> textord_wordstats_smooth_factor </td>
+			<td> 0.05 </td>
+			<td>  Smoothing gap stats </td>
+		</tr>
+		<tr>
+			<td> textord_width_smooth_factor </td>
+			<td> 0.1 </td>
+			<td>  Smoothing width stats </td>
+		</tr>
+		<tr>
+			<td> textord_words_width_ile </td>
+			<td> 0.4 </td>
+			<td>  Ile of blob widths for space est </td>
+		</tr>
+		<tr>
+			<td> textord_words_maxspace </td>
+			<td> 4 </td>
+			<td>  Multiple of xheight </td>
+		</tr>
+		<tr>
+			<td> textord_words_default_maxspace </td>
+			<td> 3.5 </td>
+			<td>  Max believable third space </td>
+		</tr>
+		<tr>
+			<td> textord_words_default_minspace </td>
+			<td> 0.6 </td>
+			<td>  Fraction of xheight </td>
+		</tr>
+		<tr>
+			<td> textord_words_min_minspace </td>
+			<td> 0.3 </td>
+			<td>  Fraction of xheight </td>
+		</tr>
+		<tr>
+			<td> textord_words_default_nonspace </td>
+			<td> 0.2 </td>
+			<td>  Fraction of xheight </td>
+		</tr>
+		<tr>
+			<td> textord_words_initial_lower </td>
+			<td> 0.25 </td>
+			<td>  Max inital cluster size </td>
+		</tr>
+		<tr>
+			<td> textord_words_initial_upper </td>
+			<td> 0.15 </td>
+			<td>  Min initial cluster spacing </td>
+		</tr>
+		<tr>
+			<td> textord_words_minlarge </td>
+			<td> 0.75 </td>
+			<td>  Fraction of valid gaps needed </td>
+		</tr>
+		<tr>
+			<td> textord_words_pitchsd_threshold </td>
+			<td> 0.04 </td>
+			<td>  Pitch sync threshold </td>
+		</tr>
+		<tr>
+			<td> textord_words_def_fixed </td>
+			<td> 0.016 </td>
+			<td>  Threshold for definite fixed </td>
+		</tr>
+		<tr>
+			<td> textord_words_def_prop </td>
+			<td> 0.09 </td>
+			<td>  Threshold for definite prop </td>
+		</tr>
+		<tr>
+			<td> textord_pitch_rowsimilarity </td>
+			<td> 0.08 </td>
+			<td>  Fraction of xheight for sameness </td>
+		</tr>
+		<tr>
+			<td> words_initial_lower </td>
+			<td> 0.5 </td>
+			<td>  Max inital cluster size </td>
+		</tr>
+		<tr>
+			<td> words_initial_upper </td>
+			<td> 0.15 </td>
+			<td>  Min initial cluster spacing </td>
+		</tr>
+		<tr>
+			<td> words_default_prop_nonspace </td>
+			<td> 0.25 </td>
+			<td>  Fraction of xheight </td>
+		</tr>
+		<tr>
+			<td> words_default_fixed_space </td>
+			<td> 0.75 </td>
+			<td>  Fraction of xheight </td>
+		</tr>
+		<tr>
+			<td> words_default_fixed_limit </td>
+			<td> 0.6 </td>
+			<td>  Allowed size variance </td>
+		</tr>
+		<tr>
+			<td> textord_words_definite_spread </td>
+			<td> 0.3 </td>
+			<td>  Non-fuzzy spacing region </td>
+		</tr>
+		<tr>
+			<td> textord_spacesize_ratiofp </td>
+			<td> 2.8 </td>
+			<td>  Min ratio space/nonspace </td>
+		</tr>
+		<tr>
+			<td> textord_spacesize_ratioprop </td>
+			<td> 2 </td>
+			<td>  Min ratio space/nonspace </td>
+		</tr>
+		<tr>
+			<td> textord_fpiqr_ratio </td>
+			<td> 1.5 </td>
+			<td>  Pitch <span class="caps">IQR</span>/Gap <span class="caps">IQR</span> threshold </td>
+		</tr>
+		<tr>
+			<td> textord_max_pitch_iqr </td>
+			<td> 0.2 </td>
+			<td>  Xh fraction noise in pitch </td>
+		</tr>
+		<tr>
+			<td> textord_fp_min_width </td>
+			<td> 0.5 </td>
+			<td>  Min width of decent blobs </td>
+		</tr>
+		<tr>
+			<td> textord_underline_offset </td>
+			<td> 0.1 </td>
+			<td>  Fraction of x to ignore </td>
+		</tr>
+		<tr>
+			<td> classify_cp_angle_pad_loose </td>
+			<td> 45 </td>
+			<td>  Class Pruner Angle Pad Loose </td>
+		</tr>
+		<tr>
+			<td> classify_cp_angle_pad_medium </td>
+			<td> 20 </td>
+			<td>  Class Pruner Angle Pad Medium </td>
+		</tr>
+		<tr>
+			<td> classify_cp_angle_pad_tight </td>
+			<td> 10 </td>
+			<td>  CLass Pruner Angle Pad Tight </td>
+		</tr>
+		<tr>
+			<td> classify_cp_end_pad_loose </td>
+			<td> 0.5 </td>
+			<td>  Class Pruner End Pad Loose </td>
+		</tr>
+		<tr>
+			<td> classify_cp_end_pad_medium </td>
+			<td> 0.5 </td>
+			<td>  Class Pruner End Pad Medium </td>
+		</tr>
+		<tr>
+			<td> classify_cp_end_pad_tight </td>
+			<td> 0.5 </td>
+			<td>  Class Pruner End Pad Tight </td>
+		</tr>
+		<tr>
+			<td> classify_cp_side_pad_loose </td>
+			<td> 2.5 </td>
+			<td>  Class Pruner Side Pad Loose </td>
+		</tr>
+		<tr>
+			<td> classify_cp_side_pad_medium </td>
+			<td> 1.2 </td>
+			<td>  Class Pruner Side Pad Medium </td>
+		</tr>
+		<tr>
+			<td> classify_cp_side_pad_tight </td>
+			<td> 0.6 </td>
+			<td>  Class Pruner Side Pad Tight </td>
+		</tr>
+		<tr>
+			<td> classify_pp_angle_pad </td>
+			<td> 45 </td>
+			<td>  Proto Pruner Angle Pad </td>
+		</tr>
+		<tr>
+			<td> classify_pp_end_pad </td>
+			<td> 0.5 </td>
+			<td>  Proto Prune End Pad </td>
+		</tr>
+		<tr>
+			<td> classify_pp_side_pad </td>
+			<td> 2.5 </td>
+			<td>  Proto Pruner Side Pad </td>
+		</tr>
+		<tr>
+			<td> classify_min_slope </td>
+			<td> 0.414214 </td>
+			<td>  Slope below which lines are called horizontal </td>
+		</tr>
+		<tr>
+			<td> classify_max_slope </td>
+			<td> 2.41421 </td>
+			<td>  Slope above which lines are called vertical </td>
+		</tr>
+		<tr>
+			<td> classify_norm_adj_midpoint </td>
+			<td> 32 </td>
+			<td>  Norm adjust midpoint &#8230; </td>
+		</tr>
+		<tr>
+			<td> classify_norm_adj_curl </td>
+			<td> 2 </td>
+			<td>  Norm adjust curl &#8230; </td>
+		</tr>
+		<tr>
+			<td> classify_pico_feature_length </td>
+			<td> 0.05 </td>
+			<td>  Pico Feature Length </td>
+		</tr>
+		<tr>
+			<td> speckle_large_max_size </td>
+			<td> 0.3 </td>
+			<td>  Max large speckle size </td>
+		</tr>
+		<tr>
+			<td> speckle_small_penalty </td>
+			<td> 10 </td>
+			<td>  Small speckle penalty </td>
+		</tr>
+		<tr>
+			<td> speckle_large_penalty </td>
+			<td> 10 </td>
+			<td>  Large speckle penalty </td>
+		</tr>
+		<tr>
+			<td> speckle_small_certainty </td>
+			<td> -1 </td>
+			<td>  Small speckle certainty </td>
+		</tr>
+		<tr>
+			<td> ambigs_debug_level </td>
+			<td> 0 </td>
+			<td>  Debug level for unichar ambiguities </td>
+		</tr>
+		<tr>
+			<td> tessedit_single_match </td>
+			<td> 0 </td>
+			<td>  Top choice only from CP </td>
+		</tr>
+		<tr>
+			<td> classify_debug_level </td>
+			<td> 0 </td>
+			<td>  Classify debug level </td>
+		</tr>
+		<tr>
+			<td> classify_norm_method </td>
+			<td> 1 </td>
+			<td>  Normalization Method   &#8230; </td>
+		</tr>
+		<tr>
+			<td> matcher_debug_level </td>
+			<td> 0 </td>
+			<td>  Matcher Debug Level </td>
+		</tr>
+		<tr>
+			<td> matcher_debug_flags </td>
+			<td> 0 </td>
+			<td>  Matcher Debug Flags </td>
+		</tr>
+		<tr>
+			<td> classify_learning_debug_level </td>
+			<td> 0 </td>
+			<td>  Learning Debug Level:  </td>
+		</tr>
+		<tr>
+			<td> matcher_permanent_classes_min </td>
+			<td> 1 </td>
+			<td>  Min # of permanent classes </td>
+		</tr>
+		<tr>
+			<td> matcher_min_examples_for_prototyping </td>
+			<td> 3 </td>
+			<td>  Reliable Config Threshold </td>
+		</tr>
+		<tr>
+			<td> matcher_sufficient_examples_for_prototyping </td>
+			<td> 5 </td>
+			<td>  Enable adaption even if the ambiguities have not been seen </td>
+		</tr>
+		<tr>
+			<td> classify_adapt_proto_threshold </td>
+			<td> 230 </td>
+			<td>  Threshold for good protos during adaptive 0-255 </td>
+		</tr>
+		<tr>
+			<td> classify_adapt_feature_threshold </td>
+			<td> 230 </td>
+			<td>  Threshold for good features during adaptive 0-255 </td>
+		</tr>
+		<tr>
+			<td> classify_class_pruner_threshold </td>
+			<td> 229 </td>
+			<td>  Class Pruner Threshold 0-255 </td>
+		</tr>
+		<tr>
+			<td> classify_class_pruner_multiplier </td>
+			<td> 30 </td>
+			<td>  Class Pruner Multiplier 0-255:        </td>
+		</tr>
+		<tr>
+			<td> classify_cp_cutoff_strength </td>
+			<td> 7 </td>
+			<td>  Class Pruner CutoffStrength:          </td>
+		</tr>
+		<tr>
+			<td> classify_integer_matcher_multiplier </td>
+			<td> 14 </td>
+			<td>  Integer Matcher Multiplier  0-255:    </td>
+		</tr>
+		<tr>
+			<td> il1_adaption_test </td>
+			<td> 0 </td>
+			<td>  Dont adapt to i/I at beginning of word </td>
+		</tr>
+		<tr>
+			<td> dawg_debug_level </td>
+			<td> 0 </td>
+			<td>  Set to 1 for general debug info, to 2 for more details, to 3 to see all the debug messages </td>
+		</tr>
+		<tr>
+			<td> hyphen_debug_level </td>
+			<td> 0 </td>
+			<td>  Debug level for hyphenated words. </td>
+		</tr>
+		<tr>
+			<td> max_viterbi_list_size </td>
+			<td> 10 </td>
+			<td>  Maximum size of viterbi list. </td>
+		</tr>
+		<tr>
+			<td> stopper_smallword_size </td>
+			<td> 2 </td>
+			<td>  Size of dict word to be treated as non-dict word </td>
+		</tr>
+		<tr>
+			<td> stopper_debug_level </td>
+			<td> 0 </td>
+			<td>  Stopper debug level </td>
+		</tr>
+		<tr>
+			<td> tessedit_truncate_wordchoice_log </td>
+			<td> 10 </td>
+			<td>  Max words to keep in list </td>
+		</tr>
+		<tr>
+			<td> fragments_debug </td>
+			<td> 0 </td>
+			<td>  Debug character fragments </td>
+		</tr>
+		<tr>
+			<td> segment_debug </td>
+			<td> 0 </td>
+			<td>  Debug the whole segmentation process </td>
+		</tr>
+		<tr>
+			<td> max_permuter_attempts </td>
+			<td> 10000 </td>
+			<td>  Maximum number of different character choices to consider during permutation. This limit is especially useful when user patterns are specified, since overly generic patterns can result in dawg search exploring an overly large number of options. </td>
+		</tr>
+		<tr>
+			<td> wordrec_num_seg_states </td>
+			<td> 30 </td>
+			<td>  Segmentation states </td>
+		</tr>
+		<tr>
+			<td> repair_unchopped_blobs </td>
+			<td> 1 </td>
+			<td>  Fix blobs that aren&#8217;t chopped </td>
+		</tr>
+		<tr>
+			<td> chop_debug </td>
+			<td> 0 </td>
+			<td>  Chop debug </td>
+		</tr>
+		<tr>
+			<td> chop_split_length </td>
+			<td> 10000 </td>
+			<td>  Split Length </td>
+		</tr>
+		<tr>
+			<td> chop_same_distance </td>
+			<td> 2 </td>
+			<td>  Same distance </td>
+		</tr>
+		<tr>
+			<td> chop_min_outline_points </td>
+			<td> 6 </td>
+			<td>  Min Number of Points on Outline </td>
+		</tr>
+		<tr>
+			<td> chop_inside_angle </td>
+			<td> -50 </td>
+			<td>  Min Inside Angle Bend </td>
+		</tr>
+		<tr>
+			<td> chop_min_outline_area </td>
+			<td> 2000 </td>
+			<td>  Min Outline Area </td>
+		</tr>
+		<tr>
+			<td> chop_x_y_weight </td>
+			<td> 3 </td>
+			<td>  X / Y  length weight </td>
+		</tr>
+		<tr>
+			<td> segment_adjust_debug </td>
+			<td> 0 </td>
+			<td>  Segmentation adjustment debug </td>
+		</tr>
+		<tr>
+			<td> wordrec_debug_level </td>
+			<td> 0 </td>
+			<td>  Debug level for wordrec </td>
+		</tr>
+		<tr>
+			<td> segsearch_debug_level </td>
+			<td> 0 </td>
+			<td>  SegSearch debug level </td>
+		</tr>
+		<tr>
+			<td> segsearch_max_pain_points </td>
+			<td> 2000 </td>
+			<td>  Maximum number of pain points stored in the queue </td>
+		</tr>
+		<tr>
+			<td> segsearch_max_futile_classifications </td>
+			<td> 10 </td>
+			<td>  Maximum number of pain point classifications per word thatdid not result in finding a better word choice. </td>
+		</tr>
+		<tr>
+			<td> language_model_debug_level </td>
+			<td> 0 </td>
+			<td>  Language model debug level </td>
+		</tr>
+		<tr>
+			<td> language_model_ngram_order </td>
+			<td> 8 </td>
+			<td>  Maximum order of the character ngram model </td>
+		</tr>
+		<tr>
+			<td> language_model_viterbi_list_max_num_prunable </td>
+			<td> 10 </td>
+			<td>  Maximum number of prunable (those for which PrunablePath() is true) entries in each viterbi list recorded in <span class="caps">BLOB</span>_CHOICEs </td>
+		</tr>
+		<tr>
+			<td> language_model_viterbi_list_max_size </td>
+			<td> 500 </td>
+			<td>  Maximum size of viterbi lists recorded in <span class="caps">BLOB</span>_CHOICEs </td>
+		</tr>
+		<tr>
+			<td> language_model_min_compound_length </td>
+			<td> 3 </td>
+			<td>  Minimum length of compound words </td>
+		</tr>
+		<tr>
+			<td> language_model_fixed_length_choices_depth </td>
+			<td> 3 </td>
+			<td>  Depth of blob choice lists to explore when fixed length dawgs are on </td>
+		</tr>
+		<tr>
+			<td> tessedit_pageseg_mode </td>
+			<td> 6 </td>
+			<td>  Page seg mode: 0=osd only, 1=auto+osd, 2=auto, 3=col, 4=block, 5=line, 6=word, 7=char (Values from PageSegMode enum in publictypes.h) </td>
+		</tr>
+		<tr>
+			<td> tessedit_ocr_engine_mode </td>
+			<td> 0 </td>
+			<td>  Which <span class="caps">OCR</span> engine(s) to run (Tesseract, Cube, both). Defaults to loading and running only Tesseract (no Cube,no combiner). Values from OcrEngineMode enum in tesseractclass.h) </td>
+		</tr>
+		<tr>
+			<td> pageseg_devanagari_split_strategy </td>
+			<td> 0 </td>
+			<td>  Whether to use the top-line splitting process for Devanagari documents while performing page-segmentation. </td>
+		</tr>
+		<tr>
+			<td> ocr_devanagari_split_strategy </td>
+			<td> 0 </td>
+			<td>  Whether to use the top-line splitting process for Devanagari documents while performing ocr. </td>
+		</tr>
+		<tr>
+			<td> bidi_debug </td>
+			<td> 0 </td>
+			<td>  Debug level for BiDi </td>
+		</tr>
+		<tr>
+			<td> applybox_debug </td>
+			<td> 1 </td>
+			<td>  Debug level </td>
+		</tr>
+		<tr>
+			<td> applybox_page </td>
+			<td> 0 </td>
+			<td>  Page number to apply boxes from </td>
+		</tr>
+		<tr>
+			<td> tessedit_bigram_debug </td>
+			<td> 0 </td>
+			<td>  Amount of debug output for bigram correction. </td>
+		</tr>
+		<tr>
+			<td> debug_x_ht_level </td>
+			<td> 0 </td>
+			<td>  Reestimate debug </td>
+		</tr>
+		<tr>
+			<td> quality_min_initial_alphas_reqd </td>
+			<td> 2 </td>
+			<td>  alphas in a good word </td>
+		</tr>
+		<tr>
+			<td> tessedit_tess_adaption_mode </td>
+			<td> 39 </td>
+			<td>  Adaptation decision algorithm for tess </td>
+		</tr>
+		<tr>
+			<td> tessedit_test_adaption_mode </td>
+			<td> 3 </td>
+			<td>  Adaptation decision algorithm for tess </td>
+		</tr>
+		<tr>
+			<td> paragraph_debug_level </td>
+			<td> 0 </td>
+			<td>  Print paragraph debug info. </td>
+		</tr>
+		<tr>
+			<td> cube_debug_level </td>
+			<td> 0 </td>
+			<td>  Print cube debug info. </td>
+		</tr>
+		<tr>
+			<td> tessedit_preserve_min_wd_len </td>
+			<td> 2 </td>
+			<td>  Only preserve wds longer than this </td>
+		</tr>
+		<tr>
+			<td> crunch_rating_max </td>
+			<td> 10 </td>
+			<td>  For adj length in rating per ch </td>
+		</tr>
+		<tr>
+			<td> crunch_pot_indicators </td>
+			<td> 1 </td>
+			<td>  How many potential indicators needed </td>
+		</tr>
+		<tr>
+			<td> crunch_leave_lc_strings </td>
+			<td> 4 </td>
+			<td>  Dont crunch words with long lower case strings </td>
+		</tr>
+		<tr>
+			<td> crunch_leave_uc_strings </td>
+			<td> 4 </td>
+			<td>  Dont crunch words with long lower case strings </td>
+		</tr>
+		<tr>
+			<td> crunch_long_repetitions </td>
+			<td> 3 </td>
+			<td>  Crunch words with long repetitions </td>
+		</tr>
+		<tr>
+			<td> crunch_debug </td>
+			<td> 0 </td>
+			<td>  As it says </td>
+		</tr>
+		<tr>
+			<td> fixsp_non_noise_limit </td>
+			<td> 1 </td>
+			<td>  How many non-noise blbs either side? </td>
+		</tr>
+		<tr>
+			<td> fixsp_done_mode </td>
+			<td> 1 </td>
+			<td>  What constitues done for spacing </td>
+		</tr>
+		<tr>
+			<td> debug_fix_space_level </td>
+			<td> 0 </td>
+			<td>  Contextual fixspace debug </td>
+		</tr>
+		<tr>
+			<td> x_ht_acceptance_tolerance </td>
+			<td> 8 </td>
+			<td>  Max allowed deviation of blob top outside of font data </td>
+		</tr>
+		<tr>
+			<td> x_ht_min_change </td>
+			<td> 8 </td>
+			<td>  Min change in xht before actually trying it </td>
+		</tr>
+		<tr>
+			<td> suspect_level </td>
+			<td> 99 </td>
+			<td>  Suspect marker level </td>
+		</tr>
+		<tr>
+			<td> suspect_space_level </td>
+			<td> 100 </td>
+			<td>  Min suspect level for rejecting spaces </td>
+		</tr>
+		<tr>
+			<td> suspect_short_words </td>
+			<td> 2 </td>
+			<td>  Dont Suspect dict wds longer than this </td>
+		</tr>
+		<tr>
+			<td> tessedit_reject_mode </td>
+			<td> 0 </td>
+			<td>  Rejection algorithm </td>
+		</tr>
+		<tr>
+			<td> tessedit_ok_mode </td>
+			<td> 5 </td>
+			<td>  Acceptance decision algorithm </td>
+		</tr>
+		<tr>
+			<td> tessedit_image_border </td>
+			<td> 2 </td>
+			<td>  Rej blbs near image edge limit </td>
+		</tr>
+		<tr>
+			<td> min_sane_x_ht_pixels </td>
+			<td> 8 </td>
+			<td>  Reject any x-ht lt or eq than this </td>
+		</tr>
+		<tr>
+			<td> tessedit_page_number </td>
+			<td> -1 </td>
+			<td>  -1 -&gt; All pages , else specifc page to process </td>
+		</tr>
+		<tr>
+			<td> tessdata_manager_debug_level </td>
+			<td> 0 </td>
+			<td>  Debug level for TessdataManager functions. </td>
+		</tr>
+		<tr>
+			<td> tosp_debug_level </td>
+			<td> 0 </td>
+			<td>  Debug data </td>
+		</tr>
+		<tr>
+			<td> tosp_enough_space_samples_for_median </td>
+			<td> 3 </td>
+			<td>  or should we use mean </td>
+		</tr>
+		<tr>
+			<td> tosp_redo_kern_limit </td>
+			<td> 10 </td>
+			<td>  No.samples reqd to reestimate for row </td>
+		</tr>
+		<tr>
+			<td> tosp_few_samples </td>
+			<td> 40 </td>
+			<td>  No.gaps reqd with 1 large gap to treat as a table </td>
+		</tr>
+		<tr>
+			<td> tosp_short_row </td>
+			<td> 20 </td>
+			<td>  No.gaps reqd with few cert spaces to use certs </td>
+		</tr>
+		<tr>
+			<td> tosp_sanity_method </td>
+			<td> 1 </td>
+			<td>  How to avoid being silly </td>
+		</tr>
+		<tr>
+			<td> textord_max_noise_size </td>
+			<td> 7 </td>
+			<td>  Pixel size of noise </td>
+		</tr>
+		<tr>
+			<td> textord_noise_sizefraction </td>
+			<td> 10 </td>
+			<td>  Fraction of size for maxima </td>
+		</tr>
+		<tr>
+			<td> textord_noise_translimit </td>
+			<td> 16 </td>
+			<td>  Transitions for normal blob </td>
+		</tr>
+		<tr>
+			<td> textord_noise_sncount </td>
+			<td> 1 </td>
+			<td>  super norm blobs to save row </td>
+		</tr>
+		<tr>
+			<td> use_definite_ambigs_for_classifier </td>
+			<td> 0 </td>
+			<td>  Use definite ambiguities when running character classifier </td>
+		</tr>
+		<tr>
+			<td> use_ambigs_for_adaption </td>
+			<td> 0 </td>
+			<td>  Use ambigs for deciding whether to adapt to a character </td>
+		</tr>
+		<tr>
+			<td> prioritize_division </td>
+			<td> 0 </td>
+			<td>  Prioritize blob division over chopping </td>
+		</tr>
+		<tr>
+			<td> classify_enable_learning </td>
+			<td> 1 </td>
+			<td>  Enable adaptive classifier </td>
+		</tr>
+		<tr>
+			<td> tess_cn_matching </td>
+			<td> 0 </td>
+			<td>  Character Normalized Matching </td>
+		</tr>
+		<tr>
+			<td> tess_bn_matching </td>
+			<td> 0 </td>
+			<td>  Baseline Normalized Matching </td>
+		</tr>
+		<tr>
+			<td> classify_enable_adaptive_matcher </td>
+			<td> 1 </td>
+			<td>  Enable adaptive classifier </td>
+		</tr>
+		<tr>
+			<td> classify_use_pre_adapted_templates </td>
+			<td> 0 </td>
+			<td>  Use pre-adapted classifier templates </td>
+		</tr>
+		<tr>
+			<td> classify_save_adapted_templates </td>
+			<td> 0 </td>
+			<td>  Save adapted templates to a file </td>
+		</tr>
+		<tr>
+			<td> classify_enable_adaptive_debugger </td>
+			<td> 0 </td>
+			<td>  Enable match debugger </td>
+		</tr>
+		<tr>
+			<td> disable_character_fragments </td>
+			<td> 1 </td>
+			<td>  Do not include character fragments in the results of the classifier </td>
+		</tr>
+		<tr>
+			<td> classify_debug_character_fragments </td>
+			<td> 0 </td>
+			<td>  Bring up graphical debugging windows for fragments training </td>
+		</tr>
+		<tr>
+			<td> matcher_debug_separate_windows </td>
+			<td> 0 </td>
+			<td>  Use two different windows for debugging the matching: One for the protos and one for the features. </td>
+		</tr>
+		<tr>
+			<td> classify_bln_numeric_mode </td>
+			<td> 0 </td>
+			<td>  Assume the input is numbers [0-9]. </td>
+		</tr>
+		<tr>
+			<td> load_system_dawg </td>
+			<td> 1 </td>
+			<td>  Load system word dawg. </td>
+		</tr>
+		<tr>
+			<td> load_freq_dawg </td>
+			<td> 1 </td>
+			<td>  Load frequent word dawg. </td>
+		</tr>
+		<tr>
+			<td> load_unambig_dawg </td>
+			<td> 1 </td>
+			<td>  Load unambiguous word dawg. </td>
+		</tr>
+		<tr>
+			<td> load_punc_dawg </td>
+			<td> 1 </td>
+			<td>  Load dawg with punctuation patterns. </td>
+		</tr>
+		<tr>
+			<td> load_number_dawg </td>
+			<td> 1 </td>
+			<td>  Load dawg with number patterns. </td>
+		</tr>
+		<tr>
+			<td> load_fixed_length_dawgs </td>
+			<td> 1 </td>
+			<td>  Load fixed length dawgs (e.g. for non-space delimited languages) </td>
+		</tr>
+		<tr>
+			<td> load_bigram_dawg </td>
+			<td> 1 </td>
+			<td>  Load dawg with special word bigrams. </td>
+		</tr>
+		<tr>
+			<td> use_only_first_uft8_step </td>
+			<td> 0 </td>
+			<td>  Use only the first UTF8 step of the given string when computing log probabilities. </td>
+		</tr>
+		<tr>
+			<td> stopper_no_acceptable_choices </td>
+			<td> 0 </td>
+			<td>  Make AcceptableChoice() always return false. Useful when there is a need to explore all segmentations </td>
+		</tr>
+		<tr>
+			<td> save_raw_choices </td>
+			<td> 1 </td>
+			<td>  Save all explored raw choices </td>
+		</tr>
+		<tr>
+			<td> permute_debug </td>
+			<td> 0 </td>
+			<td>  Debug char permutation process </td>
+		</tr>
+		<tr>
+			<td> permute_script_word </td>
+			<td> 0 </td>
+			<td>  Turn on word script consistency permuter </td>
+		</tr>
+		<tr>
+			<td> segment_segcost_rating </td>
+			<td> 0 </td>
+			<td>  incorporate segmentation cost in word rating? </td>
+		</tr>
+		<tr>
+			<td> segment_nonalphabetic_script </td>
+			<td> 0 </td>
+			<td>  Don&#8217;t use any alphabetic-specific tricks.Set to true in the traineddata config file for scripts that are cursive or inherently fixed-pitch </td>
+		</tr>
+		<tr>
+			<td> permute_fixed_length_dawg </td>
+			<td> 0 </td>
+			<td>  Turn on fixed-length phrasebook search permuter </td>
+		</tr>
+		<tr>
+			<td> permute_chartype_word </td>
+			<td> 0 </td>
+			<td>  Turn on character type (property) consistency permuter </td>
+		</tr>
+		<tr>
+			<td> save_doc_words </td>
+			<td> 0 </td>
+			<td>  Save Document Words </td>
+		</tr>
+		<tr>
+			<td> doc_dict_enable </td>
+			<td> 1 </td>
+			<td>  Enable Document Dictionary  </td>
+		</tr>
+		<tr>
+			<td> ngram_permuter_activated </td>
+			<td> 0 </td>
+			<td>  Activate character-level n-gram-based permuter </td>
+		</tr>
+		<tr>
+			<td> permute_only_top </td>
+			<td> 0 </td>
+			<td>  Run only the top choice permuter </td>
+		</tr>
+		<tr>
+			<td> merge_fragments_in_matrix </td>
+			<td> 1 </td>
+			<td>  Merge the fragments in the ratings matrix and delete them after merging </td>
+		</tr>
+		<tr>
+			<td> wordrec_no_block </td>
+			<td> 0 </td>
+			<td>  Don&#8217;t output block information </td>
+		</tr>
+		<tr>
+			<td> wordrec_enable_assoc </td>
+			<td> 1 </td>
+			<td>  Associator Enable </td>
+		</tr>
+		<tr>
+			<td> force_word_assoc </td>
+			<td> 0 </td>
+			<td>  force associator to run regardless of what enable_assoc is.This is used for <span class="caps">CJK</span> where component grouping is necessary. </td>
+		</tr>
+		<tr>
+			<td> fragments_guide_chopper </td>
+			<td> 0 </td>
+			<td>  Use information from fragments to guide chopping process </td>
+		</tr>
+		<tr>
+			<td> chop_enable </td>
+			<td> 1 </td>
+			<td>  Chop enable </td>
+		</tr>
+		<tr>
+			<td> chop_vertical_creep </td>
+			<td> 0 </td>
+			<td>  Vertical creep </td>
+		</tr>
+		<tr>
+			<td> assume_fixed_pitch_char_segment </td>
+			<td> 0 </td>
+			<td>  include fixed-pitch heuristics in char segmentation </td>
+		</tr>
+		<tr>
+			<td> use_new_state_cost </td>
+			<td> 0 </td>
+			<td>  use new state cost heuristics for segmentation state evaluation </td>
+		</tr>
+		<tr>
+			<td> wordrec_debug_blamer </td>
+			<td> 0 </td>
+			<td>  Print blamer debug messages </td>
+		</tr>
+		<tr>
+			<td> wordrec_run_blamer </td>
+			<td> 0 </td>
+			<td>  Try to set the blame for errors </td>
+		</tr>
+		<tr>
+			<td> enable_new_segsearch </td>
+			<td> 0 </td>
+			<td>  Enable new segmentation search path. </td>
+		</tr>
+		<tr>
+			<td> save_alt_choices </td>
+			<td> 1 </td>
+			<td>  Save alternative paths found during chopping and segmentation search </td>
+		</tr>
+		<tr>
+			<td> language_model_ngram_on </td>
+			<td> 0 </td>
+			<td>  Turn on/off the use of character ngram model </td>
+		</tr>
+		<tr>
+			<td> language_model_ngram_use_only_first_uft8_step </td>
+			<td> 0 </td>
+			<td>  Use only the first UTF8 step of the given string when computing log probabilities. </td>
+		</tr>
+		<tr>
+			<td> language_model_ngram_space_delimited_language </td>
+			<td> 1 </td>
+			<td>  Words are delimited by space </td>
+		</tr>
+		<tr>
+			<td> language_model_use_sigmoidal_certainty </td>
+			<td> 0 </td>
+			<td>  Use sigmoidal score for certainty </td>
+		</tr>
+		<tr>
+			<td> tessedit_resegment_from_boxes </td>
+			<td> 0 </td>
+			<td>  Take segmentation and labeling from box file </td>
+		</tr>
+		<tr>
+			<td> tessedit_resegment_from_line_boxes </td>
+			<td> 0 </td>
+			<td>  Conversion of word/line box file to char box file </td>
+		</tr>
+		<tr>
+			<td> tessedit_train_from_boxes </td>
+			<td> 0 </td>
+			<td>  Generate training data from boxed chars </td>
+		</tr>
+		<tr>
+			<td> tessedit_make_boxes_from_boxes </td>
+			<td> 0 </td>
+			<td>  Generate more boxes from boxed chars </td>
+		</tr>
+		<tr>
+			<td> tessedit_dump_pageseg_images </td>
+			<td> 0 </td>
+			<td>  Dump intermediate images made during page segmentation </td>
+		</tr>
+		<tr>
+			<td> tessedit_ambigs_training </td>
+			<td> 0 </td>
+			<td>  Perform training for ambiguities </td>
+		</tr>
+		<tr>
+			<td> tessedit_adapt_to_char_fragments </td>
+			<td> 1 </td>
+			<td>  Adapt to words that contain  a character composed form fragments </td>
+		</tr>
+		<tr>
+			<td> tessedit_adaption_debug </td>
+			<td> 0 </td>
+			<td>  Generate and print debug information for adaption </td>
+		</tr>
+		<tr>
+			<td> applybox_learn_chars_and_char_frags_mode </td>
+			<td> 0 </td>
+			<td>  Learn both character fragments (as is done in the special low exposure mode) as well as unfragmented characters. </td>
+		</tr>
+		<tr>
+			<td> applybox_learn_ngrams_mode </td>
+			<td> 0 </td>
+			<td>  Each bounding box is assumed to contain ngrams. Only learn the ngrams whose outlines overlap horizontally. </td>
+		</tr>
+		<tr>
+			<td> tessedit_display_outwords </td>
+			<td> 0 </td>
+			<td>  Draw output words </td>
+		</tr>
+		<tr>
+			<td> tessedit_training_tess </td>
+			<td> 0 </td>
+			<td>  Call Tess to learn blobs </td>
+		</tr>
+		<tr>
+			<td> tessedit_dump_choices </td>
+			<td> 0 </td>
+			<td>  Dump char choices </td>
+		</tr>
+		<tr>
+			<td> tessedit_fix_fuzzy_spaces </td>
+			<td> 1 </td>
+			<td>  Try to improve fuzzy spaces </td>
+		</tr>
+		<tr>
+			<td> tessedit_unrej_any_wd </td>
+			<td> 0 </td>
+			<td>  Dont bother with word plausibility </td>
+		</tr>
+		<tr>
+			<td> tessedit_fix_hyphens </td>
+			<td> 1 </td>
+			<td>  Crunch double hyphens? </td>
+		</tr>
+		<tr>
+			<td> tessedit_redo_xheight </td>
+			<td> 1 </td>
+			<td>  Check/Correct x-height </td>
+		</tr>
+		<tr>
+			<td> tessedit_enable_doc_dict </td>
+			<td> 1 </td>
+			<td>  Add words to the document dictionary </td>
+		</tr>
+		<tr>
+			<td> tessedit_debug_fonts </td>
+			<td> 0 </td>
+			<td>  Output font info per char </td>
+		</tr>
+		<tr>
+			<td> tessedit_debug_block_rejection </td>
+			<td> 0 </td>
+			<td>  Block and Row stats </td>
+		</tr>
+		<tr>
+			<td> tessedit_enable_bigram_correction </td>
+			<td> 1 </td>
+			<td>  Enable correction based on the word bigram dictionary. </td>
+		</tr>
+		<tr>
+			<td> debug_acceptable_wds </td>
+			<td> 0 </td>
+			<td>  Dump word pass/fail chk </td>
+		</tr>
+		<tr>
+			<td> tessedit_tess_adapt_to_rejmap </td>
+			<td> 0 </td>
+			<td>  Use reject map to control Tesseract adaption </td>
+		</tr>
+		<tr>
+			<td> tessedit_minimal_rej_pass1 </td>
+			<td> 0 </td>
+			<td>  Do minimal rejection on pass 1 output </td>
+		</tr>
+		<tr>
+			<td> tessedit_test_adaption </td>
+			<td> 0 </td>
+			<td>  Test adaption criteria </td>
+		</tr>
+		<tr>
+			<td> tessedit_matcher_log </td>
+			<td> 0 </td>
+			<td>  Log matcher activity </td>
+		</tr>
+		<tr>
+			<td> save_blob_choices </td>
+			<td> 0 </td>
+			<td>  Save the results of the recognition step (blob_choices) within the corresponding <span class="caps">WERD</span>_CHOICE </td>
+		</tr>
+		<tr>
+			<td> test_pt </td>
+			<td> 0 </td>
+			<td>  Test for point </td>
+		</tr>
+		<tr>
+			<td> docqual_excuse_outline_errs </td>
+			<td> 0 </td>
+			<td>  Allow outline errs in unrejection? </td>
+		</tr>
+		<tr>
+			<td> tessedit_good_quality_unrej </td>
+			<td> 1 </td>
+			<td>  Reduce rejection on good docs </td>
+		</tr>
+		<tr>
+			<td> tessedit_use_reject_spaces </td>
+			<td> 1 </td>
+			<td>  Reject spaces? </td>
+		</tr>
+		<tr>
+			<td> tessedit_preserve_blk_rej_perfect_wds </td>
+			<td> 1 </td>
+			<td>  Only rej partially rejected words in block rejection </td>
+		</tr>
+		<tr>
+			<td> tessedit_preserve_row_rej_perfect_wds </td>
+			<td> 1 </td>
+			<td>  Only rej partially rejected words in row rejection </td>
+		</tr>
+		<tr>
+			<td> tessedit_dont_blkrej_good_wds </td>
+			<td> 0 </td>
+			<td>  Use word segmentation quality metric </td>
+		</tr>
+		<tr>
+			<td> tessedit_dont_rowrej_good_wds </td>
+			<td> 0 </td>
+			<td>  Use word segmentation quality metric </td>
+		</tr>
+		<tr>
+			<td> tessedit_row_rej_good_docs </td>
+			<td> 1 </td>
+			<td>  Apply row rejection to good docs </td>
+		</tr>
+		<tr>
+			<td> tessedit_reject_bad_qual_wds </td>
+			<td> 1 </td>
+			<td>  Reject all bad quality wds </td>
+		</tr>
+		<tr>
+			<td> tessedit_debug_doc_rejection </td>
+			<td> 0 </td>
+			<td>  Page stats </td>
+		</tr>
+		<tr>
+			<td> tessedit_debug_quality_metrics </td>
+			<td> 0 </td>
+			<td>  Output data to debug file </td>
+		</tr>
+		<tr>
+			<td> bland_unrej </td>
+			<td> 0 </td>
+			<td>  unrej potential with no chekcs </td>
+		</tr>
+		<tr>
+			<td> unlv_tilde_crunching </td>
+			<td> 1 </td>
+			<td>  Mark v.bad words for tilde crunch </td>
+		</tr>
+		<tr>
+			<td> crunch_early_merge_tess_fails </td>
+			<td> 1 </td>
+			<td>  Before word crunch? </td>
+		</tr>
+		<tr>
+			<td> crunch_early_convert_bad_unlv_chs </td>
+			<td> 0 </td>
+			<td>  Take out ~^ early? </td>
+		</tr>
+		<tr>
+			<td> crunch_terrible_garbage </td>
+			<td> 1 </td>
+			<td>  As it says </td>
+		</tr>
+		<tr>
+			<td> crunch_pot_garbage </td>
+			<td> 1 </td>
+			<td>  <span class="caps">POTENTIAL</span> crunch garbage </td>
+		</tr>
+		<tr>
+			<td> crunch_leave_ok_strings </td>
+			<td> 1 </td>
+			<td>  Dont touch sensible strings </td>
+		</tr>
+		<tr>
+			<td> crunch_accept_ok </td>
+			<td> 1 </td>
+			<td>  Use acceptability in okstring </td>
+		</tr>
+		<tr>
+			<td> crunch_leave_accept_strings </td>
+			<td> 0 </td>
+			<td>  Dont pot crunch sensible strings </td>
+		</tr>
+		<tr>
+			<td> crunch_include_numerals </td>
+			<td> 0 </td>
+			<td>  Fiddle alpha figures </td>
+		</tr>
+		<tr>
+			<td> tessedit_prefer_joined_punct </td>
+			<td> 0 </td>
+			<td>  Reward punctation joins </td>
+		</tr>
+		<tr>
+			<td> tessedit_write_block_separators </td>
+			<td> 0 </td>
+			<td>  Write block separators in output </td>
+		</tr>
+		<tr>
+			<td> tessedit_write_rep_codes </td>
+			<td> 0 </td>
+			<td>  Write repetition char code </td>
+		</tr>
+		<tr>
+			<td> tessedit_write_unlv </td>
+			<td> 0 </td>
+			<td>  Write .unlv output file </td>
+		</tr>
+		<tr>
+			<td> tessedit_create_hocr </td>
+			<td> 0 </td>
+			<td>  Write .html hOCR output file </td>
+		</tr>
+		<tr>
+			<td> suspect_constrain_1Il </td>
+			<td> 0 </td>
+			<td>  <span class="caps">UNLV</span> keep 1Il chars rejected </td>
+		</tr>
+		<tr>
+			<td> tessedit_minimal_rejection </td>
+			<td> 0 </td>
+			<td>  Only reject tess failures </td>
+		</tr>
+		<tr>
+			<td> tessedit_zero_rejection </td>
+			<td> 0 </td>
+			<td>  Dont reject <span class="caps">ANYTHING</span> </td>
+		</tr>
+		<tr>
+			<td> tessedit_word_for_word </td>
+			<td> 0 </td>
+			<td>  Make output have exactly one word per <span class="caps">WERD</span> </td>
+		</tr>
+		<tr>
+			<td> tessedit_zero_kelvin_rejection </td>
+			<td> 0 </td>
+			<td>  Dont reject <span class="caps">ANYTHING</span> AT <span class="caps">ALL</span> </td>
+		</tr>
+		<tr>
+			<td> tessedit_consistent_reps </td>
+			<td> 1 </td>
+			<td>  Force all rep chars the same </td>
+		</tr>
+		<tr>
+			<td> tessedit_rejection_debug </td>
+			<td> 0 </td>
+			<td>  Adaption debug </td>
+		</tr>
+		<tr>
+			<td> tessedit_flip_0O </td>
+			<td> 1 </td>
+			<td>  Contextual 0O O0 flips </td>
+		</tr>
+		<tr>
+			<td> rej_trust_doc_dawg </td>
+			<td> 0 </td>
+			<td>  Use <span class="caps">DOC</span> dawg in 11l conf. detector </td>
+		</tr>
+		<tr>
+			<td> rej_1Il_use_dict_word </td>
+			<td> 0 </td>
+			<td>  Use dictword test </td>
+		</tr>
+		<tr>
+			<td> rej_1Il_trust_permuter_type </td>
+			<td> 1 </td>
+			<td>  Dont double check </td>
+		</tr>
+		<tr>
+			<td> rej_use_tess_accepted </td>
+			<td> 1 </td>
+			<td>  Individual rejection control </td>
+		</tr>
+		<tr>
+			<td> rej_use_tess_blanks </td>
+			<td> 1 </td>
+			<td>  Individual rejection control </td>
+		</tr>
+		<tr>
+			<td> rej_use_good_perm </td>
+			<td> 1 </td>
+			<td>  Individual rejection control </td>
+		</tr>
+		<tr>
+			<td> rej_use_sensible_wd </td>
+			<td> 0 </td>
+			<td>  Extend permuter check </td>
+		</tr>
+		<tr>
+			<td> rej_alphas_in_number_perm </td>
+			<td> 0 </td>
+			<td>  Extend permuter check </td>
+		</tr>
+		<tr>
+			<td> tessedit_create_boxfile </td>
+			<td> 0 </td>
+			<td>  Output text with boxes </td>
+		</tr>
+		<tr>
+			<td> tessedit_write_images </td>
+			<td> 0 </td>
+			<td>  Capture the image from the <span class="caps">IPE</span> </td>
+		</tr>
+		<tr>
+			<td> interactive_display_mode </td>
+			<td> 0 </td>
+			<td>  Run interactively? </td>
+		</tr>
+		<tr>
+			<td> tessedit_override_permuter </td>
+			<td> 1 </td>
+			<td>  According to dict_word </td>
+		</tr>
+		<tr>
+			<td> textord_tabfind_show_vlines </td>
+			<td> 0 </td>
+			<td>  Debug line finding </td>
+		</tr>
+		<tr>
+			<td> textord_use_cjk_fp_model </td>
+			<td> 0 </td>
+			<td>  Use <span class="caps">CJK</span> fixed pitch model </td>
+		</tr>
+		<tr>
+			<td> tessedit_init_config_only </td>
+			<td> 0 </td>
+			<td>  Only initialize with the config file. Useful if the instance is not going to be used for <span class="caps">OCR</span> but say only for layout analysis. </td>
+		</tr>
+		<tr>
+			<td> textord_equation_detect </td>
+			<td> 0 </td>
+			<td>  Turn on equation detector </td>
+		</tr>
+		<tr>
+			<td> textord_single_height_mode </td>
+			<td> 0 </td>
+			<td>  Script has no xheight, so use a single mode </td>
+		</tr>
+		<tr>
+			<td> tosp_old_to_method </td>
+			<td> 0 </td>
+			<td>  Space stats use prechopping? </td>
+		</tr>
+		<tr>
+			<td> tosp_old_to_constrain_sp_kn </td>
+			<td> 0 </td>
+			<td>  Constrain relative values of inter and intra-word gaps for old_to_method. </td>
+		</tr>
+		<tr>
+			<td> tosp_only_use_prop_rows </td>
+			<td> 1 </td>
+			<td>  Block stats to use fixed pitch rows? </td>
+		</tr>
+		<tr>
+			<td> tosp_force_wordbreak_on_punct </td>
+			<td> 0 </td>
+			<td>  Force word breaks on punct to break long lines in non-space delimited langs </td>
+		</tr>
+		<tr>
+			<td> tosp_use_pre_chopping </td>
+			<td> 0 </td>
+			<td>  Space stats use prechopping? </td>
+		</tr>
+		<tr>
+			<td> tosp_old_to_bug_fix </td>
+			<td> 0 </td>
+			<td>  Fix suspected bug in old code </td>
+		</tr>
+		<tr>
+			<td> tosp_block_use_cert_spaces </td>
+			<td> 1 </td>
+			<td>  Only stat <span class="caps">OBVIOUS</span> spaces </td>
+		</tr>
+		<tr>
+			<td> tosp_row_use_cert_spaces </td>
+			<td> 1 </td>
+			<td>  Only stat <span class="caps">OBVIOUS</span> spaces </td>
+		</tr>
+		<tr>
+			<td> tosp_narrow_blobs_not_cert </td>
+			<td> 1 </td>
+			<td>  Only stat <span class="caps">OBVIOUS</span> spaces </td>
+		</tr>
+		<tr>
+			<td> tosp_row_use_cert_spaces1 </td>
+			<td> 1 </td>
+			<td>  Only stat <span class="caps">OBVIOUS</span> spaces </td>
+		</tr>
+		<tr>
+			<td> tosp_recovery_isolated_row_stats </td>
+			<td> 1 </td>
+			<td>  Use row alone when inadequate cert spaces </td>
+		</tr>
+		<tr>
+			<td> tosp_only_small_gaps_for_kern </td>
+			<td> 0 </td>
+			<td>  Better guess </td>
+		</tr>
+		<tr>
+			<td> tosp_all_flips_fuzzy </td>
+			<td> 0 </td>
+			<td>  Pass <span class="caps">ANY</span> flip to context? </td>
+		</tr>
+		<tr>
+			<td> tosp_fuzzy_limit_all </td>
+			<td> 1 </td>
+			<td>  Dont restrict kn-&gt;sp fuzzy limit to tables </td>
+		</tr>
+		<tr>
+			<td> tosp_stats_use_xht_gaps </td>
+			<td> 1 </td>
+			<td>  Use within xht gap for wd breaks </td>
+		</tr>
+		<tr>
+			<td> tosp_use_xht_gaps </td>
+			<td> 1 </td>
+			<td>  Use within xht gap for wd breaks </td>
+		</tr>
+		<tr>
+			<td> tosp_only_use_xht_gaps </td>
+			<td> 0 </td>
+			<td>  Only use within xht gap for wd breaks </td>
+		</tr>
+		<tr>
+			<td> tosp_rule_9_test_punct </td>
+			<td> 0 </td>
+			<td>  Dont chng kn to space next to punct </td>
+		</tr>
+		<tr>
+			<td> tosp_flip_fuzz_kn_to_sp </td>
+			<td> 1 </td>
+			<td>  Default flip </td>
+		</tr>
+		<tr>
+			<td> tosp_flip_fuzz_sp_to_kn </td>
+			<td> 1 </td>
+			<td>  Default flip </td>
+		</tr>
+		<tr>
+			<td> tosp_improve_thresh </td>
+			<td> 0 </td>
+			<td>  Enable improvement heuristic </td>
+		</tr>
+		<tr>
+			<td> textord_no_rejects </td>
+			<td> 0 </td>
+			<td>  Don&#8217;t remove noise blobs </td>
+		</tr>
+		<tr>
+			<td> textord_show_blobs </td>
+			<td> 0 </td>
+			<td>  Display unsorted blobs </td>
+		</tr>
+		<tr>
+			<td> textord_show_boxes </td>
+			<td> 0 </td>
+			<td>  Display unsorted blobs </td>
+		</tr>
+		<tr>
+			<td> textord_noise_rejwords </td>
+			<td> 1 </td>
+			<td>  Reject noise-like words </td>
+		</tr>
+		<tr>
+			<td> textord_noise_rejrows </td>
+			<td> 1 </td>
+			<td>  Reject noise-like rows </td>
+		</tr>
+		<tr>
+			<td> textord_noise_debug </td>
+			<td> 0 </td>
+			<td>  Debug row garbage detector </td>
+		</tr>
+		<tr>
+			<td> m_data_sub_dir </td>
+			<td> tessdata/ </td>
+			<td>  Directory for data files </td>
+		</tr>
+		<tr>
+			<td> classify_learn_debug_str </td>
+			<td>  </td>
+			<td>  Class str to debug learning </td>
+		</tr>
+		<tr>
+			<td> user_words_suffix </td>
+			<td>  </td>
+			<td>  A list of user-provided words. </td>
+		</tr>
+		<tr>
+			<td> user_patterns_suffix </td>
+			<td>  </td>
+			<td>  A list of user-provided patterns. </td>
+		</tr>
+		<tr>
+			<td> output_ambig_words_file </td>
+			<td>  </td>
+			<td>  Output file for ambiguities found in the dictionary </td>
+		</tr>
+		<tr>
+			<td> word_to_debug </td>
+			<td>  </td>
+			<td>  Word for which stopper debug information should be printed to stdout </td>
+		</tr>
+		<tr>
+			<td> word_to_debug_lengths </td>
+			<td>  </td>
+			<td>  Lengths of unichars in word_to_debug </td>
+		</tr>
+		<tr>
+			<td> tessedit_char_blacklist </td>
+			<td>  </td>
+			<td>  Blacklist of chars not to recognize </td>
+		</tr>
+		<tr>
+			<td> tessedit_char_whitelist </td>
+			<td>  </td>
+			<td>  Whitelist of chars to recognize </td>
+		</tr>
+		<tr>
+			<td> tessedit_write_params_to_file </td>
+			<td>  </td>
+			<td>  Write all parameters to the given file. </td>
+		</tr>
+		<tr>
+			<td> applybox_exposure_pattern </td>
+			<td> .exp </td>
+			<td>  Exposure value follows this pattern in the image filename. The name of the image files are expected to be in the form [lang].[fontname].exp[num].tif </td>
+		</tr>
+		<tr>
+			<td> chs_leading_punct </td>
+			<td> (&#8217;`&#8221; </td>
+			<td>  Leading punctuation </td>
+		</tr>
+		<tr>
+			<td> chs_trailing_punct1 </td>
+			<td> ).,;:?! </td>
+			<td>  1st Trailing punctuation </td>
+		</tr>
+		<tr>
+			<td> chs_trailing_punct2 </td>
+			<td> )&#8217;`&#8221; </td>
+			<td>  2nd Trailing punctuation </td>
+		</tr>
+		<tr>
+			<td> outlines_odd </td>
+			<td> %&#124;  </td>
+			<td>  Non standard number of outlines </td>
+		</tr>
+		<tr>
+			<td> outlines_2 </td>
+			<td> ij!?%&#8221;:; </td>
+			<td>  Non standard number of outlines </td>
+		</tr>
+		<tr>
+			<td> numeric_punctuation </td>
+			<td> ., </td>
+			<td>  Punct. chs expected <span class="caps">WITHIN</span> numbers </td>
+		</tr>
+		<tr>
+			<td> unrecognised_char </td>
+			<td> &#124; </td>
+			<td>  Output char for unidentified blobs </td>
+		</tr>
+		<tr>
+			<td> ok_repeated_ch_non_alphanum_wds </td>
+			<td> -?*= </td>
+			<td>  Allow NN to unrej </td>
+		</tr>
+		<tr>
+			<td> conflict_set_I_l_1 </td>
+			<td> Il1[] </td>
+			<td>  Il1 conflict set </td>
+		</tr>
+		<tr>
+			<td> file_type </td>
+			<td> .tif </td>
+			<td>  Filename extension </td>
+		</tr>
+		<tr>
+			<td> tessedit_load_sublangs </td>
+			<td>  </td>
+			<td>  List of languages to load with this one </td>
+		</tr>
+		<tr>
+			<td> classify_char_norm_range </td>
+			<td> 0.2 </td>
+			<td>  Character Normalization Range &#8230; </td>
+		</tr>
+		<tr>
+			<td> classify_min_norm_scale_x </td>
+			<td> 0 </td>
+			<td>  Min char x-norm scale &#8230; </td>
+		</tr>
+		<tr>
+			<td> classify_max_norm_scale_x </td>
+			<td> 0.325 </td>
+			<td>  Max char x-norm scale &#8230; </td>
+		</tr>
+		<tr>
+			<td> classify_min_norm_scale_y </td>
+			<td> 0 </td>
+			<td>  Min char y-norm scale &#8230; </td>
+		</tr>
+		<tr>
+			<td> classify_max_norm_scale_y </td>
+			<td> 0.325 </td>
+			<td>  Max char y-norm scale &#8230; </td>
+		</tr>
+		<tr>
+			<td> matcher_good_threshold </td>
+			<td> 0.125 </td>
+			<td>  Good Match (0-1) </td>
+		</tr>
+		<tr>
+			<td> matcher_great_threshold </td>
+			<td> 0 </td>
+			<td>  Great Match (0-1) </td>
+		</tr>
+		<tr>
+			<td> matcher_perfect_threshold </td>
+			<td> 0.02 </td>
+			<td>  Perfect Match (0-1) </td>
+		</tr>
+		<tr>
+			<td> matcher_bad_match_pad </td>
+			<td> 0.15 </td>
+			<td>  Bad Match Pad (0-1) </td>
+		</tr>
+		<tr>
+			<td> matcher_rating_margin </td>
+			<td> 0.1 </td>
+			<td>  New template margin (0-1) </td>
+		</tr>
+		<tr>
+			<td> matcher_avg_noise_size </td>
+			<td> 12 </td>
+			<td>  Avg. noise blob length </td>
+		</tr>
+		<tr>
+			<td> matcher_clustering_max_angle_delta </td>
+			<td> 0.015 </td>
+			<td>  Maximum angle delta for prototype clustering </td>
+		</tr>
+		<tr>
+			<td> classify_misfit_junk_penalty </td>
+			<td> 0 </td>
+			<td>  Penalty to apply when a non-alnum is vertically out of its expected textline position </td>
+		</tr>
+		<tr>
+			<td> rating_scale </td>
+			<td> 1.5 </td>
+			<td>  Rating scaling factor </td>
+		</tr>
+		<tr>
+			<td> certainty_scale </td>
+			<td> 20 </td>
+			<td>  Certainty scaling factor </td>
+		</tr>
+		<tr>
+			<td> tessedit_class_miss_scale </td>
+			<td> 0.00390625 </td>
+			<td>  Scale factor for features not used </td>
+		</tr>
+		<tr>
+			<td> classify_character_fragments_garbage_certainty_threshold </td>
+			<td> -3 </td>
+			<td>  Exclude fragments that do not look like whole characters from training and adaption </td>
+		</tr>
+		<tr>
+			<td> segment_penalty_dict_frequent_word </td>
+			<td> 1 </td>
+			<td>  Score multiplier for word matches which have good case andare frequent in the given language (lower is better). </td>
+		</tr>
+		<tr>
+			<td> segment_penalty_dict_case_ok </td>
+			<td> 1.1 </td>
+			<td>  Score multiplier for word matches that have good case (lower is better). </td>
+		</tr>
+		<tr>
+			<td> segment_penalty_dict_case_bad </td>
+			<td> 1.3125 </td>
+			<td>  Default score multiplier for word matches, which may have case issues (lower is better). </td>
+		</tr>
+		<tr>
+			<td> segment_penalty_ngram_best_choice </td>
+			<td> 1.24 </td>
+			<td>  Multipler to for the best choice from the ngram model. </td>
+		</tr>
+		<tr>
+			<td> segment_penalty_dict_nonword </td>
+			<td> 1.25 </td>
+			<td>  Score multiplier for glyph fragment segmentations which do not match a dictionary word (lower is better). </td>
+		</tr>
+		<tr>
+			<td> segment_penalty_garbage </td>
+			<td> 1.5 </td>
+			<td>  Score multiplier for poorly cased strings that are not in the dictionary and generally look like garbage (lower is better). </td>
+		</tr>
+		<tr>
+			<td> certainty_scale </td>
+			<td> 20 </td>
+			<td>  Certainty scaling factor </td>
+		</tr>
+		<tr>
+			<td> stopper_nondict_certainty_base </td>
+			<td> -2.5 </td>
+			<td>  Certainty threshold for non-dict words </td>
+		</tr>
+		<tr>
+			<td> stopper_phase2_certainty_rejection_offset </td>
+			<td> 1 </td>
+			<td>  Reject certainty offset </td>
+		</tr>
+		<tr>
+			<td> stopper_certainty_per_char </td>
+			<td> -0.5 </td>
+			<td>  Certainty to add for each dict char above small word size. </td>
+		</tr>
+		<tr>
+			<td> stopper_allowable_character_badness </td>
+			<td> 3 </td>
+			<td>  Max certaintly variation allowed in a word (in sigma) </td>
+		</tr>
+		<tr>
+			<td> stopper_ambiguity_threshold_gain </td>
+			<td> 8 </td>
+			<td>  Gain factor for ambiguity threshold. </td>
+		</tr>
+		<tr>
+			<td> stopper_ambiguity_threshold_offset </td>
+			<td> 1.5 </td>
+			<td>  Certainty offset for ambiguity threshold. </td>
+		</tr>
+		<tr>
+			<td> bestrate_pruning_factor </td>
+			<td> 2 </td>
+			<td>  Multiplying factor of current best rate to prune other hypotheses </td>
+		</tr>
+		<tr>
+			<td> segment_reward_script </td>
+			<td> 0.95 </td>
+			<td>  Score multipler for script consistency within a word. Being a &#8216;reward&#8217; factor, it should be &lt;= 1. Smaller value implies bigger reward. </td>
+		</tr>
+		<tr>
+			<td> segment_reward_chartype </td>
+			<td> 0.97 </td>
+			<td>  Score multipler for char type consistency within a word.  </td>
+		</tr>
+		<tr>
+			<td> segment_reward_ngram_best_choice </td>
+			<td> 0.99 </td>
+			<td>  Score multipler for ngram permuter&#8217;s best choice (only used in the Han script path). </td>
+		</tr>
+		<tr>
+			<td> doc_dict_pending_threshold </td>
+			<td> 0 </td>
+			<td>  Worst certainty for using pending dictionary </td>
+		</tr>
+		<tr>
+			<td> doc_dict_certainty_threshold </td>
+			<td> -2.25 </td>
+			<td>  Worst certainty for words that can be inserted into thedocument dictionary </td>
+		</tr>
+		<tr>
+			<td> wordrec_worst_state </td>
+			<td> 1 </td>
+			<td>  Worst segmentation state </td>
+		</tr>
+		<tr>
+			<td> tessedit_certainty_threshold </td>
+			<td> -2.25 </td>
+			<td>  Good blob limit </td>
+		</tr>
+		<tr>
+			<td> chop_split_dist_knob </td>
+			<td> 0.5 </td>
+			<td>  Split length adjustment </td>
+		</tr>
+		<tr>
+			<td> chop_overlap_knob </td>
+			<td> 0.9 </td>
+			<td>  Split overlap adjustment </td>
+		</tr>
+		<tr>
+			<td> chop_center_knob </td>
+			<td> 0.15 </td>
+			<td>  Split center adjustment </td>
+		</tr>
+		<tr>
+			<td> chop_sharpness_knob </td>
+			<td> 0.06 </td>
+			<td>  Split sharpness adjustment </td>
+		</tr>
+		<tr>
+			<td> chop_width_change_knob </td>
+			<td> 5 </td>
+			<td>  Width change adjustment </td>
+		</tr>
+		<tr>
+			<td> chop_ok_split </td>
+			<td> 100 </td>
+			<td>  OK split limit </td>
+		</tr>
+		<tr>
+			<td> chop_good_split </td>
+			<td> 50 </td>
+			<td>  Good split limit </td>
+		</tr>
+		<tr>
+			<td> heuristic_segcost_rating_base </td>
+			<td> 1.25 </td>
+			<td>  base factor for adding segmentation cost into word rating.It&#8217;s a multiplying factor, the larger the value above 1, the bigger the effect of segmentation cost. </td>
+		</tr>
+		<tr>
+			<td> heuristic_weight_rating </td>
+			<td> 1 </td>
+			<td>  weight associated with char rating in combined cost of state </td>
+		</tr>
+		<tr>
+			<td> heuristic_weight_width </td>
+			<td> 1000 </td>
+			<td>  weight associated with width evidence in combined cost of state </td>
+		</tr>
+		<tr>
+			<td> heuristic_weight_seamcut </td>
+			<td> 0 </td>
+			<td>  weight associated with seam cut in combined cost of state </td>
+		</tr>
+		<tr>
+			<td> heuristic_max_char_wh_ratio </td>
+			<td> 2 </td>
+			<td>  max char width-to-height ratio allowed in segmentation </td>
+		</tr>
+		<tr>
+			<td> segsearch_max_char_wh_ratio </td>
+			<td> 2 </td>
+			<td>  Maximum character width-to-height ratio </td>
+		</tr>
+		<tr>
+			<td> segsearch_max_fixed_pitch_char_wh_ratio </td>
+			<td> 2 </td>
+			<td>  Maximum character width-to-height ratio for fixed-pitch fonts </td>
+		</tr>
+		<tr>
+			<td> language_model_ngram_small_prob </td>
+			<td> 0,000001 </td>
+			<td>  To avoid overly small denominators use this as the floor of the probability returned by the ngram model. </td>
+		</tr>
+		<tr>
+			<td> language_model_ngram_nonmatch_score </td>
+			<td> -40 </td>
+			<td>  Average classifier score of a non-matching unichar. </td>
+		</tr>
+		<tr>
+			<td> language_model_ngram_scale_factor </td>
+			<td> 0.03 </td>
+			<td>  Strength of the character ngram model relative to the character classifier  </td>
+		</tr>
+		<tr>
+			<td> language_model_penalty_non_freq_dict_word </td>
+			<td> 0.1 </td>
+			<td>  Penalty for words not in the frequent word dictionary </td>
+		</tr>
+		<tr>
+			<td> language_model_penalty_non_dict_word </td>
+			<td> 0.15 </td>
+			<td>  Penalty for non-dictionary words </td>
+		</tr>
+		<tr>
+			<td> language_model_penalty_punc </td>
+			<td> 0.2 </td>
+			<td>  Penalty for inconsistent punctuation </td>
+		</tr>
+		<tr>
+			<td> language_model_penalty_case </td>
+			<td> 0.1 </td>
+			<td>  Penalty for inconsistent case </td>
+		</tr>
+		<tr>
+			<td> language_model_penalty_script </td>
+			<td> 0.5 </td>
+			<td>  Penalty for inconsistent script </td>
+		</tr>
+		<tr>
+			<td> language_model_penalty_chartype </td>
+			<td> 0.3 </td>
+			<td>  Penalty for inconsistent character type </td>
+		</tr>
+		<tr>
+			<td> language_model_penalty_font </td>
+			<td> 0 </td>
+			<td>  Penalty for inconsistent font </td>
+		</tr>
+		<tr>
+			<td> language_model_penalty_spacing </td>
+			<td> 0.05 </td>
+			<td>  Penalty for inconsistent spacing </td>
+		</tr>
+		<tr>
+			<td> language_model_penalty_increment </td>
+			<td> 0.01 </td>
+			<td>  Penalty increment </td>
+		</tr>
+		<tr>
+			<td> quality_rej_pc </td>
+			<td> 0.08 </td>
+			<td>  good_quality_doc lte rejection limit </td>
+		</tr>
+		<tr>
+			<td> quality_blob_pc </td>
+			<td> 0 </td>
+			<td>  good_quality_doc gte good blobs limit </td>
+		</tr>
+		<tr>
+			<td> quality_outline_pc </td>
+			<td> 1 </td>
+			<td>  good_quality_doc lte outline error limit </td>
+		</tr>
+		<tr>
+			<td> quality_char_pc </td>
+			<td> 0.95 </td>
+			<td>  good_quality_doc gte good char limit </td>
+		</tr>
+		<tr>
+			<td> test_pt_x </td>
+			<td> 100000 </td>
+			<td>  xcoord </td>
+		</tr>
+		<tr>
+			<td> test_pt_y </td>
+			<td> 100000 </td>
+			<td>  ycoord </td>
+		</tr>
+		<tr>
+			<td> tessedit_reject_doc_percent </td>
+			<td> 65 </td>
+			<td>  %rej allowed before rej whole doc </td>
+		</tr>
+		<tr>
+			<td> tessedit_reject_block_percent </td>
+			<td> 45 </td>
+			<td>  %rej allowed before rej whole block </td>
+		</tr>
+		<tr>
+			<td> tessedit_reject_row_percent </td>
+			<td> 40 </td>
+			<td>  %rej allowed before rej whole row </td>
+		</tr>
+		<tr>
+			<td> tessedit_whole_wd_rej_row_percent </td>
+			<td> 70 </td>
+			<td>  Number of row rejects in whole word rejectswhich prevents whole row rejection </td>
+		</tr>
+		<tr>
+			<td> tessedit_good_doc_still_rowrej_wd </td>
+			<td> 1.1 </td>
+			<td>  rej good doc wd if more than this fraction rejected </td>
+		</tr>
+		<tr>
+			<td> quality_rowrej_pc </td>
+			<td> 1.1 </td>
+			<td>  good_quality_doc gte good char limit </td>
+		</tr>
+		<tr>
+			<td> crunch_terrible_rating </td>
+			<td> 80 </td>
+			<td>  crunch rating lt this </td>
+		</tr>
+		<tr>
+			<td> crunch_poor_garbage_cert </td>
+			<td> -9 </td>
+			<td>  crunch garbage cert lt this </td>
+		</tr>
+		<tr>
+			<td> crunch_poor_garbage_rate </td>
+			<td> 60 </td>
+			<td>  crunch garbage rating lt this </td>
+		</tr>
+		<tr>
+			<td> crunch_pot_poor_rate </td>
+			<td> 40 </td>
+			<td>  <span class="caps">POTENTIAL</span> crunch rating lt this </td>
+		</tr>
+		<tr>
+			<td> crunch_pot_poor_cert </td>
+			<td> -8 </td>
+			<td>  <span class="caps">POTENTIAL</span> crunch cert lt this </td>
+		</tr>
+		<tr>
+			<td> crunch_del_rating </td>
+			<td> 60 </td>
+			<td>  <span class="caps">POTENTIAL</span> crunch rating lt this </td>
+		</tr>
+		<tr>
+			<td> crunch_del_cert </td>
+			<td> -10 </td>
+			<td>  <span class="caps">POTENTIAL</span> crunch cert lt this </td>
+		</tr>
+		<tr>
+			<td> crunch_del_min_ht </td>
+			<td> 0.7 </td>
+			<td>  Del if word ht lt xht x this </td>
+		</tr>
+		<tr>
+			<td> crunch_del_max_ht </td>
+			<td> 3 </td>
+			<td>  Del if word ht gt xht x this </td>
+		</tr>
+		<tr>
+			<td> crunch_del_min_width </td>
+			<td> 3 </td>
+			<td>  Del if word width lt xht x this </td>
+		</tr>
+		<tr>
+			<td> crunch_del_high_word </td>
+			<td> 1.5 </td>
+			<td>  Del if word gt xht x this above bl </td>
+		</tr>
+		<tr>
+			<td> crunch_del_low_word </td>
+			<td> 0.5 </td>
+			<td>  Del if word gt xht x this below bl </td>
+		</tr>
+		<tr>
+			<td> crunch_small_outlines_size </td>
+			<td> 0.6 </td>
+			<td>  Small if lt xht x this </td>
+		</tr>
+		<tr>
+			<td> fixsp_small_outlines_size </td>
+			<td> 0.28 </td>
+			<td>  Small if lt xht x this </td>
+		</tr>
+		<tr>
+			<td> suspect_rating_per_ch </td>
+			<td> 999.9 </td>
+			<td>  Dont touch bad rating limit </td>
+		</tr>
+		<tr>
+			<td> suspect_accept_rating </td>
+			<td> -999.9 </td>
+			<td>  Accept good rating limit </td>
+		</tr>
+		<tr>
+			<td> tessedit_lower_flip_hyphen </td>
+			<td> 1.5 </td>
+			<td>  Aspect ratio dot/hyphen test </td>
+		</tr>
+		<tr>
+			<td> tessedit_upper_flip_hyphen </td>
+			<td> 1.8 </td>
+			<td>  Aspect ratio dot/hyphen test </td>
+		</tr>
+		<tr>
+			<td> rej_whole_of_mostly_reject_word_fract </td>
+			<td> 0.85 </td>
+			<td>  if &gt;this fract </td>
+		</tr>
+		<tr>
+			<td> min_orientation_margin </td>
+			<td> 7 </td>
+			<td>  Min acceptable orientation margin </td>
+		</tr>
+		<tr>
+			<td> tosp_old_sp_kn_th_factor </td>
+			<td> 2 </td>
+			<td>  Factor for defining space threshold in terms of space and kern sizes </td>
+		</tr>
+		<tr>
+			<td> tosp_threshold_bias1 </td>
+			<td> 0 </td>
+			<td>  how far between kern and space? </td>
+		</tr>
+		<tr>
+			<td> tosp_threshold_bias2 </td>
+			<td> 0 </td>
+			<td>  how far between kern and space? </td>
+		</tr>
+		<tr>
+			<td> tosp_narrow_fraction </td>
+			<td> 0.3 </td>
+			<td>  Fract of xheight for narrow </td>
+		</tr>
+		<tr>
+			<td> tosp_narrow_aspect_ratio </td>
+			<td> 0.48 </td>
+			<td>  narrow if w/h less than this </td>
+		</tr>
+		<tr>
+			<td> tosp_wide_fraction </td>
+			<td> 0.52 </td>
+			<td>  Fract of xheight for wide </td>
+		</tr>
+		<tr>
+			<td> tosp_wide_aspect_ratio </td>
+			<td> 0 </td>
+			<td>  wide if w/h less than this </td>
+		</tr>
+		<tr>
+			<td> tosp_fuzzy_space_factor </td>
+			<td> 0.6 </td>
+			<td>  Fract of xheight for fuzz sp </td>
+		</tr>
+		<tr>
+			<td> tosp_fuzzy_space_factor1 </td>
+			<td> 0.5 </td>
+			<td>  Fract of xheight for fuzz sp </td>
+		</tr>
+		<tr>
+			<td> tosp_fuzzy_space_factor2 </td>
+			<td> 0.72 </td>
+			<td>  Fract of xheight for fuzz sp </td>
+		</tr>
+		<tr>
+			<td> tosp_gap_factor </td>
+			<td> 0.83 </td>
+			<td>  gap ratio to flip sp-&gt;kern </td>
+		</tr>
+		<tr>
+			<td> tosp_kern_gap_factor1 </td>
+			<td> 2 </td>
+			<td>  gap ratio to flip kern-&gt;sp </td>
+		</tr>
+		<tr>
+			<td> tosp_kern_gap_factor2 </td>
+			<td> 1.3 </td>
+			<td>  gap ratio to flip kern-&gt;sp </td>
+		</tr>
+		<tr>
+			<td> tosp_kern_gap_factor3 </td>
+			<td> 2.5 </td>
+			<td>  gap ratio to flip kern-&gt;sp </td>
+		</tr>
+		<tr>
+			<td> tosp_ignore_big_gaps </td>
+			<td> -1 </td>
+			<td>  xht multiplier </td>
+		</tr>
+		<tr>
+			<td> tosp_ignore_very_big_gaps </td>
+			<td> 3.5 </td>
+			<td>  xht multiplier </td>
+		</tr>
+		<tr>
+			<td> tosp_rep_space </td>
+			<td> 1.6 </td>
+			<td>  rep gap multiplier for space </td>
+		</tr>
+		<tr>
+			<td> tosp_enough_small_gaps </td>
+			<td> 0.65 </td>
+			<td>  Fract of kerns reqd for isolated row stats </td>
+		</tr>
+		<tr>
+			<td> tosp_table_kn_sp_ratio </td>
+			<td> 2.25 </td>
+			<td>  Min difference of kn &amp; sp in table </td>
+		</tr>
+		<tr>
+			<td> tosp_table_xht_sp_ratio </td>
+			<td> 0.33 </td>
+			<td>  Expect spaces bigger than this </td>
+		</tr>
+		<tr>
+			<td> tosp_table_fuzzy_kn_sp_ratio </td>
+			<td> 3 </td>
+			<td>  Fuzzy if less than this </td>
+		</tr>
+		<tr>
+			<td> tosp_fuzzy_kn_fraction </td>
+			<td> 0.5 </td>
+			<td>  New fuzzy kn alg </td>
+		</tr>
+		<tr>
+			<td> tosp_fuzzy_sp_fraction </td>
+			<td> 0.5 </td>
+			<td>  New fuzzy sp alg </td>
+		</tr>
+		<tr>
+			<td> tosp_min_sane_kn_sp </td>
+			<td> 1.5 </td>
+			<td>  Dont trust spaces less than this time kn </td>
+		</tr>
+		<tr>
+			<td> tosp_init_guess_kn_mult </td>
+			<td> 2.2 </td>
+			<td>  Thresh guess &#8211; mult kn by this </td>
+		</tr>
+		<tr>
+			<td> tosp_init_guess_xht_mult </td>
+			<td> 0.28 </td>
+			<td>  Thresh guess &#8211; mult xht by this </td>
+		</tr>
+		<tr>
+			<td> tosp_max_sane_kn_thresh </td>
+			<td> 5 </td>
+			<td>  Multiplier on kn to limit thresh </td>
+		</tr>
+		<tr>
+			<td> tosp_flip_caution </td>
+			<td> 0 </td>
+			<td>  Dont autoflip kn to sp when large separation </td>
+		</tr>
+		<tr>
+			<td> tosp_large_kerning </td>
+			<td> 0.19 </td>
+			<td>  Limit use of xht gap with large kns </td>
+		</tr>
+		<tr>
+			<td> tosp_dont_fool_with_small_kerns </td>
+			<td> -1 </td>
+			<td>  Limit use of xht gap with odd small kns </td>
+		</tr>
+		<tr>
+			<td> tosp_near_lh_edge </td>
+			<td> 0 </td>
+			<td>  Dont reduce box if the top left is non blank </td>
+		</tr>
+		<tr>
+			<td> tosp_silly_kn_sp_gap </td>
+			<td> 0.2 </td>
+			<td>  Dont let sp minus kn get too small </td>
+		</tr>
+		<tr>
+			<td> tosp_pass_wide_fuzz_sp_to_context </td>
+			<td> 0.75 </td>
+			<td>  How wide fuzzies need context </td>
+		</tr>
+		<tr>
+			<td> textord_blob_size_bigile </td>
+			<td> 95 </td>
+			<td>  Percentile for large blobs </td>
+		</tr>
+		<tr>
+			<td> textord_noise_area_ratio </td>
+			<td> 0.7 </td>
+			<td>  Fraction of bounding box for noise </td>
+		</tr>
+		<tr>
+			<td> textord_blob_size_smallile </td>
+			<td> 20 </td>
+			<td>  Percentile for small blobs </td>
+		</tr>
+		<tr>
+			<td> textord_initialx_ile </td>
+			<td> 0.75 </td>
+			<td>  Ile of sizes for xheight guess </td>
+		</tr>
+		<tr>
+			<td> textord_initialasc_ile </td>
+			<td> 0.9 </td>
+			<td>  Ile of sizes for xheight guess </td>
+		</tr>
+		<tr>
+			<td> textord_noise_sizelimit </td>
+			<td> 0.5 </td>
+			<td>  Fraction of x for big t count </td>
+		</tr>
+		<tr>
+			<td> textord_noise_normratio </td>
+			<td> 2 </td>
+			<td>  Dot to norm ratio for deletion </td>
+		</tr>
+		<tr>
+			<td> textord_noise_syfract </td>
+			<td> 0.2 </td>
+			<td>  xh fract height error for norm blobs </td>
+		</tr>
+		<tr>
+			<td> textord_noise_sxfract </td>
+			<td> 0.4 </td>
+			<td>  xh fract width error for norm blobs </td>
+		</tr>
+		<tr>
+			<td> textord_noise_hfract </td>
+			<td> 0.015625 </td>
+			<td>  Height fraction to discard outlines as speckle noise </td>
+		</tr>
+		<tr>
+			<td> textord_noise_rowratio </td>
+			<td> 6 </td>
+			<td>  Dot to norm ratio for deletion </td>
+		</tr>
+		<tr>
+			<td> textord_blshift_maxshift </td>
+			<td> 0 </td>
+			<td>  Max baseline shift </td>
+		</tr>
+		<tr>
+			<td> textord_blshift_xfraction </td>
+			<td> 9.99 </td>
+			<td>  Min size of baseline shift </td>
+		</tr>
+	</table>
+
+	<p class="add"><script type="text/javascript" style="margin-left: -180px"><!--
+google_ad_client = "pub-4407908224822840";
+/* 728x90, bola vytvorená 12.7.2009 */
+google_ad_slot = "5249627313";
+google_ad_width = 728;
+google_ad_height = 90;
+//-->
+</script>
+<script type="text/javascript" style="margin-left: -180px"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script><br />
+<script src="files/sorttable.js"></script></p>
+
+</div> <!-- close entrytext -->
+
+</div> <!-- close post -->
+
+<div class="navigation">
+
+<a rel="prev" href="http://www.sk-spell.sk.cx/through-tesseract-ocr-eye" title="through tesseract-ocr eye">&laquo; through tesseract-ocr eye</a>
+
+|  <a rel="tesseract-ocr-en" href="http://www.sk-spell.sk.cx/tesseract-ocr-en ">Tesseract-ocr-en (in English)</a>
+
+| <a rel="home" href="http://www.sk-spell.sk.cx/">Main site (in Slovak)</a> |
+
+<a rel="next" href="http://www.sk-spell.sk.cx/tesseract-ocr-extending-documentation" title="tesseract-ocr: extending documentation">tesseract-ocr: extending documentation &raquo;</a>
+
+</div> <!-- close navigation -->
+
+
+
+</div> <!-- end content -->
+
+<div class="clearing">&nbsp;</div>
+
+</div> <!-- end everything -->
+
+</body>
+</html>
