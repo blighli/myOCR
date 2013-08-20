@@ -28,7 +28,7 @@ void CubeWidget::resizeGL( int w, int h )
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	gluLookAt(
-		0.0, 0.0, 5.0, // eye location
+		5.0, 5.0, 5.0, // eye location
 		0.0, 0.0, 0.0, // center location
 		0.0, 1.0, 0.0); // up vector
 }
@@ -91,9 +91,7 @@ void CubeWidget::paintGL()
 	glVertex3f( -0.5, -0.5, -0.5 );
 	glEnd();
 
-	//glutWireTeapot(5);
-
-	//glFlush();
+	glFlush();
 	//glutSwapBuffers();
 
 }
