@@ -107,6 +107,12 @@ MainWindow::MainWindow()
 	toolBarImage->addAction(actionRecognizeText);
 	toolBarImage->addSeparator();
 	toolBarImage->addAction(actionEnableChinese);
+
+	QComboBox* recognizeMethods = new QComboBox();
+	recognizeMethods->addItem(tr("Chinese and English"),QVariant(0));
+	recognizeMethods->addItem(tr("Number Only"),QVariant(1));
+	recognizeMethods->addItem(tr("ABBYY"),QVariant(2));
+	toolBarImage->addWidget(recognizeMethods);
 }
 
 MainWindow::~MainWindow()
@@ -307,8 +313,22 @@ void MainWindow::processImage()
 		cvReleaseImage(&mImage);
 		mImage = grayImage;
 	}
+
+	//IplImage* binaryImage = cvCreateImage(cvGetSize(mImage), 8, 1);
+	//cvThreshold(mImage, binaryImage, 120, 255, CV_THRESH_BINARY);
+	////cvAdaptiveThreshold(mImage, binaryImage, 255);
+	//cvReleaseImage(&mImage);
+	//mImage = binaryImage;
+
+	//IplImage* erodedImage = cvCreateImage(cvGetSize(mImage), 8, 1);
+	//cvErode(mImage, erodedImage);
+	//cvReleaseImage(&mImage);
+	//mImage = erodedImage;
 	
-	//cvAdaptiveThreshold(mImage, mImage, 255);
+	//IplImage* dialatedImage = cvCreateImage(cvGetSize(mImage), 8, 1);
+	//cvDilate(mImage,dialatedImage);
+	//cvReleaseImage(&mImage);
+	//mImage = dialatedImage;
 
 	QImage* image = ImageAdapter::IplImage2QImage(mImage);
 	imageWidget->setImage(image);

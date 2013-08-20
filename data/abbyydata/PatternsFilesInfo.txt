@@ -1,0 +1,19 @@
+Patterns file				Accepted languages
+----------------------------------------------------------------------------
+
+European.rom				LID_Afrikaans, LID_Albanian, LID_Basque, LID_Breton, LID_Bulgarian, LID_Byelorussian, 
+							LID_Catalan, LID_Chechen, LID_CrimeanTatar, LID_Croatian, LID_Czech, LID_Danish, LID_Dutch, 
+							LID_DutchBelgian, LID_English, LID_Estonian, LID_Fijian, LID_Finnish, LID_French, 
+							LID_German, LID_GermanNewSpelling, LID_Greek, LID_Hawaiian, LID_Hungarian, LID_Icelandic, 
+							LID_Indonesian, LID_Irish, LID_Italian, LID_Kabardian, LID_Latin, LID_Latvian, 
+							LID_Lithuanian, LID_Macedonian, LID_Malay, LID_Maori, LID_Mixed, LID_Moldavian, LID_Mongol, 
+							LID_Norwegian, LID_NorwegianBokmal, LID_NorwegianNynorsk, LID_Ossetic, LID_Polish, 
+							LID_Portuguese, LID_PortugueseBrazilian, LID_Provencal, LID_RhaetoRomanic, LID_Romanian, 
+							LID_Russian, LID_Samoan, LID_Serbian, LID_Slovak, LID_Slovenian, LID_Spanish, LID_Swahili, 
+							LID_Swedish,  LID_Tagalog, LID_Tatar, LID_Turkish, LID_Ukrainian, LID_Welsh, LID_Yiddish, 
+							LID_Digits, LID_WestEuropean
+
+ChineseJapanese.rom			LID_ChineseSimplified, LID_ChineseTraditional, LID_Japanese
+
+KoreanSpecific.rom			LID_Korean
+ + ChineseJapanese.rom
