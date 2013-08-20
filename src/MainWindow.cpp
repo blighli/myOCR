@@ -442,7 +442,7 @@ void MainWindow::recognizeText()
 				QRect rect = masks->at(i);
 				tessBaseAPI->SetRectangle(rect.x(), rect.y(), rect.width(), rect.height());
 
-				boxes = tessBaseAPI->GetComponentImages(tesseract::RIL_BLOCK, true, NULL, NULL);
+				boxes = tessBaseAPI->GetComponentImages(tesseract::RIL_SYMBOL, true, NULL, NULL);
 				if(boxes)
 				{
 					for(int i = 0; i< boxes->n; i++)
