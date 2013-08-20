@@ -209,19 +209,19 @@ void ImageWidget::mousePressEvent(QMouseEvent *event)
 	mDrawMesureLines = true;
 	mCurrentMousePos = event->pos();
 
-	if(mEnableMasks && mCurrentMask == NULL)
+	if(mImage && mEnableMasks && mCurrentMask == NULL)
 	{
-		if(mCurrentMousePos.x() > mImage->width() + mImagePadding)
+		if(mCurrentMousePos.x() >= mImage->width() + mImagePadding)
 		{
-			mCurrentMousePos.setX(mImage->width() + mImagePadding);
+			mCurrentMousePos.setX(mImage->width() + mImagePadding - 1);
 		}
 		if(mCurrentMousePos.x() < mImagePadding)
 		{
 			mCurrentMousePos.setX(mImagePadding);
 		}
-		if(mCurrentMousePos.y() > mImage->height() + mImagePadding)
+		if(mCurrentMousePos.y() >= mImage->height() + mImagePadding)
 		{
-			mCurrentMousePos.setY(mImage->height() + mImagePadding);
+			mCurrentMousePos.setY(mImage->height() + mImagePadding - 1);
 		}
 		if(mCurrentMousePos.y() < mImagePadding)
 		{
@@ -240,7 +240,7 @@ void ImageWidget::mouseReleaseEvent(QMouseEvent *event)
 {
 	mDrawMesureLines = false;
 
-	if(mEnableMasks && mCurrentMask)
+	if(mImage && mEnableMasks && mCurrentMask)
 	{
 		mMasks->push_back(*mCurrentMask);
 		delete mCurrentMask;
@@ -254,19 +254,19 @@ void ImageWidget::mouseMoveEvent(QMouseEvent *event)
 {
 	mCurrentMousePos = event->pos();
 
-	if(mEnableMasks && mCurrentMask)
+	if(mImage && mEnableMasks && mCurrentMask)
 	{
-		if(mCurrentMousePos.x() > mImage->width() + mImagePadding)
+		if(mCurrentMousePos.x() >= mImage->width() + mImagePadding)
 		{
-			mCurrentMousePos.setX(mImage->width() + mImagePadding);
+			mCurrentMousePos.setX(mImage->width() + mImagePadding - 1);
 		}
 		if(mCurrentMousePos.x() < mImagePadding)
 		{
 			mCurrentMousePos.setX(mImagePadding);
 		}
-		if(mCurrentMousePos.y() > mImage->height() + mImagePadding)
+		if(mCurrentMousePos.y() >= mImage->height() + mImagePadding)
 		{
-			mCurrentMousePos.setY(mImage->height() + mImagePadding);
+			mCurrentMousePos.setY(mImage->height() + mImagePadding - 1);
 		}
 		if(mCurrentMousePos.y() < mImagePadding)
 		{
@@ -274,7 +274,10 @@ void ImageWidget::mouseMoveEvent(QMouseEvent *event)
 		}
 
 		QPoint maskCorner(mCurrentMousePos.x() - mImagePadding, mCurrentMousePos.y() - mImagePadding);
-		mCurrentMask->setBottomRight(maskCorner);
+		if(maskCorner.x() > mCurrentMask->topLeft().x() && maskCorner.y() >  mCurrentMask->topLeft().y())
+		{
+			mCurrentMask->setBottomRight(maskCorner);
+		}
 	}
 
 	update();
