@@ -211,6 +211,23 @@ void ImageWidget::mousePressEvent(QMouseEvent *event)
 
 	if(mEnableMasks && mCurrentMask == NULL)
 	{
+		if(mCurrentMousePos.x() > mImage->width() + mImagePadding)
+		{
+			mCurrentMousePos.setX(mImage->width() + mImagePadding);
+		}
+		if(mCurrentMousePos.x() < mImagePadding)
+		{
+			mCurrentMousePos.setX(mImagePadding);
+		}
+		if(mCurrentMousePos.y() > mImage->height() + mImagePadding)
+		{
+			mCurrentMousePos.setY(mImage->height() + mImagePadding);
+		}
+		if(mCurrentMousePos.y() < mImagePadding)
+		{
+			mCurrentMousePos.setY(mImagePadding);
+		}
+
 		QPoint maskCorner(mCurrentMousePos.x() - mImagePadding, mCurrentMousePos.y() - mImagePadding);
 		mCurrentMask = new QRect(maskCorner, maskCorner);
 	}
@@ -239,6 +256,23 @@ void ImageWidget::mouseMoveEvent(QMouseEvent *event)
 
 	if(mEnableMasks && mCurrentMask)
 	{
+		if(mCurrentMousePos.x() > mImage->width() + mImagePadding)
+		{
+			mCurrentMousePos.setX(mImage->width() + mImagePadding);
+		}
+		if(mCurrentMousePos.x() < mImagePadding)
+		{
+			mCurrentMousePos.setX(mImagePadding);
+		}
+		if(mCurrentMousePos.y() > mImage->height() + mImagePadding)
+		{
+			mCurrentMousePos.setY(mImage->height() + mImagePadding);
+		}
+		if(mCurrentMousePos.y() < mImagePadding)
+		{
+			mCurrentMousePos.setY(mImagePadding);
+		}
+
 		QPoint maskCorner(mCurrentMousePos.x() - mImagePadding, mCurrentMousePos.y() - mImagePadding);
 		mCurrentMask->setBottomRight(maskCorner);
 	}

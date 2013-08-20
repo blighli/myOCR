@@ -111,11 +111,11 @@ MainWindow::MainWindow()
 	toolBarImage->addSeparator();
 	toolBarImage->addAction(actionEnableChinese);
 
-	QComboBox* recognizeMethods = new QComboBox();
-	recognizeMethods->addItem(tr("Chinese and English"),QVariant(0));
-	recognizeMethods->addItem(tr("Number Only"),QVariant(1));
-	recognizeMethods->addItem(tr("ABBYY"),QVariant(2));
-	toolBarImage->addWidget(recognizeMethods);
+	//QComboBox* recognizeMethods = new QComboBox();
+	//recognizeMethods->addItem(tr("Chinese and English"),QVariant(0));
+	//recognizeMethods->addItem(tr("Number Only"),QVariant(1));
+	//recognizeMethods->addItem(tr("ABBYY"),QVariant(2));
+	//toolBarImage->addWidget(recognizeMethods);
 }
 
 MainWindow::~MainWindow()
