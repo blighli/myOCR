@@ -484,4 +484,6 @@ void MainWindow::showCube()
 	}
 	cubeWidget->setImage(mImage);
 	cubeWidget->show();
+	cubeWidget->raise();
+	cubeWidget->activateWindow();
 }
