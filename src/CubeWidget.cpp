@@ -2,7 +2,7 @@
 
 CubeWidget::CubeWidget( QWidget *parent ) : QGLWidget(parent)
 {
-
+	mImage = NULL;
 }
 
 void CubeWidget::initializeGL()
@@ -19,4 +19,9 @@ void CubeWidget::resizeGL( int w, int h )
 void CubeWidget::paintGL()
 {
 
+}
+
+void CubeWidget::setImage( IplImage* image )
+{
+	mImage = image;
 }

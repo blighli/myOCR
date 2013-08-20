@@ -5,6 +5,7 @@
 #include "ImageAdapter.h"
 #include "AppInfo.h"
 #include "AbbyyOCR.h"
+#include "CubeWidget.h"
 
 
 MainWindow::MainWindow()
@@ -15,7 +16,10 @@ MainWindow::MainWindow()
 	boxes = NULL;
 	mEnableMasks = false;
 
+	cubeWidget = NULL;
+
 	resize(960, 600);
+
 
 	imageWidget = new ImageWidget();
 	textEdit = new QTextEdit();
@@ -59,6 +63,7 @@ MainWindow::MainWindow()
 	actionEnableMesure->setCheckable(true);
 	actionEnableChinese = new QAction(tr("Enable Chinese"), this);
 	actionEnableChinese->setCheckable(true);
+	actionShowCube = new QAction(tr("Show Cube"), this);
 	
 	actionOpenImage->setIcon(QIcon(":/open.png"));
 	actionSaveImage->setIcon(QIcon(":/save.png"));
@@ -70,6 +75,7 @@ MainWindow::MainWindow()
 	actionClearMasks->setIcon(QIcon(":/clear2.png"));
 	actionEnableMesure->setIcon(QIcon(":/mesure.png"));
 	actionEnableChinese->setIcon(QIcon(":/chinese.png"));
+	actionShowCube->setIcon(QIcon(":/cube.png"));
 
 	connect(actionOpenImage, SIGNAL(triggered()), this, SLOT(openImageFile()));
 	connect(actionSaveImage, SIGNAL(triggered()), this, SLOT(saveImageFile()));
@@ -81,6 +87,7 @@ MainWindow::MainWindow()
 	connect(actionClearMasks, SIGNAL(triggered()), this, SLOT(clearMasks()));
 	connect(actionEnableMesure, SIGNAL(triggered()), this, SLOT(enableMesure()));
 	connect(actionEnableChinese, SIGNAL(triggered()), this, SLOT(enableChinese()));
+	connect(actionShowCube, SIGNAL(triggered()), this, SLOT(showCube()));
 	
 	menuFile->addAction(actionOpenImage);
 	menuFile->addAction(actionSaveImage);
@@ -95,6 +102,7 @@ MainWindow::MainWindow()
 	menuImage->addAction(actionRecognizeText);
 	menuImage->addSeparator();
 	menuImage->addAction(actionEnableChinese);
+	menuImage->addAction(actionShowCube);
 	menuHelp->addAction(actionAbout);
 	
 	toolBarFile->addAction(actionOpenImage);
@@ -110,6 +118,7 @@ MainWindow::MainWindow()
 	toolBarImage->addAction(actionRecognizeText);
 	toolBarImage->addSeparator();
 	toolBarImage->addAction(actionEnableChinese);
+	toolBarImage->addAction(actionShowCube);
 
 	//QComboBox* recognizeMethods = new QComboBox();
 	//recognizeMethods->addItem(tr("Chinese and English"),QVariant(0));
@@ -465,4 +474,14 @@ void MainWindow::recognizeText()
 			imageWidget->setBoxes(rects, rectCount);
 		}
 	}
+}
+
+void MainWindow::showCube()
+{
+	if(cubeWidget == NULL)
+	{
+		cubeWidget = new CubeWidget();
+	}
+	cubeWidget->setImage(mImage);
+	cubeWidget->show();
 }

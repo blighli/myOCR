@@ -9,6 +9,7 @@
 class ImageWidget;
 class QTextEdit;
 class AbbyyOCR;
+class CubeWidget;
 
 class MainWindow : public QMainWindow
 {
@@ -30,9 +31,12 @@ private slots:
 
 	void enableMesure();
 	void enableChinese();
+
+	void showCube();
 private:
 	//user interface components
 	ImageWidget* imageWidget;
+	CubeWidget* cubeWidget;
 	QTextEdit* textEdit;
 
 	QMenu* menuFile;
@@ -52,6 +56,7 @@ private:
 	QAction* actionClearMasks;
 	QAction* actionEnableMesure;
 	QAction* actionEnableChinese;
+	QAction* actionShowCube;
 	QAction* actionAbout;
 
 	//internal variables
