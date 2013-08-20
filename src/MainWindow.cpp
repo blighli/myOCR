@@ -3,6 +3,8 @@
 #include <QtGui>
 #include "ImageWidget.h"
 #include "ImageAdapter.h"
+#include "AppInfo.h"
+#include "AbbyyOCR.h"
 
 
 MainWindow::MainWindow()
@@ -130,7 +132,7 @@ MainWindow::~MainWindow()
 void MainWindow::openImageFile()
 {
 	QString fileName = QFileDialog::getOpenFileName(this,
-		tr("Open Image"), ".",
+		tr("Open Image"), AppInfo::instance()->appDir(),
 		tr("Image files (*.png *.jpg *.bmp *.tiff)"));
     if (!fileName.isEmpty())
 	{
@@ -151,7 +153,7 @@ void MainWindow::openImageFile()
 void MainWindow::saveImageFile()
 {
 	QString fileName = QFileDialog::getSaveFileName(this,
-		tr("Save Image"), ".",
+		tr("Save Image"), AppInfo::instance()->appDir(),
 		tr("Image files (*.png *.jpg *.bmp *.tiff)"));
     if (!fileName.isEmpty())
 	{
@@ -191,7 +193,7 @@ void MainWindow::saveMasks()
 		return;
 	}
 	QString fileName = QFileDialog::getSaveFileName(this,
-		tr("Save Masks"), ".",
+		tr("Save Masks"), AppInfo::instance()->appDir(),
 		tr("XML files (*.xml)"));
     if (!fileName.isEmpty())
 	{
@@ -231,7 +233,7 @@ void MainWindow::saveMasks()
 void MainWindow::loadMasks()
 {
 	QString fileName = QFileDialog::getOpenFileName(this,
-		tr("Load Masks"), ".",
+		tr("Load Masks"), AppInfo::instance()->appDir(),
 		tr("XML files (*.xml)"));
     if (!fileName.isEmpty())
 	{
@@ -346,16 +348,20 @@ void MainWindow::recognizeText()
 	}
 	else
 	{
+		AbbyyOCR abbyyOCR;
+		abbyyOCR.setImage(mImage);
+		QString ret = abbyyOCR.recognizeText();
+
 		//设置环境变量TESSDATA_PREFIX
 		if(tessBaseAPI == NULL)
 		{
 			tessBaseAPI = new tesseract::TessBaseAPI(); 
 		}
 		//或者在Init函数中设置datapath
+		QString tessdata = AppInfo::instance()->appDir();
 		if(actionEnableChinese->isChecked())
 		{
-
-			if (tessBaseAPI->Init(NULL, "chi_sim+eng")) {
+			if (tessBaseAPI->Init(tessdata.toAscii(), "chi_sim+eng")) {
 				QMessageBox msgBox;
 				msgBox.setIcon(QMessageBox::Critical);
 				msgBox.setText(tr("Could not initialize tesseract: chinese"));
@@ -374,7 +380,7 @@ void MainWindow::recognizeText()
 		}
 		else
 		{
-			if (tessBaseAPI->Init(NULL, "eng")) {
+			if (tessBaseAPI->Init(tessdata.toAscii(), "eng")) {
 				QMessageBox msgBox;
 				msgBox.setIcon(QMessageBox::Critical);
 				msgBox.setText(tr("Could not initialize tesseract: english"));
