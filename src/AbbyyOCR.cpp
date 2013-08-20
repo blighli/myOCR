@@ -120,7 +120,8 @@ void AbbyyOCR::setMasks( QVector<QRect>* masks )
 	}
 	if(masks)
 	{
-		mMasks = new RECT[masks->size()];
+		mMaskCount = masks->size();
+		mMasks = new RECT[mMaskCount];
 		for(int i=0;i<masks->size();i++)
 		{
 			QRect rect = masks->at(i);
