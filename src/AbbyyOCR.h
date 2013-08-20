@@ -9,7 +9,10 @@ class AbbyyOCR
 {
 public:
 	AbbyyOCR();
+	~AbbyyOCR();
 	void setImage(IplImage* image);
+	void setMasks(QVector<QRect>* masks);
+
 	QString recognizeText();
 private:
 	QString mChinesePatternPath;
@@ -18,6 +21,8 @@ private:
 	QString mLicensePath;
 
 	CFineImage mImage;
+	RECT* mMasks;
+	int mMaskCount;
 	QByteArray readFile(const QString& fileName);
 };
 

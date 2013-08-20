@@ -348,8 +348,15 @@ void MainWindow::recognizeText()
 	}
 	else
 	{
+		QVector<QRect>* masks = imageWidget->getMasks();
+
 		AbbyyOCR abbyyOCR;
 		abbyyOCR.setImage(mImage);
+
+		if(masks->size() > 0)
+		{
+			
+		}
 		QString ret = abbyyOCR.recognizeText();
 		textEdit->clear();
 		textEdit->setText(QString("%1%2%3").arg(textEdit->toPlainText(),"\n",ret));
@@ -399,7 +406,6 @@ void MainWindow::recognizeText()
 
 		tessBaseAPI->SetImage((uchar*)mImage->imageData, mImage->width, mImage->height, mImage->nChannels, mImage->widthStep);
 
-		QVector<QRect>* masks = imageWidget->getMasks();
 		if(masks->size() == 0)
 		{
 

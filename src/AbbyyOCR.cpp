@@ -8,6 +8,17 @@ AbbyyOCR::AbbyyOCR()
 	mEnglishPatternPath = abbyyDataDir + "/European.rom";
 	mEnglishDictPath = abbyyDataDir + "/English.edc";
 	mLicensePath = abbyyDataDir + "/Sample.license";
+
+	mMasks = 0;
+	mMaskCount = 0;
+}
+
+AbbyyOCR::~AbbyyOCR()
+{
+	if(mMasks)
+	{
+		delete[] mMasks;
+	}
 }
 
 void AbbyyOCR::setImage( IplImage* image )
@@ -64,8 +75,16 @@ QString AbbyyOCR::recognizeText()
 	errorCode = FineSetLicenseInfo( &licenseInfo );
 
 	CFineLayout* layout = 0;
-	errorCode = FineRecognizeImage(languages, englishPattern, cjkPatterns, dictionaries, &mImage, 
-		FIPO_Default, FRM_Full, FRCL_Level3, &layout, 0, 0, 0);
+	if(mMasks)
+	{
+		errorCode = FineRecognizeRegion(languages, englishPattern, cjkPatterns, dictionaries, &mImage, mMaskCount, mMasks,
+			FIPO_Default, FRM_Full, FRCL_Level3, &layout, 0, 0, 0);
+	}
+	else
+	{
+		errorCode = FineRecognizeImage(languages, englishPattern, cjkPatterns, dictionaries, &mImage, 
+			FIPO_Default, FRM_Full, FRCL_Level3, &layout, 0, 0, 0);
+	}
 
 	QString recognizedText;
 	for( int blockIndex = 0; blockIndex < layout->TextBlocksCount; blockIndex++ ) {
@@ -89,4 +108,26 @@ QByteArray AbbyyOCR::readFile( const QString& fileName )
 	QByteArray byteArray = file.readAll();
 	file.close();
 	return byteArray;
+}
+
+void AbbyyOCR::setMasks( QVector<QRect>* masks )
+{
+	if(mMasks)
+	{
+		delete[] mMasks;
+		mMasks = 0;
+		mMaskCount = 0;
+	}
+	if(masks)
+	{
+		mMasks = new RECT[masks->size()];
+		for(int i=0;i<masks->size();i++)
+		{
+			QRect rect = masks->at(i);
+			mMasks[i].left = rect.left();
+			mMasks[i].right = rect.right();
+			mMasks[i].top = rect.top();
+			mMasks[i].bottom = rect.bottom();
+		}
+	}
 }
