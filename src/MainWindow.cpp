@@ -355,7 +355,7 @@ void MainWindow::recognizeText()
 
 		if(masks->size() > 0)
 		{
-			
+			abbyyOCR.setMasks(masks);
 		}
 		QString ret = abbyyOCR.recognizeText();
 		textEdit->clear();
