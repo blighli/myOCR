@@ -20,10 +20,15 @@ private:
 	QString mEnglishDictPath;
 	QString mLicensePath;
 
+	TFinePatternsPtr englishPattern;
+	TFinePatternsPtr chinesePattern;
+	TFineDictionaryPtr englishDict;
+
 	CFineImage mImage;
 	RECT* mMasks;
 	int mMaskCount;
-	QByteArray readFile(const QString& fileName);
+
+	char* readFile(const QString& fileName, int* size = 0);
 };
 
 #endif //ABBYYOCR_H

@@ -11,14 +11,36 @@ AbbyyOCR::AbbyyOCR()
 
 	mMasks = 0;
 	mMaskCount = 0;
+
+	englishPattern = readFile(mEnglishPatternPath);
+	chinesePattern = readFile(mChinesePatternPath);
+	englishDict = readFile(mEnglishDictPath);
+
+	int licenseSize = 0;
+	char* licenseData = readFile(mLicensePath, &licenseSize);
+
+	CFineLicenseInfo licenseInfo;
+	licenseInfo.LicenseData = (BYTE*)licenseData;
+	licenseInfo.DataLength = licenseSize;
+	licenseInfo.ApplicationId = 0;
+
+	TFineErrorCode errorCode = FineInitialize(0,0,0);
+	errorCode = FineSetLicenseInfo( &licenseInfo );
+
+	delete[] licenseData;
 }
 
 AbbyyOCR::~AbbyyOCR()
 {
+	FineDeinitialize();
+
 	if(mMasks)
 	{
 		delete[] mMasks;
 	}
+	delete[] englishPattern;
+	delete[] chinesePattern;
+	delete[] englishDict;
 }
 
 void AbbyyOCR::setImage( IplImage* image )
@@ -33,29 +55,6 @@ void AbbyyOCR::setImage( IplImage* image )
 
 QString AbbyyOCR::recognizeText()
 {
-	QFile englishPatternFile(mEnglishPatternPath);
-	englishPatternFile.open(QIODevice::ReadOnly);
-	QByteArray englishPatternByteArray = englishPatternFile.readAll();
-	englishPatternFile.close();
-	TFinePatternsPtr englishPattern = englishPatternByteArray.data();
-
-	QFile chinesePatternFile(mChinesePatternPath);
-	chinesePatternFile.open(QIODevice::ReadOnly);
-	QByteArray chinesePatternByteArray = chinesePatternFile.readAll();
-	chinesePatternFile.close();
-	TFinePatternsPtr chinesePattern = chinesePatternByteArray.data();
-
-	QFile englishDictFile(mEnglishDictPath);
-	englishDictFile.open(QIODevice::ReadOnly);
-	QByteArray englishDictByteArray = englishDictFile.readAll();
-	englishDictFile.close();
-	TFineDictionaryPtr englishDict = englishDictByteArray.data();
-
-	QFile licenseFile(mLicensePath);
-	licenseFile.open(QIODevice::ReadOnly);
-	QByteArray licenseByteArray = licenseFile.readAll();
-	licenseFile.close();
-
 	TLanguageID languages[3] = { LID_ChineseSimplified, LID_English, LID_Undefined };
 
 	TFinePatternsPtr cjkPatterns[2];
@@ -66,51 +65,70 @@ QString AbbyyOCR::recognizeText()
 	dictionaries[0] = englishDict;
 	dictionaries[1] = 0;
 
-	CFineLicenseInfo licenseInfo;
-	licenseInfo.LicenseData = (BYTE*)licenseByteArray.data();
-	licenseInfo.DataLength = licenseByteArray.size();
-	licenseInfo.ApplicationId = 0;
-
-	TFineErrorCode errorCode = FineInitialize(0,0,0);
-	errorCode = FineSetLicenseInfo( &licenseInfo );
-
 	CFineLayout* layout = 0;
+	QString recognizedText;
 	if(mMasks)
 	{
-		errorCode = FineRecognizeRegion(languages, englishPattern, cjkPatterns, dictionaries, &mImage, mMaskCount, mMasks,
-			FIPO_Default, FRM_Full, FRCL_Level3, &layout, 0, 0, 0);
+		for(int i=0;i<mMaskCount;i++)
+		{
+			TFineErrorCode errorCode = FineRecognizeRegion(languages, englishPattern, cjkPatterns, dictionaries, &mImage, 1, mMasks+i,
+				FIPO_Default, FRM_Full, FRCL_Level3, &layout, 0, 0, 0);
+
+			if(layout)
+			{
+				for( int blockIndex = 0; blockIndex < layout->TextBlocksCount; blockIndex++ ) {
+					const CFineTextBlock& block = layout->TextBlocks[blockIndex];
+					for( int lineIndex = 0; lineIndex < block.LinesCount; lineIndex++ ) {
+						const CFineTextLine& line = block.Lines[lineIndex];
+						for( int ch = 0; ch < line.CharCount; ch++ ) {
+							recognizedText += QChar(line.Chars[ch].Unicode);
+							//recognizedText += "(" + QString::number(line.Chars[ch].Quality) + "%)";
+						}
+						recognizedText += "\n";
+					}
+				}
+			}
+		}
 	}
 	else
 	{
-		errorCode = FineRecognizeImage(languages, englishPattern, cjkPatterns, dictionaries, &mImage, 
+		TFineErrorCode errorCode = FineRecognizeImage(languages, englishPattern, cjkPatterns, dictionaries, &mImage, 
 			FIPO_Default, FRM_Full, FRCL_Level3, &layout, 0, 0, 0);
-	}
 
-	QString recognizedText;
-	for( int blockIndex = 0; blockIndex < layout->TextBlocksCount; blockIndex++ ) {
-		const CFineTextBlock& block = layout->TextBlocks[blockIndex];
-		for( int lineIndex = 0; lineIndex < block.LinesCount; lineIndex++ ) {
-			const CFineTextLine& line = block.Lines[lineIndex];
-			for( int ch = 0; ch < line.CharCount; ch++ ) {
-				recognizedText += QChar(line.Chars[ch].Unicode);
+		for( int blockIndex = 0; blockIndex < layout->TextBlocksCount; blockIndex++ ) {
+			const CFineTextBlock& block = layout->TextBlocks[blockIndex];
+			for( int lineIndex = 0; lineIndex < block.LinesCount; lineIndex++ ) {
+				const CFineTextLine& line = block.Lines[lineIndex];
+				for( int ch = 0; ch < line.CharCount; ch++ ) {
+					recognizedText += QChar(line.Chars[ch].Unicode);
+					//recognizedText += "(" + QString::number(line.Chars[ch].Quality) + "%)";
+				}
+				recognizedText += "\n";
 			}
-			recognizedText += "\n";
 		}
 	}
 
 	return recognizedText;
 }
 
-QByteArray AbbyyOCR::readFile( const QString& fileName )
+char* AbbyyOCR::readFile( const QString& fileName, int* size )
 {
 	QFile file(fileName);
 	file.open(QIODevice::ReadOnly);
 	QByteArray byteArray = file.readAll();
 	file.close();
-	return byteArray;
+
+	int fileSize = byteArray.size();
+	if(size != 0)
+	{
+		*size = fileSize;
+	}
+	char* fileContent = new char[fileSize];
+	memcpy(fileContent, byteArray.constData(), fileSize);
+	return fileContent;
 }
 
-void AbbyyOCR::setMasks( QVector<QRect>* masks )
+void AbbyyOCR::setMasks( QVector<QRect>* masks)
 {
 	if(mMasks)
 	{

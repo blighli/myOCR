@@ -8,6 +8,7 @@
 
 class ImageWidget;
 class QTextEdit;
+class AbbyyOCR;
 
 class MainWindow : public QMainWindow
 {
@@ -56,6 +57,7 @@ private:
 	//internal variables
 	IplImage* mImage;
 	tesseract::TessBaseAPI* tessBaseAPI;
+	AbbyyOCR* mAbbyyOCR;
 	Boxa* boxes;
 
 	bool mEnableMasks;

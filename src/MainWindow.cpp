@@ -11,6 +11,7 @@ MainWindow::MainWindow()
 {
 	mImage = NULL;
 	tessBaseAPI = NULL;
+	mAbbyyOCR = NULL;
 	boxes = NULL;
 	mEnableMasks = false;
 
@@ -18,7 +19,7 @@ MainWindow::MainWindow()
 
 	imageWidget = new ImageWidget();
 	textEdit = new QTextEdit();
-	textEdit->setFixedWidth(200);
+	textEdit->setFixedWidth(300);
 	QFont fontTextEdit = textEdit->font();
 	fontTextEdit.setPixelSize(18);
 	textEdit->setFont(fontTextEdit);
@@ -126,6 +127,10 @@ MainWindow::~MainWindow()
 	if(tessBaseAPI)
 	{
 		tessBaseAPI->End();
+	}
+	if(mAbbyyOCR)
+	{
+		delete mAbbyyOCR;
 	}
 }
 
@@ -350,17 +355,20 @@ void MainWindow::recognizeText()
 	{
 		QVector<QRect>* masks = imageWidget->getMasks();
 
-		AbbyyOCR abbyyOCR;
-		abbyyOCR.setImage(mImage);
+		if(mAbbyyOCR == NULL)
+		{
+			mAbbyyOCR = new AbbyyOCR();
+		}
+		mAbbyyOCR->setImage(mImage);
 
 		if(masks->size() > 0)
 		{
-			abbyyOCR.setMasks(masks);
+			mAbbyyOCR->setMasks(masks);
 		}
-		QString ret = abbyyOCR.recognizeText();
+		QString ret = mAbbyyOCR->recognizeText();
 		textEdit->clear();
-		textEdit->setText(QString("%1%2%3").arg(textEdit->toPlainText(),"\n",ret));
-		textEdit->setText(QString("%1%2%3").arg(textEdit->toPlainText(),"\n\n","////////////////////\n\n"));
+		textEdit->setText(QString("%1%2%3").arg(textEdit->toPlainText(),"Abbyy Result:\n",ret));
+		textEdit->setText(QString("%1%2%3").arg(textEdit->toPlainText(),"\n","////////////////////\nTesseract Result:\n"));
 
 
 		//设置环境变量TESSDATA_PREFIX
@@ -424,19 +432,36 @@ void MainWindow::recognizeText()
 			char *outText = tessBaseAPI->GetUTF8Text();
 
 			QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf-8"));
-			textEdit->setText(QString("%1%2%3").arg(textEdit->toPlainText(),"\n",outText));
+			textEdit->setText(QString("%1%2").arg(textEdit->toPlainText(),outText));
 		}
 		else
 		{
+			QVector<QRect> rectBoxes;
 			for(int i=0;i<masks->size();i++)
 			{
 				QRect rect = masks->at(i);
 				tessBaseAPI->SetRectangle(rect.x(), rect.y(), rect.width(), rect.height());
+
+				boxes = tessBaseAPI->GetComponentImages(tesseract::RIL_SYMBOL, true, NULL, NULL);
+				for(int i = 0; i< boxes->n; i++)
+				{
+					QRect rectBox(boxes->box[i]->x, boxes->box[i]->y, boxes->box[i]->w, boxes->box[i]->h);
+					rectBox.translate(rect.x(), rect.y());
+					rectBoxes.append(rectBox);
+				}
+
 				char* ocrResult = tessBaseAPI->GetUTF8Text();
-				int conf = tessBaseAPI->MeanTextConf();
 				QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf-8"));
-				textEdit->setText(QString("%1%2%3").arg(textEdit->toPlainText(),"\n",ocrResult));
+				textEdit->setText(QString("%1%2").arg(textEdit->toPlainText(),ocrResult));
 			}
+
+			int rectCount = rectBoxes.size();
+			QRect* rects = new QRect[rectCount];
+			for(int i = 0; i< rectCount; i++)
+			{
+				rects[i] = rectBoxes.at(i);
+			}
+			imageWidget->setBoxes(rects, rectCount);
 		}
 	}
 }
