@@ -443,16 +443,19 @@ void MainWindow::recognizeText()
 				tessBaseAPI->SetRectangle(rect.x(), rect.y(), rect.width(), rect.height());
 
 				boxes = tessBaseAPI->GetComponentImages(tesseract::RIL_SYMBOL, true, NULL, NULL);
-				for(int i = 0; i< boxes->n; i++)
+				if(boxes)
 				{
-					QRect rectBox(boxes->box[i]->x, boxes->box[i]->y, boxes->box[i]->w, boxes->box[i]->h);
-					rectBox.translate(rect.x(), rect.y());
-					rectBoxes.append(rectBox);
-				}
+					for(int i = 0; i< boxes->n; i++)
+					{
+						QRect rectBox(boxes->box[i]->x, boxes->box[i]->y, boxes->box[i]->w, boxes->box[i]->h);
+						rectBox.translate(rect.x(), rect.y());
+						rectBoxes.append(rectBox);
+					}
 
-				char* ocrResult = tessBaseAPI->GetUTF8Text();
-				QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf-8"));
-				textEdit->setText(QString("%1%2").arg(textEdit->toPlainText(),ocrResult));
+					char* ocrResult = tessBaseAPI->GetUTF8Text();
+					QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf-8"));
+					textEdit->setText(QString("%1%2").arg(textEdit->toPlainText(),ocrResult));
+				}
 			}
 
 			int rectCount = rectBoxes.size();
