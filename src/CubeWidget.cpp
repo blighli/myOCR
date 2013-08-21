@@ -21,6 +21,10 @@ CubeWidget::~CubeWidget()
 
 void CubeWidget::initializeGL()
 {
+	char *argv[] = {"", NULL};
+	int argc = 1;
+	glutInit( &argc, argv );
+
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 	glShadeModel(GL_FLAT);
@@ -55,20 +59,8 @@ void CubeWidget::paintGL()
 	glRotatef(rotationY, 0.0, 1.0, 0.0);
 	glRotatef(rotationZ, 0.0, 0.0, 1.0);
 
-	glLineWidth(5.0);
+	glLineWidth(1.0);
 
-
-	//glPushMatrix();
-	//glTranslatef(0, -0.01, 0);
-	//glBegin(GL_POLYGON);
-	//glColor3f(1.0, 1.0, 1.0);
-	//glVertex3f(0, 0, 0);
-	//glVertex3f(0, 0, 1);
-	//glVertex3f(1, 0, 1);
-	//glVertex3f(1, 0, 0);
-	//glEnd();
-	//glPopMatrix();
-	
 	glBegin(GL_LINES);
 	glColor3f(1.0, 0.0, 0.0);
 	glVertex3f(1.0, 0.0, 0.0);
@@ -87,12 +79,25 @@ void CubeWidget::paintGL()
 	glVertex3f(0.0, 0.0, 0.0);
 	glEnd();
 
+	glPushMatrix();
+	glTranslatef(0.51, 0.51, 0.51);
+	glColor3f(1.0, 1.0, 1.0);
+	glutWireCube(1.0);
+	glPopMatrix();
+
 	int r = 0;
 	int g = 0;
 	int b = 0;
 	QHash<int, int>::const_iterator i = mHash->constBegin();
+	
+	int pointCount = 1;
+	int pixelCount = 1;
+	if(mImage)
+	{
+		pointCount = mHash->size();
+		pixelCount = mImage->width * mImage->height;
+	}
 
-	glBegin(GL_POINTS);
 	while (i != mHash->constEnd()) {
 		
 		int key = i.key();
@@ -103,15 +108,24 @@ void CubeWidget::paintGL()
 		g = (key - r*256*256)/256;
 		b = key - r*256*256 - g*256;
 
-		glPointSize(value/100.0);
-		glColor3f(r/255.0, g/255.0, b/255.0);
-		glVertex3f(r/255.0, g/255.0, b/255.0);
+		glPushMatrix();
+		glColor3f((r/16)/16.0, (g/16)/16.0, (b/16)/16.0);
+		glTranslatef((r/16)/16.0, (g/16)/16.0, (b/16)/16.0);
+
+		float radius = sqrtf((float)value / (float)pixelCount);
+		//if(radius > 0.01)
+		//{
+		//	glutSolidSphere( radius, 5, 5);
+		//}
+		//else
+		//{
+			glutSolidCube(radius);
+		//}
+		glPopMatrix();
 
 		++i;
 	}
-	glEnd();
 
-	//glutWireSphere(1.0, 10, 10);
 
 }
 
@@ -133,15 +147,15 @@ void CubeWidget::setImage( IplImage* image )
 			{
 				if(mImage->nChannels == 1)
 				{
-					r = ptr[x];
-					g = ptr[x];
 					b = ptr[x];
+					g = ptr[x];
+					r = ptr[x];
 				}
 				else if(mImage->nChannels == 3)
 				{
-					r = ptr[3 * x + 0];
+					b = ptr[3 * x + 0];
 					g = ptr[3 * x + 1];
-					b = ptr[3 * x + 2];
+					r = ptr[3 * x + 2];
 				}
 				int  key = r*256*256 + g*256 + b;
 				int value = mHash->value(key, 0) + 1;
