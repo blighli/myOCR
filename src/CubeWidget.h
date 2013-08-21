@@ -14,8 +14,17 @@ protected:
 	void initializeGL();
 	void resizeGL(int w, int h);
 	void paintGL();
+
+	void mousePressEvent(QMouseEvent *event);
+	void mouseMoveEvent(QMouseEvent *event);
+
 private:
 	IplImage* mImage;
+
+	GLfloat rotationX;
+	GLfloat rotationY;
+	GLfloat rotationZ;
+	QPoint lastPos;
 
 
 };
