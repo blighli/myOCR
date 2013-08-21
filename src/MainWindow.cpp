@@ -323,14 +323,23 @@ void MainWindow::processImage()
 		return;
 	}
 
-	IplImage* grayImage = cvCreateImage(cvGetSize(mImage), 8, 1);
 	if(mImage->nChannels == 3)
 	{
+		IplImage* grayImage = cvCreateImage(cvGetSize(mImage), 8, 1);
 		cvCvtColor(mImage, grayImage, CV_RGB2GRAY);
 		cvReleaseImage(&mImage);
 		mImage = grayImage;
 	}
 
+	if(mImage->nChannels == 1)
+	{
+		IplImage* contourImage = cvCreateImage(cvGetSize(mImage), 8, 1);
+		cvCanny(mImage, contourImage, 50, 150, 3);
+		cvReleaseImage(&mImage);
+		mImage = contourImage;
+	}
+
+	/*
 	getContourAndCorrect contour;
 	contour.fetchContourAndCorrect(cv::Mat(mImage));
 
@@ -342,6 +351,7 @@ void MainWindow::processImage()
 	cvResetImageROI(mImage);
 	cvReleaseImage(&mImage);
 	mImage = chopImage;
+	*/
 
 	//IplImage* binaryImage = cvCreateImage(cvGetSize(mImage), 8, 1);
 	//cvThreshold(mImage, binaryImage, 200, 255, CV_THRESH_BINARY);

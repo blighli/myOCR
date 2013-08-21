@@ -22,8 +22,6 @@ void getContourAndCorrect:: fetchContourAndCorrect(Mat src)
 	adaptiveThreshold(src, dst, 255, CV_THRESH_BINARY, CV_THRESH_BINARY_INV,25, 10);
 	
     HoughLinesP( dst, lines, 1, CV_PI/180, 80, 30, 10 );
-
-	unsigned int nSize = lines.size();
     for( size_t i = 0; i < lines.size(); i++ )
     {
 		double a=fabs(sqrt((lines[i][0]- lines[i][2])*(lines[i][0]-lines[i][2])*1.0+(lines[i][1]- lines[i][3])*(lines[i][1]- lines[i][3])));
