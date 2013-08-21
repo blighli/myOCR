@@ -6,6 +6,7 @@
 #include "AppInfo.h"
 #include "AbbyyOCR.h"
 #include "CubeWidget.h"
+#include "getContourAndCorrect.h"
 
 
 MainWindow::MainWindow()
@@ -329,6 +330,18 @@ void MainWindow::processImage()
 		cvReleaseImage(&mImage);
 		mImage = grayImage;
 	}
+
+	getContourAndCorrect contour;
+	contour.fetchContourAndCorrect(cv::Mat(mImage));
+
+	int width = contour.CorrectContourPoint[1].x - contour.CorrectContourPoint[1].x;
+	int height = contour.CorrectContourPoint[3].y;
+	cvSetImageROI(mImage, cvRect(contour.CorrectContourPoint[0].x, 0, width, height));
+	IplImage* chopImage = cvCreateImage(cvGetSize(mImage),mImage->depth,mImage->nChannels);
+	cvCopy(mImage, mImage, NULL);
+	cvResetImageROI(mImage);
+	cvReleaseImage(&mImage);
+	mImage = chopImage;
 
 	//IplImage* binaryImage = cvCreateImage(cvGetSize(mImage), 8, 1);
 	//cvThreshold(mImage, binaryImage, 200, 255, CV_THRESH_BINARY);
