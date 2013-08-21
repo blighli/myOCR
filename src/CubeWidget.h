@@ -2,6 +2,7 @@
 #define CUBEWIDGET_H
 
 #include <QGLWidget>
+#include <QHash>
 #include <opencv2/opencv.hpp>
 
 class CubeWidget : public QGLWidget
@@ -9,6 +10,7 @@ class CubeWidget : public QGLWidget
 	Q_OBJECT
 public:
 	CubeWidget(QWidget *parent = 0);
+	~CubeWidget();
 	void setImage(IplImage* image);
 protected:
 	void initializeGL();
@@ -20,6 +22,7 @@ protected:
 
 private:
 	IplImage* mImage;
+	QHash<int,int>* mHash;
 
 	GLfloat rotationX;
 	GLfloat rotationY;

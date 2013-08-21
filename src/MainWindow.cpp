@@ -330,11 +330,11 @@ void MainWindow::processImage()
 		mImage = grayImage;
 	}
 
-	IplImage* binaryImage = cvCreateImage(cvGetSize(mImage), 8, 1);
-	cvThreshold(mImage, binaryImage, 200, 255, CV_THRESH_BINARY);
-	//cvAdaptiveThreshold(mImage, binaryImage, 255);
-	cvReleaseImage(&mImage);
-	mImage = binaryImage;
+	//IplImage* binaryImage = cvCreateImage(cvGetSize(mImage), 8, 1);
+	//cvThreshold(mImage, binaryImage, 200, 255, CV_THRESH_BINARY);
+	////cvAdaptiveThreshold(mImage, binaryImage, 255);
+	//cvReleaseImage(&mImage);
+	//mImage = binaryImage;
 
 	//IplImage* erodedImage = cvCreateImage(cvGetSize(mImage), 8, 1);
 	//cvErode(mImage, erodedImage);

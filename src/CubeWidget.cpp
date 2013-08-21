@@ -5,12 +5,18 @@
 CubeWidget::CubeWidget( QWidget *parent ) : QGLWidget(parent)
 {
 	mImage = NULL;
+	mHash = new QHash<int, int>();
 
 	rotationX = 0;
 	rotationY = 0;
 	rotationZ = 0;
 
 	resize(600, 600);
+}
+
+CubeWidget::~CubeWidget()
+{
+	delete mHash;
 }
 
 void CubeWidget::initializeGL()
@@ -52,16 +58,16 @@ void CubeWidget::paintGL()
 	glLineWidth(5.0);
 
 
-	glPushMatrix();
-	glTranslatef(0, -0.01, 0);
-	glBegin(GL_POLYGON);
-	glColor3f(1.0, 1.0, 1.0);
-	glVertex3f(0, 0, 0);
-	glVertex3f(0, 0, 1);
-	glVertex3f(1, 0, 1);
-	glVertex3f(1, 0, 0);
-	glEnd();
-	glPopMatrix();
+	//glPushMatrix();
+	//glTranslatef(0, -0.01, 0);
+	//glBegin(GL_POLYGON);
+	//glColor3f(1.0, 1.0, 1.0);
+	//glVertex3f(0, 0, 0);
+	//glVertex3f(0, 0, 1);
+	//glVertex3f(1, 0, 1);
+	//glVertex3f(1, 0, 0);
+	//glEnd();
+	//glPopMatrix();
 	
 	glBegin(GL_LINES);
 	glColor3f(1.0, 0.0, 0.0);
@@ -81,26 +87,29 @@ void CubeWidget::paintGL()
 	glVertex3f(0.0, 0.0, 0.0);
 	glEnd();
 
-	if(mImage)
-	{
-		glPointSize(1.0);
-		glBegin(GL_POINTS);
-		for(int y=0;y<mImage->height;y++)
-		{
-			uchar* ptr = (uchar*)(mImage->imageData + y * mImage->widthStep);
-			for(int x=0;x<mImage->width;x++)
-			{
-				int r = ptr[3 * x + 0];
-				int g = ptr[3 * x + 1];
-				int b = ptr[3 * x + 2];
-				glColor3f(r/255.0, g/255.0, b/255.0);
-				
-				glVertex3f(r/255.0, g/255.0, b/255.0);
-			}
-		}
-		glEnd();
-	}
+	int r = 0;
+	int g = 0;
+	int b = 0;
+	QHash<int, int>::const_iterator i = mHash->constBegin();
 
+	glBegin(GL_POINTS);
+	while (i != mHash->constEnd()) {
+		
+		int key = i.key();
+		int value = i.value();
+
+
+		r = key / (256*256);
+		g = (key - r*256*256)/256;
+		b = key - r*256*256 - g*256;
+
+		glPointSize(value/100.0);
+		glColor3f(r/255.0, g/255.0, b/255.0);
+		glVertex3f(r/255.0, g/255.0, b/255.0);
+
+		++i;
+	}
+	glEnd();
 
 	//glutWireSphere(1.0, 10, 10);
 
@@ -109,6 +118,38 @@ void CubeWidget::paintGL()
 void CubeWidget::setImage( IplImage* image )
 {
 	mImage = image;
+
+	if(mImage)
+	{
+		int r = 0;
+		int g = 0;
+		int b = 0;
+
+		mHash->clear();
+		for(int y=0;y<mImage->height;y++)
+		{
+			uchar* ptr = (uchar*)(mImage->imageData + y * mImage->widthStep);
+			for(int x=0;x<mImage->width;x++)
+			{
+				if(mImage->nChannels == 1)
+				{
+					r = ptr[x];
+					g = ptr[x];
+					b = ptr[x];
+				}
+				else if(mImage->nChannels == 3)
+				{
+					r = ptr[3 * x + 0];
+					g = ptr[3 * x + 1];
+					b = ptr[3 * x + 2];
+				}
+				int  key = r*256*256 + g*256 + b;
+				int value = mHash->value(key, 0) + 1;
+				mHash->insert(key, value);
+			}
+		}
+	}
+
 }
 
 void CubeWidget::mousePressEvent( QMouseEvent *event )
