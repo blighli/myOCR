@@ -14,14 +14,26 @@ class ParamWidget : public QWidget
 public:
 	ParamWidget();
 
+	
+
 	QGroupBox* cannyGroup;
 	QSlider* cannyThreshold1;
 	QSlider* cannyThreshold2;
 	
-	QGroupBox* houghGroup;;
+	QGroupBox* dilateGroup;
+	QSlider* dilateIter;
+
+	QGroupBox* erodeGroup;
+	QSlider* erodeIter;
+
+	QGroupBox* houghGroup;
+	QSlider* houghRho;
+	QSlider* houghTheta;
 	QSlider* houghThreshold;
 	QSlider* houghParam1;
 	QSlider* houghParam2;
+
+	QGroupBox* backGroundGroup;
 
 signals:
 	void process();

@@ -354,15 +354,24 @@ void MainWindow::processImage()
 		msgBox.exec();
 		return;
 	}
-
+	
 	bool cannyGroup = paramWidget->cannyGroup->isChecked();
 	int cannyThreshold1 = paramWidget->cannyThreshold1->value();
 	int cannyThreshold2 = paramWidget->cannyThreshold2->value();
+	
+	bool dilateGroup = paramWidget->dilateGroup->isChecked();
+	int dilateIter = paramWidget->dilateIter->value();
+	bool erodeGroup = paramWidget->erodeGroup->isChecked();
+	int erodeIter = paramWidget->erodeIter->value();
 
 	bool houghGroup = paramWidget->houghGroup->isChecked();
+	int houghRho = paramWidget->houghRho->value();
+	int houghTheta = paramWidget->houghTheta->value();
 	int houghThreshold = paramWidget->houghThreshold->value();
 	int houghParam1 = paramWidget->houghParam1->value();
 	int houghParam2 = paramWidget->houghParam2->value();
+
+	bool backGroundGroup = paramWidget->backGroundGroup->isChecked();
 
 	cvReleaseImage(&mImage);
 	mImage = cvCloneImage(mOriginalImage);
@@ -374,7 +383,6 @@ void MainWindow::processImage()
 		cvReleaseImage(&mImage);
 		mImage = grayImage;
 	}
-
 	
 	if(mImage->nChannels == 1 && cannyGroup)
 	{
@@ -383,19 +391,42 @@ void MainWindow::processImage()
 		cvReleaseImage(&mImage);
 		mImage = contourImage;
 	}
+
+	if(dilateGroup && dilateIter>0)
+	{
+		IplImage* dialatedImage = cvCreateImage(cvGetSize(mImage), 8, 1);
+		cvDilate(mImage, dialatedImage, 0, dilateIter);
+		cvReleaseImage(&mImage);
+		mImage = dialatedImage;
+	}
+
+	if(erodeGroup && erodeIter>0)
+	{
+		IplImage* erodedImage = cvCreateImage(cvGetSize(mImage), 8, 1);
+		cvErode(mImage, erodedImage, 0, erodeIter);
+		cvReleaseImage(&mImage);
+		mImage = erodedImage;
+	}
 	
 	if(houghGroup)
 	{
 		//检测线段
 		IplImage* lineImage = cvCreateImage(cvGetSize(mImage), 8, 3);
-		cvCvtColor(mImage, lineImage, CV_GRAY2BGR);
+		if(backGroundGroup)
+		{
+			cvCvtColor(mImage, lineImage, CV_GRAY2BGR);
+		}
 		CvMemStorage* storage = cvCreateMemStorage(0);
 		CvSeq* lines = 0;
-		lines = cvHoughLines2( mImage, storage, CV_HOUGH_PROBABILISTIC, 1, CV_PI/180, houghThreshold, houghParam1, houghParam2 );
+		lines = cvHoughLines2( mImage, storage, CV_HOUGH_PROBABILISTIC, houghRho, CV_PI/180 * houghTheta, houghThreshold, houghParam1, houghParam2 );
 		for( int i = 0; i < lines ->total; i++ )  //lines存储的是直线  
 		{  
 			CvPoint* line = ( CvPoint* )cvGetSeqElem( lines, i );  //lines序列里面存储的是像素点坐标  
-			cvLine( lineImage, line[0], line[1], CV_RGB(255, 0, 0), 2, CV_AA );  //将找到的直线标记为红色  
+			
+			cvLine( lineImage, line[0], line[1], CV_RGB(255, 0, 0), 1, CV_AA );  //将找到的直线标记为红色  
+
+			cvCircle(lineImage, line[0], 4, CV_RGB(0, 255, 0), -1);
+			cvCircle(lineImage, line[1], 4, CV_RGB(0, 0, 255), -1);
 		}
 		cvReleaseImage(&mImage);
 		mImage = lineImage;
@@ -420,16 +451,6 @@ void MainWindow::processImage()
 	////cvAdaptiveThreshold(mImage, binaryImage, 255);
 	//cvReleaseImage(&mImage);
 	//mImage = binaryImage;
-
-	//IplImage* erodedImage = cvCreateImage(cvGetSize(mImage), 8, 1);
-	//cvErode(mImage, erodedImage);
-	//cvReleaseImage(&mImage);
-	//mImage = erodedImage;
-	
-	//IplImage* dialatedImage = cvCreateImage(cvGetSize(mImage), 8, 1);
-	//cvDilate(mImage,dialatedImage);
-	//cvReleaseImage(&mImage);
-	//mImage = dialatedImage;
 
 	QImage* image = ImageAdapter::IplImage2QImage(mImage);
 	imageWidget->setImage(image);
