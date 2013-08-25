@@ -323,21 +323,18 @@ void MainWindow::processImage()
 		return;
 	}
 
+	/*
 	IplImage* rImage = cvCreateImage(cvGetSize(mImage), 8, 1);
 	IplImage* gImage = cvCreateImage(cvGetSize(mImage), 8, 1);
 	IplImage* bImage = cvCreateImage(cvGetSize(mImage), 8, 1);
-	cvSplit(mImage, rImage, gImage, bImage, 0);
-
+	cvSplit(mImage, bImage, gImage, rImage, 0);
 	cvEqualizeHist(rImage, rImage);
 	cvEqualizeHist(gImage, gImage);
 	cvEqualizeHist(bImage, bImage);
+	cvMerge(bImage, gImage, rImage, 0, mImage);
+	*/
 
-	cvMerge(rImage, gImage, bImage, 0, mImage);
-
-	//cvReleaseImage(&mImage);
-	//mImage = bImage;
-
-	/*
+	
 	if(mImage->nChannels == 3)
 	{
 		IplImage* grayImage = cvCreateImage(cvGetSize(mImage), 8, 1);
@@ -346,6 +343,7 @@ void MainWindow::processImage()
 		mImage = grayImage;
 	}
 
+	
 	if(mImage->nChannels == 1)
 	{
 		IplImage* contourImage = cvCreateImage(cvGetSize(mImage), 8, 1);
@@ -353,9 +351,19 @@ void MainWindow::processImage()
 		cvReleaseImage(&mImage);
 		mImage = contourImage;
 	}
-	*/
-
-
+	
+	//检测线段
+	IplImage* lineImage = cvCreateImage(cvGetSize(mImage), 8, 3);
+	CvMemStorage* storage = cvCreateMemStorage(0);
+	CvSeq* lines = 0;
+	lines = cvHoughLines2( mImage, storage, CV_HOUGH_PROBABILISTIC, 1, CV_PI/180, 100, 50, 5 );
+	for( int i = 0; i < lines ->total; i++ )  //lines存储的是直线  
+    {  
+        CvPoint* line = ( CvPoint* )cvGetSeqElem( lines, i );  //lines序列里面存储的是像素点坐标  
+        cvLine( lineImage, line[0], line[1], CV_RGB(255, 0, 0) );  //将找到的直线标记为红色  
+    }
+	cvReleaseImage(&mImage);
+	mImage = lineImage;
 /*	
 	getContourAndCorrect contour;
 	contour.fetchContourAndCorrect(cv::Mat(mImage));
