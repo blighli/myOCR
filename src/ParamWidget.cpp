@@ -6,11 +6,11 @@ ParamWidget::ParamWidget()
 	mainLayout = new QVBoxLayout();
 	setLayout(mainLayout);
 
-	addGroup(tr("Canny"));
+	cannyGroup = addGroup(tr("Canny"));
 	cannyThreshold1 = addParam(tr("Threshold1"),0, 200, 50);
 	cannyThreshold2 = addParam(tr("Threshold2"),0, 200, 150);
 	
-	addGroup(tr("Hough"));
+	houghGroup = addGroup(tr("Hough"));
 	houghThreshold = addParam(tr("Threshold"),0,200, 100);
 	houghParam1 = addParam(tr("Param1"),0, 200, 50);
 	houghParam2 = addParam(tr("Param2"),0, 200, 5);
@@ -26,12 +26,15 @@ void ParamWidget::buttonPressed()
 	emit process();
 }
 
-void ParamWidget::addGroup(QString groupName)
+QGroupBox* ParamWidget::addGroup(QString groupName)
 {
 	group = new QGroupBox(groupName);
+	group->setCheckable(true);
 	mainLayout->addWidget(group);
 	groupLayout = new QVBoxLayout();
 	group->setLayout(groupLayout);
+
+	return group;
 }
 
 QSlider* ParamWidget::addParam(QString paramName, int min, int max, int value)

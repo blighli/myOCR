@@ -355,9 +355,11 @@ void MainWindow::processImage()
 		return;
 	}
 
+	bool cannyGroup = paramWidget->cannyGroup->isChecked();
 	int cannyThreshold1 = paramWidget->cannyThreshold1->value();
 	int cannyThreshold2 = paramWidget->cannyThreshold2->value();
 
+	bool houghGroup = paramWidget->houghGroup->isChecked();
 	int houghThreshold = paramWidget->houghThreshold->value();
 	int houghParam1 = paramWidget->houghParam1->value();
 	int houghParam2 = paramWidget->houghParam2->value();
@@ -374,7 +376,7 @@ void MainWindow::processImage()
 	}
 
 	
-	if(mImage->nChannels == 1)
+	if(mImage->nChannels == 1 && cannyGroup)
 	{
 		IplImage* contourImage = cvCreateImage(cvGetSize(mImage), 8, 1);
 		cvCanny(mImage, contourImage, cannyThreshold1, cannyThreshold2, 3);
@@ -382,18 +384,22 @@ void MainWindow::processImage()
 		mImage = contourImage;
 	}
 	
-	//检测线段
-	IplImage* lineImage = cvCreateImage(cvGetSize(mImage), 8, 3);
-	CvMemStorage* storage = cvCreateMemStorage(0);
-	CvSeq* lines = 0;
-	lines = cvHoughLines2( mImage, storage, CV_HOUGH_PROBABILISTIC, 1, CV_PI/180, houghThreshold, houghParam1, houghParam2 );
-	for( int i = 0; i < lines ->total; i++ )  //lines存储的是直线  
-    {  
-        CvPoint* line = ( CvPoint* )cvGetSeqElem( lines, i );  //lines序列里面存储的是像素点坐标  
-        cvLine( lineImage, line[0], line[1], CV_RGB(255, 0, 0) );  //将找到的直线标记为红色  
-    }
-	cvReleaseImage(&mImage);
-	mImage = lineImage;
+	if(houghGroup)
+	{
+		//检测线段
+		IplImage* lineImage = cvCreateImage(cvGetSize(mImage), 8, 3);
+		CvMemStorage* storage = cvCreateMemStorage(0);
+		CvSeq* lines = 0;
+		lines = cvHoughLines2( mImage, storage, CV_HOUGH_PROBABILISTIC, 1, CV_PI/180, houghThreshold, houghParam1, houghParam2 );
+		for( int i = 0; i < lines ->total; i++ )  //lines存储的是直线  
+		{  
+			CvPoint* line = ( CvPoint* )cvGetSeqElem( lines, i );  //lines序列里面存储的是像素点坐标  
+			cvLine( lineImage, line[0], line[1], CV_RGB(255, 0, 0) );  //将找到的直线标记为红色  
+		}
+		cvReleaseImage(&mImage);
+		mImage = lineImage;
+	}
+
 /*	
 	getContourAndCorrect contour;
 	contour.fetchContourAndCorrect(cv::Mat(mImage));

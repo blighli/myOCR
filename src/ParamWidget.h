@@ -14,9 +14,11 @@ class ParamWidget : public QWidget
 public:
 	ParamWidget();
 
+	QGroupBox* cannyGroup;
 	QSlider* cannyThreshold1;
 	QSlider* cannyThreshold2;
 	
+	QGroupBox* houghGroup;;
 	QSlider* houghThreshold;
 	QSlider* houghParam1;
 	QSlider* houghParam2;
@@ -34,7 +36,7 @@ private:
 		EDIT_WIDTH = 40,
 		BUTTON_WIDTH = 100
 	};
-	void addGroup(QString groupName);
+	QGroupBox* addGroup(QString groupName);
 	QSlider* addParam(QString paramName, int min, int max, int value);
 	QPushButton* addButton(QString buttonName);
 
