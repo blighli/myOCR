@@ -109,17 +109,18 @@ void CubeWidget::paintGL()
 		b = key - r*256*256 - g*256;
 
 		glPushMatrix();
-		glColor3f((r/16)/16.0, (g/16)/16.0, (b/16)/16.0);
-		glTranslatef((r/16)/16.0, (g/16)/16.0, (b/16)/16.0);
+		
+		glColor3f(r/255.0, g/255.0, b/255.0);
+		glTranslatef(r/255.0, g/255.0, b/255.0);
 
 		float radius = sqrtf((float)value / (float)pixelCount);
 		//if(radius > 0.01)
 		//{
-		//	glutSolidSphere( radius, 5, 5);
+			glutSolidSphere( radius, 5, 5);
 		//}
 		//else
 		//{
-			glutSolidCube(radius);
+		//	glutSolidCube(radius);
 		//}
 		glPopMatrix();
 
