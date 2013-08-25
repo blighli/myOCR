@@ -10,6 +10,7 @@ class ImageWidget;
 class QTextEdit;
 class AbbyyOCR;
 class CubeWidget;
+class ParamWidget;
 
 class MainWindow : public QMainWindow
 {
@@ -37,6 +38,7 @@ private:
 	//user interface components
 	ImageWidget* imageWidget;
 	CubeWidget* cubeWidget;
+	ParamWidget* paramWidget;
 	QTextEdit* textEdit;
 
 	QMenu* menuFile;

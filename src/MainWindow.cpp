@@ -7,6 +7,7 @@
 #include "AbbyyOCR.h"
 #include "CubeWidget.h"
 #include "getContourAndCorrect.h"
+#include "ParamWidget.h"
 
 
 MainWindow::MainWindow()
@@ -18,6 +19,7 @@ MainWindow::MainWindow()
 	mEnableMasks = false;
 
 	cubeWidget = NULL;
+	paramWidget = NULL;
 
 	resize(960, 600);
 
@@ -141,6 +143,14 @@ MainWindow::~MainWindow()
 	if(mAbbyyOCR)
 	{
 		delete mAbbyyOCR;
+	}
+	if(cubeWidget)
+	{
+		delete cubeWidget;
+	}
+	if(paramWidget)
+	{
+		delete paramWidget;
 	}
 }
 
@@ -322,6 +332,15 @@ void MainWindow::processImage()
 		msgBox.exec();
 		return;
 	}
+
+	if(paramWidget == NULL)
+	{
+		paramWidget = new ParamWidget();
+	}
+	paramWidget->show();
+	paramWidget->raise();
+	paramWidget->activateWindow();
+
 
 	/*
 	IplImage* rImage = cvCreateImage(cvGetSize(mImage), 8, 1);
