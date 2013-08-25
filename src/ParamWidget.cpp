@@ -7,13 +7,13 @@ ParamWidget::ParamWidget()
 	setLayout(mainLayout);
 
 	cannyGroup = addGroup(tr("Canny"));
-	cannyThreshold1 = addParam(tr("Threshold1"),0, 200, 50);
-	cannyThreshold2 = addParam(tr("Threshold2"),0, 200, 150);
+	cannyThreshold1 = addParam(tr("Threshold1"),1, 400, 50);
+	cannyThreshold2 = addParam(tr("Threshold2"),1, 400, 150);
 	
 	houghGroup = addGroup(tr("Hough"));
-	houghThreshold = addParam(tr("Threshold"),0,200, 100);
-	houghParam1 = addParam(tr("Param1"),0, 200, 50);
-	houghParam2 = addParam(tr("Param2"),0, 200, 5);
+	houghThreshold = addParam(tr("Threshold"),1,400, 100);
+	houghParam1 = addParam(tr("Param1"),1, 400, 50);
+	houghParam2 = addParam(tr("Param2"),1, 400, 5);
 
 	buttonProcess = addButton(tr("Process"));
 	connect(buttonProcess, SIGNAL(pressed()), this, SLOT(buttonPressed()));

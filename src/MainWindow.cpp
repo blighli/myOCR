@@ -388,13 +388,14 @@ void MainWindow::processImage()
 	{
 		//检测线段
 		IplImage* lineImage = cvCreateImage(cvGetSize(mImage), 8, 3);
+		cvCvtColor(mImage, lineImage, CV_GRAY2BGR);
 		CvMemStorage* storage = cvCreateMemStorage(0);
 		CvSeq* lines = 0;
 		lines = cvHoughLines2( mImage, storage, CV_HOUGH_PROBABILISTIC, 1, CV_PI/180, houghThreshold, houghParam1, houghParam2 );
 		for( int i = 0; i < lines ->total; i++ )  //lines存储的是直线  
 		{  
 			CvPoint* line = ( CvPoint* )cvGetSeqElem( lines, i );  //lines序列里面存储的是像素点坐标  
-			cvLine( lineImage, line[0], line[1], CV_RGB(255, 0, 0) );  //将找到的直线标记为红色  
+			cvLine( lineImage, line[0], line[1], CV_RGB(255, 0, 0), 2, CV_AA );  //将找到的直线标记为红色  
 		}
 		cvReleaseImage(&mImage);
 		mImage = lineImage;
