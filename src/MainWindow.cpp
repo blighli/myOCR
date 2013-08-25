@@ -13,6 +13,7 @@
 MainWindow::MainWindow()
 {
 	mImage = NULL;
+	mOriginalImage = NULL;
 	tessBaseAPI = NULL;
 	mAbbyyOCR = NULL;
 	boxes = NULL;
@@ -83,7 +84,7 @@ MainWindow::MainWindow()
 	connect(actionOpenImage, SIGNAL(triggered()), this, SLOT(openImageFile()));
 	connect(actionSaveImage, SIGNAL(triggered()), this, SLOT(saveImageFile()));
 	connect(actionRecognizeText, SIGNAL(triggered()), this, SLOT(recognizeText()));
-	connect(actionProcessImage, SIGNAL(triggered()), this, SLOT(processImage()));
+	connect(actionProcessImage, SIGNAL(triggered()), this, SLOT(showParamWidget()));
 	connect(actionEnableMasks, SIGNAL(triggered()), this, SLOT(enableMasks()));
 	connect(actionSaveMasks, SIGNAL(triggered()), this, SLOT(saveMasks()));
 	connect(actionLoadMasks, SIGNAL(triggered()), this, SLOT(loadMasks()));
@@ -136,6 +137,10 @@ MainWindow::~MainWindow()
 	{
 		cvReleaseImage(&mImage);
 	}
+	if(mOriginalImage)
+	{
+		cvReleaseImage(&mOriginalImage);
+	}
 	if(tessBaseAPI)
 	{
 		tessBaseAPI->End();
@@ -166,7 +171,12 @@ void MainWindow::openImageFile()
 		{
 			cvReleaseImage(&mImage);
 		}
-		mImage = cvLoadImage(fileName.toStdString().c_str());
+		if(mOriginalImage)
+		{
+			cvReleaseImage(&mOriginalImage);
+		}
+		mOriginalImage = cvLoadImage(fileName.toStdString().c_str());
+		mImage = cvCloneImage(mOriginalImage);
 		if(mImage)
 		{
 			QImage* image = ImageAdapter::IplImage2QImage(mImage);
@@ -322,9 +332,21 @@ void MainWindow::clearMasks()
 	imageWidget->update();
 }
 
+void MainWindow::showParamWidget()
+{
+	if(paramWidget == NULL)
+	{
+		paramWidget = new ParamWidget();
+		connect(paramWidget, SIGNAL(process()), this, SLOT(processImage()));
+	}
+	paramWidget->show();
+	paramWidget->raise();
+	paramWidget->activateWindow();
+}
+
 void MainWindow::processImage()
 {
-	if(mImage == NULL)
+	if(mOriginalImage == NULL)
 	{
 		QMessageBox msgBox;
 		msgBox.setIcon(QMessageBox::Warning);
@@ -333,27 +355,16 @@ void MainWindow::processImage()
 		return;
 	}
 
-	if(paramWidget == NULL)
-	{
-		paramWidget = new ParamWidget();
-	}
-	paramWidget->show();
-	paramWidget->raise();
-	paramWidget->activateWindow();
+	int cannyThreshold1 = paramWidget->cannyThreshold1->value();
+	int cannyThreshold2 = paramWidget->cannyThreshold2->value();
 
+	int houghThreshold = paramWidget->houghThreshold->value();
+	int houghParam1 = paramWidget->houghParam1->value();
+	int houghParam2 = paramWidget->houghParam2->value();
 
-	/*
-	IplImage* rImage = cvCreateImage(cvGetSize(mImage), 8, 1);
-	IplImage* gImage = cvCreateImage(cvGetSize(mImage), 8, 1);
-	IplImage* bImage = cvCreateImage(cvGetSize(mImage), 8, 1);
-	cvSplit(mImage, bImage, gImage, rImage, 0);
-	cvEqualizeHist(rImage, rImage);
-	cvEqualizeHist(gImage, gImage);
-	cvEqualizeHist(bImage, bImage);
-	cvMerge(bImage, gImage, rImage, 0, mImage);
-	*/
+	cvReleaseImage(&mImage);
+	mImage = cvCloneImage(mOriginalImage);
 
-	
 	if(mImage->nChannels == 3)
 	{
 		IplImage* grayImage = cvCreateImage(cvGetSize(mImage), 8, 1);
@@ -366,7 +377,7 @@ void MainWindow::processImage()
 	if(mImage->nChannels == 1)
 	{
 		IplImage* contourImage = cvCreateImage(cvGetSize(mImage), 8, 1);
-		cvCanny(mImage, contourImage, 50, 150, 3);
+		cvCanny(mImage, contourImage, cannyThreshold1, cannyThreshold2, 3);
 		cvReleaseImage(&mImage);
 		mImage = contourImage;
 	}
@@ -375,7 +386,7 @@ void MainWindow::processImage()
 	IplImage* lineImage = cvCreateImage(cvGetSize(mImage), 8, 3);
 	CvMemStorage* storage = cvCreateMemStorage(0);
 	CvSeq* lines = 0;
-	lines = cvHoughLines2( mImage, storage, CV_HOUGH_PROBABILISTIC, 1, CV_PI/180, 100, 50, 5 );
+	lines = cvHoughLines2( mImage, storage, CV_HOUGH_PROBABILISTIC, 1, CV_PI/180, houghThreshold, houghParam1, houghParam2 );
 	for( int i = 0; i < lines ->total; i++ )  //lines存储的是直线  
     {  
         CvPoint* line = ( CvPoint* )cvGetSeqElem( lines, i );  //lines序列里面存储的是像素点坐标  

@@ -23,6 +23,8 @@ private slots:
 	void openImageFile();
 	void saveImageFile();
 	void recognizeText();
+
+	void showParamWidget();
 	void processImage();
 
 	void enableMasks();
@@ -63,6 +65,7 @@ private:
 
 	//internal variables
 	IplImage* mImage;
+	IplImage* mOriginalImage;
 	tesseract::TessBaseAPI* tessBaseAPI;
 	AbbyyOCR* mAbbyyOCR;
 	Boxa* boxes;
