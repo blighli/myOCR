@@ -38,6 +38,10 @@ public:
 	QSlider* combineRho;
 	QSlider* combineDistance;
 
+	QGroupBox* rectangleGroup;
+	QSlider* rectangleHorizontalLength;
+	QSlider* rectangleVerticalLength;
+
 	QGroupBox* backGroundGroup;
 
 signals:

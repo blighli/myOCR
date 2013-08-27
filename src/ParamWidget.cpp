@@ -28,6 +28,10 @@ ParamWidget::ParamWidget()
 	combineRho = addParam(tr("Rho"),0, 500, 10);
 	combineDistance = addParam(tr("Distance"),0,1000, 100);
 
+	rectangleGroup = addGroup(tr("Rectangle"));
+	rectangleHorizontalLength = addParam(tr("Horizontal Length"),0, 3000, 800);
+	rectangleVerticalLength = addParam(tr("Vertical Length"),0, 2000, 400);
+
 	backGroundGroup =  addGroup(tr("Background"));
 
 	buttonProcess = addButton(tr("Process"));

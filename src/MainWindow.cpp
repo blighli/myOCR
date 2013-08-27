@@ -347,6 +347,10 @@ void MainWindow::showParamWidget()
 class LineSeg
 {
 public:
+	LineSeg()
+	{
+
+	}
 	LineSeg(const CvPoint& p0, const CvPoint& p1, int thetaThresh, int rhoThresh, int distThresh)
 	{
 		point[0] = p0;
@@ -375,6 +379,31 @@ public:
 	{
 		float dist = sqrtf((p0.x - p1.x) * (p0.x - p1.x) + (p0.y - p1.y) * (p0.y - p1.y));
 		return dist;
+	}
+
+	CvPoint intersect(const LineSeg& lineSeg)
+	{
+		float x1 = point[0].x;
+		float x2 = point[1].x;
+		float x3 = lineSeg.point[0].x;
+		float x4 = lineSeg.point[1].x;
+
+		float y1 = point[0].y;
+		float y2 = point[1].y;
+		float y3 = lineSeg.point[0].y;
+		float y4 = lineSeg.point[1].y;
+
+		float a = (y1-y2)/(x1-x2);
+		float b = (y3-y4)/(x3-x4);
+
+		float x = (a*x2-b*x4-y2+y4)/(a-b);
+		float y = a*x-a*x2+y2;
+
+		CvPoint point;
+		point.x = (int)x;
+		point.y = (int)y;
+
+		return point;
 	}
 
 	bool combine(const LineSeg& lineSeg)
@@ -516,6 +545,10 @@ void MainWindow::processImage()
 	int combineRho = paramWidget->combineRho->value();
 	int combineDistance = paramWidget->combineDistance->value();
 
+	bool rectangleGroup = paramWidget->rectangleGroup->isChecked();
+	int rectangleHorizontalLength = paramWidget->rectangleHorizontalLength->value();
+	int rectangleVerticalLength = paramWidget->rectangleVerticalLength->value();
+
 	bool backGroundGroup = paramWidget->backGroundGroup->isChecked();
 
 	cvReleaseImage(&mImage);
@@ -595,10 +628,57 @@ void MainWindow::processImage()
 
 		if(combineGroup)
 		{
+			int minHRho = 5000;
+			int maxHRho = 0;
+			int minVRho = 5000;
+			int maxVRho = 0;
+
+			LineSeg minH;
+			LineSeg maxH;
+			LineSeg minV;
+			LineSeg maxV;
+
+
 			for(int n=0; n<lineSegList.size(); n++)
 			{
+				if(rectangleGroup)
+				{
 
-				if(lineSegList[n].length > 800)
+					if(lineSegList[n].theta < M_PI * 0.25 || lineSegList[n].theta > M_PI * 0.75)//ˮƽ
+					{
+						if(lineSegList[n].length > rectangleHorizontalLength)
+						{
+							if(lineSegList[n].rho < minHRho && lineSegList[n].rho > 300)
+							{
+								minHRho = lineSegList[n].rho;
+								minH = lineSegList[n];
+							}
+							if(lineSegList[n].rho > maxHRho && lineSegList[n].rho < mImage->height - 100)
+							{
+								maxHRho = lineSegList[n].rho;
+								maxH = lineSegList[n];
+							}
+						}
+
+					}
+					else
+					{
+						if(lineSegList[n].length > rectangleVerticalLength)
+						{
+							if(lineSegList[n].rho < minVRho && lineSegList[n].rho > 80)
+							{
+								minVRho = lineSegList[n].rho;
+								minV = lineSegList[n];
+							}
+							if(lineSegList[n].rho > maxVRho && lineSegList[n].rho < mImage->width - 20)
+							{
+								maxVRho = lineSegList[n].rho;
+								maxV = lineSegList[n];
+							}
+						}
+					}
+				}
+				else
 				{
 					cvLine( lineImage, lineSegList[n].point[0], lineSegList[n].point[1], CV_RGB(255, 0, 0), 1, CV_AA );
 
@@ -606,6 +686,21 @@ void MainWindow::processImage()
 					cvInitFont(&font, FONT_HERSHEY_PLAIN, 1, 1);
 					cvPutText(lineImage, (QString::number((int)(lineSegList[n].theta / M_PI*180)) + "," + QString::number((int)(lineSegList[n].rho))).toStdString().c_str(), lineSegList[n].point[0], &font,CV_RGB(255, 255, 255));
 				}
+			}
+
+
+			if(rectangleGroup)
+			{
+				CvPoint points[4];
+				points[0] = minH.intersect(minV);
+				points[1] = minH.intersect(maxV);
+				points[2] = maxH.intersect(maxV);
+				points[3] = maxH.intersect(minV);
+
+				cvLine( lineImage, points[0], points[1], CV_RGB(255, 0, 0), 3, CV_AA );
+				cvLine( lineImage, points[1], points[2], CV_RGB(255, 0, 0), 3, CV_AA );
+				cvLine( lineImage, points[2], points[3], CV_RGB(255, 0, 0), 3, CV_AA );
+				cvLine( lineImage, points[3], points[0], CV_RGB(255, 0, 0), 3, CV_AA );
 			}
 		}
 
