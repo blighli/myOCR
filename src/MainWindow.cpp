@@ -746,6 +746,8 @@ void MainWindow::processImage()
 
 		cvThreshold(grayImage, grayImage, 30, 255, CV_THRESH_BINARY);
 
+		cvSmooth(grayImage, grayImage, CV_MEDIAN);
+
 		cvReleaseImage(&mImage);
 		mImage = grayImage;
 	}
