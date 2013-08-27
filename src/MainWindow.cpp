@@ -27,13 +27,11 @@ MainWindow::MainWindow()
 
 	imageWidget = new ImageWidget();
 	textEdit = new QTextEdit();
-	textEdit->setFixedWidth(300);
+	textEdit->setFixedWidth(400);
 	QFont fontTextEdit = textEdit->font();
 	fontTextEdit.setPixelSize(18);
 	textEdit->setFont(fontTextEdit);
 
-	paramWidget = new ParamWidget();
-	connect(paramWidget, SIGNAL(process()), this, SLOT(processImage()));
 
 	QHBoxLayout* hbox = new QHBoxLayout();
 
@@ -41,7 +39,6 @@ MainWindow::MainWindow()
 	scrollArea->setWidget(imageWidget);
 	scrollArea->setWidgetResizable(true);
 	hbox->addWidget(scrollArea,1);
-	hbox->addWidget(paramWidget);
 	hbox->addWidget(textEdit);
 	
 	QWidget* centerWidget = new QWidget();
@@ -740,8 +737,18 @@ void MainWindow::processImage()
 		mImage = lineImage;
 	}
 
+	if(mImage->nChannels == 3)
+	{
+		IplImage* grayImage = cvCreateImage(cvGetSize(mImage), 8, 1);
+		cvCvtColor(mImage, grayImage, CV_RGB2GRAY);
 
+		cvEqualizeHist(grayImage, grayImage);
 
+		cvThreshold(grayImage, grayImage, 30, 255, CV_THRESH_BINARY);
+
+		cvReleaseImage(&mImage);
+		mImage = grayImage;
+	}
 
 	QImage* image = ImageAdapter::IplImage2QImage(mImage);
 	imageWidget->setImage(image);
@@ -858,7 +865,10 @@ void MainWindow::recognizeText()
 
 					char* ocrResult = tessBaseAPI->GetUTF8Text();
 					QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf-8"));
-					textEdit->setText(QString("%1%2").arg(textEdit->toPlainText(),ocrResult));
+					QString txt = QString(ocrResult);
+					txt.replace(" ","");
+					txt.replace("\n\n","\n");
+					textEdit->setText(QString("%1%2").arg(textEdit->toPlainText(),txt));
 				}
 			}
 
