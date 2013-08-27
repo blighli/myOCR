@@ -32,12 +32,16 @@ MainWindow::MainWindow()
 	fontTextEdit.setPixelSize(18);
 	textEdit->setFont(fontTextEdit);
 
+	paramWidget = new ParamWidget();
+	connect(paramWidget, SIGNAL(process()), this, SLOT(processImage()));
+
 	QHBoxLayout* hbox = new QHBoxLayout();
 
 	QScrollArea* scrollArea = new QScrollArea();
 	scrollArea->setWidget(imageWidget);
 	scrollArea->setWidgetResizable(true);
 	hbox->addWidget(scrollArea,1);
+	hbox->addWidget(paramWidget);
 	hbox->addWidget(textEdit);
 	
 	QWidget* centerWidget = new QWidget();
@@ -665,7 +669,7 @@ void MainWindow::processImage()
 					{
 						if(lineSegList[n].length > rectangleVerticalLength)
 						{
-							if(lineSegList[n].rho < minVRho && lineSegList[n].rho > 80)
+							if(lineSegList[n].rho < minVRho && lineSegList[n].rho > 50)
 							{
 								minVRho = lineSegList[n].rho;
 								minV = lineSegList[n];
@@ -701,6 +705,34 @@ void MainWindow::processImage()
 				cvLine( lineImage, points[1], points[2], CV_RGB(255, 0, 0), 3, CV_AA );
 				cvLine( lineImage, points[2], points[3], CV_RGB(255, 0, 0), 3, CV_AA );
 				cvLine( lineImage, points[3], points[0], CV_RGB(255, 0, 0), 3, CV_AA );
+
+				//±ê×¼¾ØÐÎ³ß´ç 2000x940
+				CvPoint2D32f src[4], dst[4];
+				src[0].x = points[0].x;
+				src[0].y = points[0].y;
+				src[1].x = points[1].x;
+				src[1].y = points[1].y;
+				src[2].x = points[2].x;
+				src[2].y = points[2].y;
+				src[3].x = points[3].x;
+				src[3].y = points[3].y;
+
+				dst[0].x = 0;
+				dst[0].y = 0;
+				dst[1].x = 2000;
+				dst[1].y = 0;
+				dst[2].x = 2000;
+				dst[2].y = 940;
+				dst[3].x = 0;
+				dst[3].y = 940;
+
+				CvMat* warp_mat = cvCreateMat( 3, 3, CV_32FC1 );
+
+				cvGetPerspectiveTransform(src, dst, warp_mat);
+
+				cvZero(lineImage);
+
+				cvWarpPerspective(mOriginalImage, lineImage, warp_mat);
 			}
 		}
 
