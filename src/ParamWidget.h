@@ -33,6 +33,11 @@ public:
 	QSlider* houghParam1;
 	QSlider* houghParam2;
 
+	QGroupBox* combineGroup;
+	QSlider* combineTheta;
+	QSlider* combineRho;
+	QSlider* combineDistance;
+
 	QGroupBox* backGroundGroup;
 
 signals:

@@ -344,6 +344,146 @@ void MainWindow::showParamWidget()
 	paramWidget->activateWindow();
 }
 
+class LineSeg
+{
+public:
+	LineSeg(const CvPoint& p0, const CvPoint& p1, int thetaThresh, int rhoThresh, int distThresh)
+	{
+		point[0] = p0;
+		point[1] = p1;
+
+		theta_threshold = M_PI / 180.0 * thetaThresh;
+		rho_threshold = rhoThresh;
+		dist_threahold = distThresh;
+
+		length = disance(p0, p1);
+
+		calcLineParam();
+	}
+
+	void calcLineParam()
+	{
+		theta = atan2f(point[0].y - point[1].y, point[0].x - point[1].x);
+		if(theta < 0)
+		{
+			theta += M_PI;
+		}
+		rho = fabs((point[0].x * point[1].y - point[0].y * point[1].x) / length);
+	}
+
+	float disance(const CvPoint& p0, const CvPoint& p1)
+	{
+		float dist = sqrtf((p0.x - p1.x) * (p0.x - p1.x) + (p0.y - p1.y) * (p0.y - p1.y));
+		return dist;
+	}
+
+	bool combine(const LineSeg& lineSeg)
+	{
+		float thetaDistance = fabs(theta - lineSeg.theta);
+		if(thetaDistance > M_PI / 2)
+		{
+			thetaDistance = M_PI - thetaDistance;
+		}
+
+		float rhoDistance = fabs(rho - lineSeg.rho);
+
+		float minDist = 4000.0;
+		for(int i = 0; i<2; i++)
+		{
+			if(minDist == 0)
+			{
+				break;
+			}
+			for(int j=0; j<2; j++)
+			{
+				if(minDist == 0)
+				{
+					break;
+				}
+				float dist = disance(point[i], lineSeg.point[j]);
+				if(dist < minDist)
+				{
+					minDist = dist;
+				}
+
+				//计算是否交叠
+				if(i == j)
+				{
+					int cosine1 = (point[i].x - lineSeg.point[j].x)*(lineSeg.point[1-j].x - lineSeg.point[j].x) 
+						+ (point[i].y - lineSeg.point[j].y)*(lineSeg.point[1-j].y - lineSeg.point[j].y);
+
+					int cosine2 = (point[i].x - lineSeg.point[1-j].x)*(lineSeg.point[j].x - lineSeg.point[1-j].x) 
+						+ (point[i].y - lineSeg.point[1-j].y)*(lineSeg.point[j].y - lineSeg.point[1-j].y) ;
+
+					if(cosine1 > 0 && cosine2 > 0)
+					{
+						minDist = 0;
+						break;
+					}
+
+					cosine1 = (lineSeg.point[i].x - point[j].x)*(point[1-j].x - point[j].x) 
+						+ (lineSeg.point[i].y - point[j].y)*(point[1-j].y - point[j].y);
+
+					cosine2 = (lineSeg.point[i].x - point[1-j].x)*(point[j].x - point[1-j].x) 
+						+ (lineSeg.point[i].y - point[1-j].y)*(point[j].y - point[1-j].y) ;
+
+					if(cosine1 > 0 && cosine2 > 0)
+					{
+						minDist = 0;
+						break;
+					}
+				}
+			}
+		}
+		
+
+		if(thetaDistance > theta_threshold || rhoDistance > rho_threshold || minDist > dist_threahold)
+		{
+			return false;
+		}
+
+		float maxDist = length;
+		CvPoint p0 = point[0];
+		CvPoint p1 = point[1];
+		if(lineSeg.length > maxDist)
+		{
+			maxDist = lineSeg.length;
+			p0 = lineSeg.point[0];
+			p1 = lineSeg.point[1];
+		}
+
+		for(int i = 0; i<2; i++)
+		{
+			for(int j=0; j<2; j++)
+			{
+				float dist = disance(point[i], lineSeg.point[j]);
+				if(dist > maxDist)
+				{
+					maxDist = dist;
+					p0 = point[i];
+					p1 = lineSeg.point[j];
+				}
+			}
+		}
+
+		length = maxDist;
+		point[0] = p0;
+		point[1] = p1;
+		calcLineParam();
+
+		return true;
+	}
+
+	CvPoint point[2];
+	float theta;
+	float rho;
+	float length;
+
+	float theta_threshold;
+	float rho_threshold;
+	float dist_threahold;
+};
+
 void MainWindow::processImage()
 {
 	if(mOriginalImage == NULL)
@@ -370,6 +510,11 @@ void MainWindow::processImage()
 	int houghThreshold = paramWidget->houghThreshold->value();
 	int houghParam1 = paramWidget->houghParam1->value();
 	int houghParam2 = paramWidget->houghParam2->value();
+
+	bool combineGroup = paramWidget->combineGroup->isChecked();
+	int combineTheta = paramWidget->combineTheta->value();
+	int combineRho = paramWidget->combineRho->value();
+	int combineDistance = paramWidget->combineDistance->value();
 
 	bool backGroundGroup = paramWidget->backGroundGroup->isChecked();
 
@@ -419,38 +564,57 @@ void MainWindow::processImage()
 		CvMemStorage* storage = cvCreateMemStorage(0);
 		CvSeq* lines = 0;
 		lines = cvHoughLines2( mImage, storage, CV_HOUGH_PROBABILISTIC, houghRho, CV_PI/180 * houghTheta, houghThreshold, houghParam1, houghParam2 );
+		
+		std::vector<LineSeg> lineSegList;
 		for( int i = 0; i < lines ->total; i++ )  //lines存储的是直线  
 		{  
 			CvPoint* line = ( CvPoint* )cvGetSeqElem( lines, i );  //lines序列里面存储的是像素点坐标  
 			
-			cvLine( lineImage, line[0], line[1], CV_RGB(255, 0, 0), 1, CV_AA );  //将找到的直线标记为红色  
-
-			cvCircle(lineImage, line[0], 4, CV_RGB(0, 255, 0), -1);
-			cvCircle(lineImage, line[1], 4, CV_RGB(0, 0, 255), -1);
+			if(combineGroup == false)
+			{
+				cvLine( lineImage, line[0], line[1], CV_RGB(255, 0, 0), 1, CV_AA );
+			}
+			else
+			{
+				LineSeg lineSeg(line[0], line[1], combineTheta, combineRho, combineDistance);
+				bool combined = false;
+				for(int n=0; n<lineSegList.size(); n++)
+				{
+					if(lineSegList[n].combine(lineSeg))
+					{
+						combined = true;
+						break;
+					}
+				}
+				if(combined == false)
+				{
+					lineSegList.push_back(lineSeg);
+				}
+			}
 		}
+
+		if(combineGroup)
+		{
+			for(int n=0; n<lineSegList.size(); n++)
+			{
+
+				if(lineSegList[n].length > 800)
+				{
+					cvLine( lineImage, lineSegList[n].point[0], lineSegList[n].point[1], CV_RGB(255, 0, 0), 1, CV_AA );
+
+					CvFont font;
+					cvInitFont(&font, FONT_HERSHEY_PLAIN, 1, 1);
+					cvPutText(lineImage, (QString::number((int)(lineSegList[n].theta / M_PI*180)) + "," + QString::number((int)(lineSegList[n].rho))).toStdString().c_str(), lineSegList[n].point[0], &font,CV_RGB(255, 255, 255));
+				}
+			}
+		}
+
 		cvReleaseImage(&mImage);
 		mImage = lineImage;
 	}
 
-/*	
-	getContourAndCorrect contour;
-	contour.fetchContourAndCorrect(cv::Mat(mImage));
 
-	int width = contour.CorrectContourPoint[1].x - contour.CorrectContourPoint[1].x;
-	int height = contour.CorrectContourPoint[3].y;
-	cvSetImageROI(mImage, cvRect(contour.CorrectContourPoint[0].x, 0, width, height));
-	IplImage* chopImage = cvCreateImage(cvGetSize(mImage),mImage->depth,mImage->nChannels);
-	cvCopy(mImage, mImage, NULL);
-	cvResetImageROI(mImage);
-	cvReleaseImage(&mImage);
-	mImage = chopImage;
-	*/
 
-	//IplImage* binaryImage = cvCreateImage(cvGetSize(mImage), 8, 1);
-	//cvThreshold(mImage, binaryImage, 200, 255, CV_THRESH_BINARY);
-	////cvAdaptiveThreshold(mImage, binaryImage, 255);
-	//cvReleaseImage(&mImage);
-	//mImage = binaryImage;
 
 	QImage* image = ImageAdapter::IplImage2QImage(mImage);
 	imageWidget->setImage(image);

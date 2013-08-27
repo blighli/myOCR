@@ -20,8 +20,13 @@ ParamWidget::ParamWidget()
 	houghRho = addParam(tr("Rho"),1,100, 1);
 	houghTheta = addParam(tr("Theta"),1,90, 1);
 	houghThreshold = addParam(tr("Threshold"),1,1000, 500);
-	houghParam1 = addParam(tr("Param1"),1, 1000, 500);
+	houghParam1 = addParam(tr("Param1"),1, 1000, 100);
 	houghParam2 = addParam(tr("Param2"),1, 100, 5);
+
+	combineGroup = addGroup(tr("Combine"));
+	combineTheta = addParam(tr("Theta"),0, 180, 5);
+	combineRho = addParam(tr("Rho"),0, 500, 10);
+	combineDistance = addParam(tr("Distance"),0,1000, 100);
 
 	backGroundGroup =  addGroup(tr("Background"));
 
