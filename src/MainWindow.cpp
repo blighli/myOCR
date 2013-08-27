@@ -715,13 +715,13 @@ void MainWindow::processImage()
 				src[3].y = points[3].y;
 
 				dst[0].x = 0;
-				dst[0].y = 0;
+				dst[0].y = 200;
 				dst[1].x = 2000;
-				dst[1].y = 0;
+				dst[1].y = 200;
 				dst[2].x = 2000;
-				dst[2].y = 940;
+				dst[2].y = 1140;
 				dst[3].x = 0;
-				dst[3].y = 940;
+				dst[3].y = 1140;
 
 				CvMat* warp_mat = cvCreateMat( 3, 3, CV_32FC1 );
 
