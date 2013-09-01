@@ -12,6 +12,7 @@ class AbbyyOCR;
 class CubeWidget;
 class ParamWidget;
 class ImageProcess;
+class TesseractOCR;
 
 class MainWindow : public QMainWindow
 {
@@ -66,9 +67,9 @@ private:
 	QAction* actionAbout;
 
 	//internal variables
-	tesseract::TessBaseAPI* tessBaseAPI;
 	AbbyyOCR* mAbbyyOCR;
-	Boxa* boxes;
+	TesseractOCR* mTesseractOCR;
+	
 
 	ImageProcess* mImageProcess;
 };
