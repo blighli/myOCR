@@ -11,6 +11,7 @@ class QTextEdit;
 class AbbyyOCR;
 class CubeWidget;
 class ParamWidget;
+class ImageProcess;
 
 class MainWindow : public QMainWindow
 {
@@ -37,6 +38,7 @@ private slots:
 
 	void showCube();
 private:
+	void buildUI();
 	//user interface components
 	ImageWidget* imageWidget;
 	CubeWidget* cubeWidget;
@@ -64,13 +66,12 @@ private:
 	QAction* actionAbout;
 
 	//internal variables
-	IplImage* mImage;
-	IplImage* mOriginalImage;
 	tesseract::TessBaseAPI* tessBaseAPI;
 	AbbyyOCR* mAbbyyOCR;
 	Boxa* boxes;
 
 	bool mEnableMasks;
+	ImageProcess* mImageProcess;
 };
 
 #endif //MAINWINDOW_H

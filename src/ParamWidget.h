@@ -14,7 +14,7 @@ class ParamWidget : public QWidget
 public:
 	ParamWidget();
 
-	
+	QGroupBox* grayGroup;
 
 	QGroupBox* cannyGroup;
 	QSlider* cannyThreshold1;
@@ -43,6 +43,8 @@ public:
 	QSlider* rectangleVerticalLength;
 
 	QGroupBox* backGroundGroup;
+
+	QGroupBox* normalizeGroup;
 
 signals:
 	void process();

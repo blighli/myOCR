@@ -6,6 +6,7 @@ ParamWidget::ParamWidget()
 	mainLayout = new QVBoxLayout();
 	setLayout(mainLayout);
 
+	grayGroup = addGroup(tr("Gray"));
 
 	cannyGroup = addGroup(tr("Canny"));
 	cannyThreshold1 = addParam(tr("Threshold1"),1, 400, 50);
@@ -24,15 +25,17 @@ ParamWidget::ParamWidget()
 	houghParam2 = addParam(tr("Param2"),1, 100, 5);
 
 	combineGroup = addGroup(tr("Combine"));
-	combineTheta = addParam(tr("Theta"),0, 180, 5);
+	combineTheta = addParam(tr("Theta"),0, 180, 1);
 	combineRho = addParam(tr("Rho"),0, 500, 10);
 	combineDistance = addParam(tr("Distance"),0,1000, 100);
 
 	rectangleGroup = addGroup(tr("Rectangle"));
 	rectangleHorizontalLength = addParam(tr("Horizontal Length"),0, 3000, 800);
-	rectangleVerticalLength = addParam(tr("Vertical Length"),0, 2000, 400);
+	rectangleVerticalLength = addParam(tr("Vertical Length"),0, 2000, 800);
 
 	backGroundGroup =  addGroup(tr("Background"));
+
+	normalizeGroup =  addGroup(tr("Normalize"));
 
 	buttonProcess = addButton(tr("Process"));
 	connect(buttonProcess, SIGNAL(pressed()), this, SLOT(buttonPressed()));

@@ -6,54 +6,93 @@
 #include "AppInfo.h"
 #include "AbbyyOCR.h"
 #include "CubeWidget.h"
-#include "getContourAndCorrect.h"
 #include "ParamWidget.h"
+#include "ImageProcess.h"
 
 
 MainWindow::MainWindow()
 {
-	mImage = NULL;
-	mOriginalImage = NULL;
+	mImageProcess = new ImageProcess();
+
 	tessBaseAPI = NULL;
 	mAbbyyOCR = NULL;
+	
 	boxes = NULL;
 	mEnableMasks = false;
 
 	cubeWidget = NULL;
 	paramWidget = NULL;
 
-	resize(960, 600);
+	buildUI();
+}
 
+MainWindow::~MainWindow()
+{
+	if(mImageProcess)
+	{
+		delete mImageProcess;
+	}
 
+	if(tessBaseAPI)
+	{
+		tessBaseAPI->End();
+	}
+
+	if(mAbbyyOCR)
+	{
+		delete mAbbyyOCR;
+	}
+
+	if(cubeWidget)
+	{
+		delete cubeWidget;
+	}
+
+	if(paramWidget)
+	{
+		delete paramWidget;
+	}
+}
+
+void MainWindow::buildUI()
+{
+	resize(960, 720);
+
+	//build image widget
 	imageWidget = new ImageWidget();
+	QScrollArea* scrollArea = new QScrollArea();
+	scrollArea->setWidget(imageWidget);
+	scrollArea->setWidgetResizable(true);
+
+	//build text widget
 	textEdit = new QTextEdit();
 	textEdit->setFixedWidth(400);
 	QFont fontTextEdit = textEdit->font();
 	fontTextEdit.setPixelSize(18);
 	textEdit->setFont(fontTextEdit);
 
-
+	//layout the main ui
 	QHBoxLayout* hbox = new QHBoxLayout();
-
-	QScrollArea* scrollArea = new QScrollArea();
-	scrollArea->setWidget(imageWidget);
-	scrollArea->setWidgetResizable(true);
 	hbox->addWidget(scrollArea,1);
 	hbox->addWidget(textEdit);
-	
 	QWidget* centerWidget = new QWidget();
 	centerWidget->setLayout(hbox);
 	setCentralWidget(centerWidget);
 
+	//build the main menu
 	menuFile = menuBar()->addMenu(tr("File"));
 	menuImage = menuBar()->addMenu(tr("Image"));
 	menuHelp = menuBar()->addMenu(tr("Help"));
 
+
+	//build the main toolbar
 	toolBarFile = addToolBar(tr("File"));
 	toolBarFile->setMovable(false);
 	toolBarImage = addToolBar(tr("Image"));
 	toolBarImage->setMovable(false);
-	
+
+
+	//build actions
 	actionOpenImage = new QAction(tr("Open Image"), this);
 	actionSaveImage = new QAction(tr("Save Image"), this);
 	actionRecognizeText = new QAction(tr("Recognize Text"), this);
@@ -69,7 +108,7 @@ MainWindow::MainWindow()
 	actionEnableChinese = new QAction(tr("Enable Chinese"), this);
 	actionEnableChinese->setCheckable(true);
 	actionShowCube = new QAction(tr("Show Cube"), this);
-	
+
 	actionOpenImage->setIcon(QIcon(":/open.png"));
 	actionSaveImage->setIcon(QIcon(":/save.png"));
 	actionRecognizeText->setIcon(QIcon(":/ocr.png"));
@@ -93,7 +132,7 @@ MainWindow::MainWindow()
 	connect(actionEnableMesure, SIGNAL(triggered()), this, SLOT(enableMesure()));
 	connect(actionEnableChinese, SIGNAL(triggered()), this, SLOT(enableChinese()));
 	connect(actionShowCube, SIGNAL(triggered()), this, SLOT(showCube()));
-	
+
 	menuFile->addAction(actionOpenImage);
 	menuFile->addAction(actionSaveImage);
 	menuImage->addAction(actionEnableMesure);
@@ -109,7 +148,7 @@ MainWindow::MainWindow()
 	menuImage->addAction(actionEnableChinese);
 	menuImage->addAction(actionShowCube);
 	menuHelp->addAction(actionAbout);
-	
+
 	toolBarFile->addAction(actionOpenImage);
 	toolBarFile->addAction(actionSaveImage);
 	toolBarImage->addAction(actionEnableMesure);
@@ -132,34 +171,6 @@ MainWindow::MainWindow()
 	//toolBarImage->addWidget(recognizeMethods);
 }
 
-MainWindow::~MainWindow()
-{
-	if(mImage)
-	{
-		cvReleaseImage(&mImage);
-	}
-	if(mOriginalImage)
-	{
-		cvReleaseImage(&mOriginalImage);
-	}
-	if(tessBaseAPI)
-	{
-		tessBaseAPI->End();
-	}
-	if(mAbbyyOCR)
-	{
-		delete mAbbyyOCR;
-	}
-	if(cubeWidget)
-	{
-		delete cubeWidget;
-	}
-	if(paramWidget)
-	{
-		delete paramWidget;
-	}
-}
-
 void MainWindow::openImageFile()
 {
 	QString fileName = QFileDialog::getOpenFileName(this,
@@ -168,20 +179,12 @@ void MainWindow::openImageFile()
     if (!fileName.isEmpty())
 	{
 		QTextCodec::setCodecForCStrings(QTextCodec::codecForName("gbk"));//解决中文路径的问题
-		if(mImage)
+		IplImage* cvImage = cvLoadImage(fileName.toStdString().c_str());
+		if(cvImage)
 		{
-			cvReleaseImage(&mImage);
-		}
-		if(mOriginalImage)
-		{
-			cvReleaseImage(&mOriginalImage);
-		}
-		mOriginalImage = cvLoadImage(fileName.toStdString().c_str());
-		mImage = cvCloneImage(mOriginalImage);
-		if(mImage)
-		{
-			QImage* image = ImageAdapter::IplImage2QImage(mImage);
-			imageWidget->setImage(image);
+			mImageProcess->setImage(cvImage);
+			QImage* qtImage= ImageAdapter::IplImage2QImage(cvImage);
+			imageWidget->setImage(qtImage);
 		}
 	}
 }
@@ -194,9 +197,10 @@ void MainWindow::saveImageFile()
     if (!fileName.isEmpty())
 	{
 		QTextCodec::setCodecForCStrings(QTextCodec::codecForName("gbk"));//解决中文路径的问题
-		if(mImage)
+		IplImage* cvImage = mImageProcess->getProcessedImage();
+		if(cvImage)
 		{
-			cvSaveImage(fileName.toStdString().c_str(), mImage);
+			cvSaveImage(fileName.toStdString().c_str(), cvImage);
 		}
 	}
 }
@@ -345,178 +349,11 @@ void MainWindow::showParamWidget()
 	paramWidget->activateWindow();
 }
 
-class LineSeg
-{
-public:
-	LineSeg()
-	{
 
-	}
-	LineSeg(const CvPoint& p0, const CvPoint& p1, int thetaThresh, int rhoThresh, int distThresh)
-	{
-		point[0] = p0;
-		point[1] = p1;
-
-		theta_threshold = M_PI / 180.0 * thetaThresh;
-		rho_threshold = rhoThresh;
-		dist_threahold = distThresh;
-
-		length = disance(p0, p1);
-
-		calcLineParam();
-	}
-
-	void calcLineParam()
-	{
-		theta = atan2f(point[0].y - point[1].y, point[0].x - point[1].x);
-		if(theta < 0)
-		{
-			theta += M_PI;
-		}
-		rho = fabs((point[0].x * point[1].y - point[0].y * point[1].x) / length);
-	}
-
-	float disance(const CvPoint& p0, const CvPoint& p1)
-	{
-		float dist = sqrtf((p0.x - p1.x) * (p0.x - p1.x) + (p0.y - p1.y) * (p0.y - p1.y));
-		return dist;
-	}
-
-	CvPoint intersect(const LineSeg& lineSeg)
-	{
-		float x1 = point[0].x;
-		float x2 = point[1].x;
-		float x3 = lineSeg.point[0].x;
-		float x4 = lineSeg.point[1].x;
-
-		float y1 = point[0].y;
-		float y2 = point[1].y;
-		float y3 = lineSeg.point[0].y;
-		float y4 = lineSeg.point[1].y;
-
-		float a = (y1-y2)/(x1-x2);
-		float b = (y3-y4)/(x3-x4);
-
-		float x = (a*x2-b*x4-y2+y4)/(a-b);
-		float y = a*x-a*x2+y2;
-
-		CvPoint point;
-		point.x = (int)x;
-		point.y = (int)y;
-
-		return point;
-	}
-
-	bool combine(const LineSeg& lineSeg)
-	{
-		float thetaDistance = fabs(theta - lineSeg.theta);
-		if(thetaDistance > M_PI / 2)
-		{
-			thetaDistance = M_PI - thetaDistance;
-		}
-
-		float rhoDistance = fabs(rho - lineSeg.rho);
-
-		float minDist = 4000.0;
-		for(int i = 0; i<2; i++)
-		{
-			if(minDist == 0)
-			{
-				break;
-			}
-			for(int j=0; j<2; j++)
-			{
-				if(minDist == 0)
-				{
-					break;
-				}
-				float dist = disance(point[i], lineSeg.point[j]);
-				if(dist < minDist)
-				{
-					minDist = dist;
-				}
-
-				//计算是否交叠
-				if(i == j)
-				{
-					int cosine1 = (point[i].x - lineSeg.point[j].x)*(lineSeg.point[1-j].x - lineSeg.point[j].x) 
-						+ (point[i].y - lineSeg.point[j].y)*(lineSeg.point[1-j].y - lineSeg.point[j].y);
-
-					int cosine2 = (point[i].x - lineSeg.point[1-j].x)*(lineSeg.point[j].x - lineSeg.point[1-j].x) 
-						+ (point[i].y - lineSeg.point[1-j].y)*(lineSeg.point[j].y - lineSeg.point[1-j].y) ;
-
-					if(cosine1 > 0 && cosine2 > 0)
-					{
-						minDist = 0;
-						break;
-					}
-
-					cosine1 = (lineSeg.point[i].x - point[j].x)*(point[1-j].x - point[j].x) 
-						+ (lineSeg.point[i].y - point[j].y)*(point[1-j].y - point[j].y);
-
-					cosine2 = (lineSeg.point[i].x - point[1-j].x)*(point[j].x - point[1-j].x) 
-						+ (lineSeg.point[i].y - point[1-j].y)*(point[j].y - point[1-j].y) ;
-
-					if(cosine1 > 0 && cosine2 > 0)
-					{
-						minDist = 0;
-						break;
-					}
-				}
-			}
-		}
-		
-
-		if(thetaDistance > theta_threshold || rhoDistance > rho_threshold || minDist > dist_threahold)
-		{
-			return false;
-		}
-
-		float maxDist = length;
-		CvPoint p0 = point[0];
-		CvPoint p1 = point[1];
-		if(lineSeg.length > maxDist)
-		{
-			maxDist = lineSeg.length;
-			p0 = lineSeg.point[0];
-			p1 = lineSeg.point[1];
-		}
-
-		for(int i = 0; i<2; i++)
-		{
-			for(int j=0; j<2; j++)
-			{
-				float dist = disance(point[i], lineSeg.point[j]);
-				if(dist > maxDist)
-				{
-					maxDist = dist;
-					p0 = point[i];
-					p1 = lineSeg.point[j];
-				}
-			}
-		}
-
-		length = maxDist;
-		point[0] = p0;
-		point[1] = p1;
-		calcLineParam();
-
-		return true;
-	}
-
-	CvPoint point[2];
-	float theta;
-	float rho;
-	float length;
-
-	float theta_threshold;
-	float rho_threshold;
-	float dist_threahold;
-};
 
 void MainWindow::processImage()
 {
-	if(mOriginalImage == NULL)
+	if(mImageProcess->getOriginalImage() == NULL)
 	{
 		QMessageBox msgBox;
 		msgBox.setIcon(QMessageBox::Warning);
@@ -524,241 +361,51 @@ void MainWindow::processImage()
 		msgBox.exec();
 		return;
 	}
+
+	ImageProcessParam param;
 	
-	bool cannyGroup = paramWidget->cannyGroup->isChecked();
-	int cannyThreshold1 = paramWidget->cannyThreshold1->value();
-	int cannyThreshold2 = paramWidget->cannyThreshold2->value();
+	param.useGray = paramWidget->grayGroup->isChecked();
+
+	param.useCanny = paramWidget->cannyGroup->isChecked();
+	param.cannyThreshold1 = paramWidget->cannyThreshold1->value();
+	param.cannyThreshold2 = paramWidget->cannyThreshold2->value();
 	
-	bool dilateGroup = paramWidget->dilateGroup->isChecked();
-	int dilateIter = paramWidget->dilateIter->value();
-	bool erodeGroup = paramWidget->erodeGroup->isChecked();
-	int erodeIter = paramWidget->erodeIter->value();
+	param.useDilate = paramWidget->dilateGroup->isChecked();
+	param.dilateIter = paramWidget->dilateIter->value();
+	param.useErode = paramWidget->erodeGroup->isChecked();
+	param.erodeIter = paramWidget->erodeIter->value();
 
-	bool houghGroup = paramWidget->houghGroup->isChecked();
-	int houghRho = paramWidget->houghRho->value();
-	int houghTheta = paramWidget->houghTheta->value();
-	int houghThreshold = paramWidget->houghThreshold->value();
-	int houghParam1 = paramWidget->houghParam1->value();
-	int houghParam2 = paramWidget->houghParam2->value();
+	param.useHough = paramWidget->houghGroup->isChecked();
+	param.houghRho = paramWidget->houghRho->value();
+	param.houghTheta = paramWidget->houghTheta->value();
+	param.houghThreshold = paramWidget->houghThreshold->value();
+	param.houghParam1 = paramWidget->houghParam1->value();
+	param.houghParam2 = paramWidget->houghParam2->value();
 
-	bool combineGroup = paramWidget->combineGroup->isChecked();
-	int combineTheta = paramWidget->combineTheta->value();
-	int combineRho = paramWidget->combineRho->value();
-	int combineDistance = paramWidget->combineDistance->value();
+	param.useCombine = paramWidget->combineGroup->isChecked();
+	param.combineTheta = paramWidget->combineTheta->value();
+	param.combineRho = paramWidget->combineRho->value();
+	param.combineDistance = paramWidget->combineDistance->value();
 
-	bool rectangleGroup = paramWidget->rectangleGroup->isChecked();
-	int rectangleHorizontalLength = paramWidget->rectangleHorizontalLength->value();
-	int rectangleVerticalLength = paramWidget->rectangleVerticalLength->value();
+	param.useRectangle = paramWidget->rectangleGroup->isChecked();
+	param.rectangleHorizontalLength = paramWidget->rectangleHorizontalLength->value();
+	param.rectangleVerticalLength = paramWidget->rectangleVerticalLength->value();
 
-	bool backGroundGroup = paramWidget->backGroundGroup->isChecked();
+	param.useBackGround = paramWidget->backGroundGroup->isChecked();
 
-	cvReleaseImage(&mImage);
-	mImage = cvCloneImage(mOriginalImage);
+	param.useNormalize = paramWidget->normalizeGroup->isChecked();
 
-	if(mImage->nChannels == 3)
-	{
-		IplImage* grayImage = cvCreateImage(cvGetSize(mImage), 8, 1);
-		cvCvtColor(mImage, grayImage, CV_RGB2GRAY);
-		cvReleaseImage(&mImage);
-		mImage = grayImage;
-	}
-	
-	if(mImage->nChannels == 1 && cannyGroup)
-	{
-		IplImage* contourImage = cvCreateImage(cvGetSize(mImage), 8, 1);
-		cvCanny(mImage, contourImage, cannyThreshold1, cannyThreshold2, 3);
-		cvReleaseImage(&mImage);
-		mImage = contourImage;
-	}
+	mImageProcess->run(&param);
 
-	if(dilateGroup && dilateIter>0)
-	{
-		IplImage* dialatedImage = cvCreateImage(cvGetSize(mImage), 8, 1);
-		cvDilate(mImage, dialatedImage, 0, dilateIter);
-		cvReleaseImage(&mImage);
-		mImage = dialatedImage;
-	}
-
-	if(erodeGroup && erodeIter>0)
-	{
-		IplImage* erodedImage = cvCreateImage(cvGetSize(mImage), 8, 1);
-		cvErode(mImage, erodedImage, 0, erodeIter);
-		cvReleaseImage(&mImage);
-		mImage = erodedImage;
-	}
-	
-	if(houghGroup)
-	{
-		//检测线段
-		IplImage* lineImage = cvCreateImage(cvGetSize(mImage), 8, 3);
-		if(backGroundGroup)
-		{
-			cvCvtColor(mImage, lineImage, CV_GRAY2BGR);
-		}
-		CvMemStorage* storage = cvCreateMemStorage(0);
-		CvSeq* lines = 0;
-		lines = cvHoughLines2( mImage, storage, CV_HOUGH_PROBABILISTIC, houghRho, CV_PI/180 * houghTheta, houghThreshold, houghParam1, houghParam2 );
-		
-		std::vector<LineSeg> lineSegList;
-		for( int i = 0; i < lines ->total; i++ )  //lines存储的是直线  
-		{  
-			CvPoint* line = ( CvPoint* )cvGetSeqElem( lines, i );  //lines序列里面存储的是像素点坐标  
-			
-			if(combineGroup == false)
-			{
-				cvLine( lineImage, line[0], line[1], CV_RGB(255, 0, 0), 1, CV_AA );
-			}
-			else
-			{
-				LineSeg lineSeg(line[0], line[1], combineTheta, combineRho, combineDistance);
-				bool combined = false;
-				for(int n=0; n<lineSegList.size(); n++)
-				{
-					if(lineSegList[n].combine(lineSeg))
-					{
-						combined = true;
-						break;
-					}
-				}
-				if(combined == false)
-				{
-					lineSegList.push_back(lineSeg);
-				}
-			}
-		}
-
-		if(combineGroup)
-		{
-			int minHRho = 5000;
-			int maxHRho = 0;
-			int minVRho = 5000;
-			int maxVRho = 0;
-
-			LineSeg minH;
-			LineSeg maxH;
-			LineSeg minV;
-			LineSeg maxV;
-
-
-			for(int n=0; n<lineSegList.size(); n++)
-			{
-				if(rectangleGroup)
-				{
-
-					if(lineSegList[n].theta < M_PI * 0.25 || lineSegList[n].theta > M_PI * 0.75)//水平
-					{
-						if(lineSegList[n].length > rectangleHorizontalLength)
-						{
-							if(lineSegList[n].rho < minHRho && lineSegList[n].rho > 300)
-							{
-								minHRho = lineSegList[n].rho;
-								minH = lineSegList[n];
-							}
-							if(lineSegList[n].rho > maxHRho && lineSegList[n].rho < mImage->height - 100)
-							{
-								maxHRho = lineSegList[n].rho;
-								maxH = lineSegList[n];
-							}
-						}
-
-					}
-					else
-					{
-						if(lineSegList[n].length > rectangleVerticalLength)
-						{
-							if(lineSegList[n].rho < minVRho && lineSegList[n].rho > 50)
-							{
-								minVRho = lineSegList[n].rho;
-								minV = lineSegList[n];
-							}
-							if(lineSegList[n].rho > maxVRho && lineSegList[n].rho < mImage->width - 20)
-							{
-								maxVRho = lineSegList[n].rho;
-								maxV = lineSegList[n];
-							}
-						}
-					}
-				}
-				else
-				{
-					cvLine( lineImage, lineSegList[n].point[0], lineSegList[n].point[1], CV_RGB(255, 0, 0), 1, CV_AA );
-
-					CvFont font;
-					cvInitFont(&font, FONT_HERSHEY_PLAIN, 1, 1);
-					cvPutText(lineImage, (QString::number((int)(lineSegList[n].theta / M_PI*180)) + "," + QString::number((int)(lineSegList[n].rho))).toStdString().c_str(), lineSegList[n].point[0], &font,CV_RGB(255, 255, 255));
-				}
-			}
-
-
-			if(rectangleGroup)
-			{
-				CvPoint points[4];
-				points[0] = minH.intersect(minV);
-				points[1] = minH.intersect(maxV);
-				points[2] = maxH.intersect(maxV);
-				points[3] = maxH.intersect(minV);
-
-				cvLine( lineImage, points[0], points[1], CV_RGB(255, 0, 0), 3, CV_AA );
-				cvLine( lineImage, points[1], points[2], CV_RGB(255, 0, 0), 3, CV_AA );
-				cvLine( lineImage, points[2], points[3], CV_RGB(255, 0, 0), 3, CV_AA );
-				cvLine( lineImage, points[3], points[0], CV_RGB(255, 0, 0), 3, CV_AA );
-
-				//标准矩形尺寸 2000x940
-				CvPoint2D32f src[4], dst[4];
-				src[0].x = points[0].x;
-				src[0].y = points[0].y;
-				src[1].x = points[1].x;
-				src[1].y = points[1].y;
-				src[2].x = points[2].x;
-				src[2].y = points[2].y;
-				src[3].x = points[3].x;
-				src[3].y = points[3].y;
-
-				dst[0].x = 0;
-				dst[0].y = 200;
-				dst[1].x = 2000;
-				dst[1].y = 200;
-				dst[2].x = 2000;
-				dst[2].y = 1140;
-				dst[3].x = 0;
-				dst[3].y = 1140;
-
-				CvMat* warp_mat = cvCreateMat( 3, 3, CV_32FC1 );
-
-				cvGetPerspectiveTransform(src, dst, warp_mat);
-
-				cvZero(lineImage);
-
-				cvWarpPerspective(mOriginalImage, lineImage, warp_mat);
-			}
-		}
-
-		cvReleaseImage(&mImage);
-		mImage = lineImage;
-	}
-
-	if(mImage->nChannels == 3)
-	{
-		IplImage* grayImage = cvCreateImage(cvGetSize(mImage), 8, 1);
-		cvCvtColor(mImage, grayImage, CV_RGB2GRAY);
-
-		cvEqualizeHist(grayImage, grayImage);
-
-		cvThreshold(grayImage, grayImage, 30, 255, CV_THRESH_BINARY);
-
-		cvSmooth(grayImage, grayImage, CV_MEDIAN);
-
-		cvReleaseImage(&mImage);
-		mImage = grayImage;
-	}
-
-	QImage* image = ImageAdapter::IplImage2QImage(mImage);
-	imageWidget->setImage(image);
+	IplImage* cvImage = mImageProcess->getProcessedImage();
+	QImage* qtImage = ImageAdapter::IplImage2QImage(cvImage);
+	imageWidget->setImage(qtImage);
 }
 
 void MainWindow::recognizeText()
 {
-	if(!mImage)
+	IplImage* cvImage = mImageProcess->getProcessedImage();
+	if(!cvImage)
 	{
 		QMessageBox msgBox;
 		msgBox.setIcon(QMessageBox::Warning);
@@ -774,7 +421,7 @@ void MainWindow::recognizeText()
 		{
 			mAbbyyOCR = new AbbyyOCR();
 		}
-		mAbbyyOCR->setImage(mImage);
+		mAbbyyOCR->setImage(cvImage);
 
 		mAbbyyOCR->setMasks(masks);
 
@@ -825,7 +472,7 @@ void MainWindow::recognizeText()
 			}
 		}
 
-		tessBaseAPI->SetImage((uchar*)mImage->imageData, mImage->width, mImage->height, mImage->nChannels, mImage->widthStep);
+		tessBaseAPI->SetImage((uchar*)cvImage->imageData, cvImage->width, cvImage->height, cvImage->nChannels, cvImage->widthStep);
 
 		if(masks->size() == 0)
 		{
@@ -891,7 +538,8 @@ void MainWindow::showCube()
 	{
 		cubeWidget = new CubeWidget();
 	}
-	cubeWidget->setImage(mImage);
+	IplImage* cvImage = mImageProcess->getProcessedImage();
+	cubeWidget->setImage(cvImage);
 	cubeWidget->show();
 	cubeWidget->raise();
 	cubeWidget->activateWindow();
