@@ -390,8 +390,10 @@ void MainWindow::processImage()
 	param.combineDistance = paramWidget->combineDistance->value();
 
 	param.useRectangle = paramWidget->rectangleGroup->isChecked();
-	param.rectangleHorizontalLength = paramWidget->rectangleHorizontalLength->value();
-	param.rectangleVerticalLength = paramWidget->rectangleVerticalLength->value();
+	param.rectangleHMinLength = paramWidget->rectangleHMinLength->value();
+	param.rectangleVMinLength = paramWidget->rectangleVMinLength->value();
+	param.rectangleTop = paramWidget->rectangleTop->value();
+	param.rectangleBottom = paramWidget->rectangleBottom->value();
 
 	param.useBackGround = paramWidget->backGroundGroup->isChecked();
 

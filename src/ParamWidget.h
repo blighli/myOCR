@@ -41,8 +41,10 @@ public:
 	QSlider* combineDistance;
 
 	QGroupBox* rectangleGroup;
-	QSlider* rectangleHorizontalLength;
-	QSlider* rectangleVerticalLength;
+	QSlider* rectangleHMinLength;
+	QSlider* rectangleVMinLength;
+	QSlider* rectangleTop;
+	QSlider* rectangleBottom;
 
 	QGroupBox* backGroundGroup;
 

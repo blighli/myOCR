@@ -32,8 +32,10 @@ typedef struct ImageProcessParam
 	int combineDistance;
 
 	bool useRectangle;
-	int rectangleHorizontalLength;
-	int rectangleVerticalLength;
+	int rectangleHMinLength;
+	int rectangleVMinLength;
+	int rectangleTop;
+	int rectangleBottom;
 
 	bool useBackGround;
 
