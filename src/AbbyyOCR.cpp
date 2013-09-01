@@ -3,14 +3,14 @@
 
 AbbyyOCR::AbbyyOCR()
 {
+	mMasks = 0;
+	mMaskCount = 0;
+
 	QString abbyyDataDir = AppInfo::instance()->appDir() + "/abbyydata";
 	mChinesePatternPath = abbyyDataDir + "/ChineseJapanese.rom";
 	mEnglishPatternPath = abbyyDataDir + "/European.rom";
 	mEnglishDictPath = abbyyDataDir + "/English.edc";
 	mLicensePath = abbyyDataDir + "/Sample.license";
-
-	mMasks = 0;
-	mMaskCount = 0;
 
 	englishPattern = readFile(mEnglishPatternPath);
 	chinesePattern = readFile(mChinesePatternPath);

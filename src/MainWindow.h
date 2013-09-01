@@ -70,7 +70,6 @@ private:
 	AbbyyOCR* mAbbyyOCR;
 	Boxa* boxes;
 
-	bool mEnableMasks;
 	ImageProcess* mImageProcess;
 };
 

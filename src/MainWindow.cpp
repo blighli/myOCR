@@ -18,7 +18,6 @@ MainWindow::MainWindow()
 	mAbbyyOCR = NULL;
 	
 	boxes = NULL;
-	mEnableMasks = false;
 
 	cubeWidget = NULL;
 	paramWidget = NULL;
@@ -217,8 +216,8 @@ void MainWindow::enableChinese()
 
 void MainWindow::enableMasks()
 {
-	mEnableMasks = actionEnableMasks->isChecked();
-	imageWidget->enableMasks(mEnableMasks);
+	bool enableMasks = actionEnableMasks->isChecked();
+	imageWidget->enableMasks(enableMasks);
 }
 
 void MainWindow::saveMasks()
@@ -420,122 +419,119 @@ void MainWindow::recognizeText()
 		msgBox.exec();
 		return;
 	}
+	QVector<QRect>* masks = imageWidget->getMasks();
+
+	if(mAbbyyOCR == NULL)
+	{
+		mAbbyyOCR = new AbbyyOCR();
+	}
+	mAbbyyOCR->setImage(cvImage);
+
+	mAbbyyOCR->setMasks(masks);
+
+	QString ret = mAbbyyOCR->recognizeText();
+	textEdit->clear();
+	textEdit->setText(QString("%1%2%3").arg(textEdit->toPlainText(),"Abbyy Result:\n",ret));
+	textEdit->setText(QString("%1%2%3").arg(textEdit->toPlainText(),"\n","/////////////////////////\n\nTesseract Result:\n"));
+
+
+	//设置环境变量TESSDATA_PREFIX
+	if(tessBaseAPI == NULL)
+	{
+		tessBaseAPI = new tesseract::TessBaseAPI(); 
+	}
+	//或者在Init函数中设置datapath
+	QString tessdata = AppInfo::instance()->appDir();
+	if(actionEnableChinese->isChecked())
+	{
+		if (tessBaseAPI->Init(tessdata.toAscii(), "chi_sim+eng")) {
+			QMessageBox msgBox;
+			msgBox.setIcon(QMessageBox::Critical);
+			msgBox.setText(tr("Could not initialize tesseract: chinese"));
+			msgBox.exec();
+			return;
+		}
+		if(true)
+		{
+			tessBaseAPI->SetVariable("chop_enable", "T");
+			tessBaseAPI->SetVariable("use_new_state_cost", "F");
+			tessBaseAPI->SetVariable("segment_segcost_rating", "F");
+			tessBaseAPI->SetVariable("enable_new_segsearch", "0");
+			tessBaseAPI->SetVariable("language_model_ngram_on", "0");
+			tessBaseAPI->SetVariable("textord_force_make_prop_words", "F");
+		}
+	}
 	else
 	{
-		QVector<QRect>* masks = imageWidget->getMasks();
-
-		if(mAbbyyOCR == NULL)
-		{
-			mAbbyyOCR = new AbbyyOCR();
+		if (tessBaseAPI->Init(tessdata.toAscii(), "eng")) {
+			QMessageBox msgBox;
+			msgBox.setIcon(QMessageBox::Critical);
+			msgBox.setText(tr("Could not initialize tesseract: english"));
+			msgBox.exec();
+			return;
 		}
-		mAbbyyOCR->setImage(cvImage);
-
-		mAbbyyOCR->setMasks(masks);
-
-		QString ret = mAbbyyOCR->recognizeText();
-		textEdit->clear();
-		textEdit->setText(QString("%1%2%3").arg(textEdit->toPlainText(),"Abbyy Result:\n",ret));
-		textEdit->setText(QString("%1%2%3").arg(textEdit->toPlainText(),"\n","/////////////////////////\n\nTesseract Result:\n"));
-
-
-		//设置环境变量TESSDATA_PREFIX
-		if(tessBaseAPI == NULL)
+		if(true)
 		{
-			tessBaseAPI = new tesseract::TessBaseAPI(); 
+			tessBaseAPI->SetVariable("tessedit_char_whitelist", "0123456789.+-*/<>");
 		}
-		//或者在Init函数中设置datapath
-		QString tessdata = AppInfo::instance()->appDir();
-		if(actionEnableChinese->isChecked())
-		{
-			if (tessBaseAPI->Init(tessdata.toAscii(), "chi_sim+eng")) {
-				QMessageBox msgBox;
-				msgBox.setIcon(QMessageBox::Critical);
-				msgBox.setText(tr("Could not initialize tesseract: chinese"));
-				msgBox.exec();
-				return;
-			}
-			if(true)
-			{
-				tessBaseAPI->SetVariable("chop_enable", "T");
-				tessBaseAPI->SetVariable("use_new_state_cost", "F");
-				tessBaseAPI->SetVariable("segment_segcost_rating", "F");
-				tessBaseAPI->SetVariable("enable_new_segsearch", "0");
-				tessBaseAPI->SetVariable("language_model_ngram_on", "0");
-				tessBaseAPI->SetVariable("textord_force_make_prop_words", "F");
-			}
-		}
-		else
-		{
-			if (tessBaseAPI->Init(tessdata.toAscii(), "eng")) {
-				QMessageBox msgBox;
-				msgBox.setIcon(QMessageBox::Critical);
-				msgBox.setText(tr("Could not initialize tesseract: english"));
-				msgBox.exec();
-				return;
-			}
-			if(true)
-			{
-				tessBaseAPI->SetVariable("tessedit_char_whitelist", "0123456789.+-*/<>");
-			}
-		}
+	}
 
-		tessBaseAPI->SetImage((uchar*)cvImage->imageData, cvImage->width, cvImage->height, cvImage->nChannels, cvImage->widthStep);
+	tessBaseAPI->SetImage((uchar*)cvImage->imageData, cvImage->width, cvImage->height, cvImage->nChannels, cvImage->widthStep);
 
-		if(masks->size() == 0)
+	if(masks->size() == 0)
+	{
+
+		boxes = tessBaseAPI->GetComponentImages(tesseract::RIL_SYMBOL, true, NULL, NULL);
+		
+		QRect* rects = new QRect[boxes->n];
+		for(int i = 0; i< boxes->n; i++)
 		{
+			rects[i].setX(boxes->box[i]->x);
+			rects[i].setY(boxes->box[i]->y);
+			rects[i].setWidth(boxes->box[i]->w);
+			rects[i].setHeight(boxes->box[i]->h);
+		}
+		imageWidget->setBoxes(rects, boxes->n);
+
+		char *outText = tessBaseAPI->GetUTF8Text();
+
+		QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf-8"));
+		textEdit->setText(QString("%1%2").arg(textEdit->toPlainText(),outText));
+	}
+	else
+	{
+		QVector<QRect> rectBoxes;
+		for(int i=0;i<masks->size();i++)
+		{
+			QRect rect = masks->at(i);
+			tessBaseAPI->SetRectangle(rect.x(), rect.y(), rect.width(), rect.height());
 
 			boxes = tessBaseAPI->GetComponentImages(tesseract::RIL_SYMBOL, true, NULL, NULL);
-		
-			QRect* rects = new QRect[boxes->n];
-			for(int i = 0; i< boxes->n; i++)
+			if(boxes)
 			{
-				rects[i].setX(boxes->box[i]->x);
-				rects[i].setY(boxes->box[i]->y);
-				rects[i].setWidth(boxes->box[i]->w);
-				rects[i].setHeight(boxes->box[i]->h);
-			}
-			imageWidget->setBoxes(rects, boxes->n);
-
-			char *outText = tessBaseAPI->GetUTF8Text();
-
-			QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf-8"));
-			textEdit->setText(QString("%1%2").arg(textEdit->toPlainText(),outText));
-		}
-		else
-		{
-			QVector<QRect> rectBoxes;
-			for(int i=0;i<masks->size();i++)
-			{
-				QRect rect = masks->at(i);
-				tessBaseAPI->SetRectangle(rect.x(), rect.y(), rect.width(), rect.height());
-
-				boxes = tessBaseAPI->GetComponentImages(tesseract::RIL_SYMBOL, true, NULL, NULL);
-				if(boxes)
+				for(int i = 0; i< boxes->n; i++)
 				{
-					for(int i = 0; i< boxes->n; i++)
-					{
-						QRect rectBox(boxes->box[i]->x, boxes->box[i]->y, boxes->box[i]->w, boxes->box[i]->h);
-						rectBox.translate(rect.x(), rect.y());
-						rectBoxes.append(rectBox);
-					}
-
-					char* ocrResult = tessBaseAPI->GetUTF8Text();
-					QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf-8"));
-					QString txt = QString(ocrResult);
-					txt.replace(" ","");
-					txt.replace("\n\n","\n");
-					textEdit->setText(QString("%1%2").arg(textEdit->toPlainText(),txt));
+					QRect rectBox(boxes->box[i]->x, boxes->box[i]->y, boxes->box[i]->w, boxes->box[i]->h);
+					rectBox.translate(rect.x(), rect.y());
+					rectBoxes.append(rectBox);
 				}
-			}
 
-			int rectCount = rectBoxes.size();
-			QRect* rects = new QRect[rectCount];
-			for(int i = 0; i< rectCount; i++)
-			{
-				rects[i] = rectBoxes.at(i);
+				char* ocrResult = tessBaseAPI->GetUTF8Text();
+				QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf-8"));
+				QString txt = QString(ocrResult);
+				txt.replace(" ","");
+				txt.replace("\n\n","\n");
+				textEdit->setText(QString("%1%2").arg(textEdit->toPlainText(),txt));
 			}
-			imageWidget->setBoxes(rects, rectCount);
 		}
+
+		int rectCount = rectBoxes.size();
+		QRect* rects = new QRect[rectCount];
+		for(int i = 0; i< rectCount; i++)
+		{
+			rects[i] = rectBoxes.at(i);
+		}
+		imageWidget->setBoxes(rects, rectCount);
 	}
 }
 
