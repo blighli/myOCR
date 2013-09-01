@@ -62,8 +62,8 @@ private slots:
 private:
 	enum{
 		SLIDER_WIDTH = 200,
-		LABEL_WIDTH = 80,
-		EDIT_WIDTH = 40,
+		LABEL_WIDTH = 100,
+		EDIT_WIDTH = 60,
 		BUTTON_WIDTH = 100
 	};
 	QGroupBox* addGroup(QString groupName);

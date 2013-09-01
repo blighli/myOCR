@@ -75,9 +75,7 @@ void ImageProcess::run( ImageProcessParam* param )
 		cvReleaseImage(&mProcessedImage);
 		mProcessedImage = grayImage;
 	}
-
-	//Assert gray is performed
-	if(mProcessedImage->nChannels != 1)
+	else
 	{
 		return;
 	}
@@ -88,6 +86,10 @@ void ImageProcess::run( ImageProcessParam* param )
 		cvCanny(mProcessedImage, cannyImage, param->cannyThreshold1, param->cannyThreshold2, 3);
 		cvReleaseImage(&mProcessedImage);
 		mProcessedImage = cannyImage;
+	}
+	else
+	{
+		return;
 	}
 
 	if(param->useDilate && param->dilateIter>0)
@@ -313,4 +315,16 @@ void ImageProcess::normalize( ImageProcessParam* param, LineSegment &minH, LineS
 	cvReleaseImage(&mProcessedImage);
 	mProcessedImage = cvCreateImage(cvSize(param->normalizeWidth, param->normalizeTop + param->normalizeHeight), 8, 3);
 	cvWarpPerspective(mOriginalImage, mProcessedImage, warp_mat);
+
+	IplImage* grayImage = cvCreateImage(cvGetSize(mProcessedImage), 8, 1);
+	cvCvtColor(mProcessedImage, grayImage, CV_RGB2GRAY);
+	cvReleaseImage(&mProcessedImage);
+	mProcessedImage = grayImage;
+
+	IplImage* cannyImage = cvCreateImage(cvGetSize(mProcessedImage), 8, 1);
+	cvCanny(mProcessedImage, cannyImage, param->cannyThreshold1, param->cannyThreshold2, 3);
+	cvReleaseImage(&mProcessedImage);
+	mProcessedImage = cannyImage;
+
+	cvNot(mProcessedImage, mProcessedImage);
 }
