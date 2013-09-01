@@ -363,6 +363,8 @@ void MainWindow::processImage()
 	}
 
 	ImageProcessParam param;
+
+	param.debug = paramWidget->debugGroup->isChecked();
 	
 	param.useGray = paramWidget->grayGroup->isChecked();
 
@@ -394,6 +396,9 @@ void MainWindow::processImage()
 	param.useBackGround = paramWidget->backGroundGroup->isChecked();
 
 	param.useNormalize = paramWidget->normalizeGroup->isChecked();
+	param.normalizeTop = paramWidget->normalizeTop->value();
+	param.normalizeWidth = paramWidget->normalizeWidth->value();
+	param.normalizeHeight = paramWidget->normalizeHeight->value();
 
 	mImageProcess->run(&param);
 

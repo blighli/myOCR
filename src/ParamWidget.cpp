@@ -6,6 +6,8 @@ ParamWidget::ParamWidget()
 	mainLayout = new QVBoxLayout();
 	setLayout(mainLayout);
 
+	debugGroup = addGroup(tr("Debug"));
+
 	grayGroup = addGroup(tr("Gray"));
 
 	cannyGroup = addGroup(tr("Canny"));
@@ -30,12 +32,15 @@ ParamWidget::ParamWidget()
 	combineDistance = addParam(tr("Distance"),0,1000, 100);
 
 	rectangleGroup = addGroup(tr("Rectangle"));
-	rectangleHorizontalLength = addParam(tr("Horizontal Length"),0, 3000, 800);
-	rectangleVerticalLength = addParam(tr("Vertical Length"),0, 2000, 800);
+	rectangleHorizontalLength = addParam(tr("HLen"),0, 3000, 800);
+	rectangleVerticalLength = addParam(tr("VLen"),0, 2000, 800);
 
 	backGroundGroup =  addGroup(tr("Background"));
 
 	normalizeGroup =  addGroup(tr("Normalize"));
+	normalizeTop = addParam(tr("Top"),0, 4000, 200);
+	normalizeWidth = addParam(tr("Width"),0, 4000, 2000);
+	normalizeHeight = addParam(tr("Height"),0, 4000, 940);
 
 	buttonProcess = addButton(tr("Process"));
 	connect(buttonProcess, SIGNAL(pressed()), this, SLOT(buttonPressed()));

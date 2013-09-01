@@ -14,6 +14,8 @@ class ParamWidget : public QWidget
 public:
 	ParamWidget();
 
+	QGroupBox* debugGroup;
+
 	QGroupBox* grayGroup;
 
 	QGroupBox* cannyGroup;
@@ -45,6 +47,9 @@ public:
 	QGroupBox* backGroundGroup;
 
 	QGroupBox* normalizeGroup;
+	QSlider* normalizeTop;
+	QSlider* normalizeWidth;
+	QSlider* normalizeHeight;
 
 signals:
 	void process();

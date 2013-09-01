@@ -100,30 +100,7 @@ void ImageProcess::run( ImageProcessParam* param )
 		cvErode(mProcessedImage, mProcessedImage, 0, param->erodeIter);
 	}
 
-	CvSeq* lines = NULL;
-	if(param->useHough)
-	{
-		CvMemStorage* storage = cvCreateMemStorage(0);
-		lines = cvHoughLines2( mProcessedImage, storage, CV_HOUGH_PROBABILISTIC, param->houghRho, CV_PI/180 * param->houghTheta, param->houghThreshold, param->houghParam1, param->houghParam2 );
-
-		if(param->useCombine == false && param->useRectangle == false)
-		{
-			IplImage* lineImage = cvCreateImage(cvGetSize(mProcessedImage), 8, 3);
-			if(param->useBackGround)
-			{
-				cvCvtColor(mProcessedImage, lineImage, CV_GRAY2BGR);
-			}
-			for( int i = 0; i < lines ->total; i++ )
-			{  
-				CvPoint* line = ( CvPoint* )cvGetSeqElem( lines, i );
-				cvLine( lineImage, line[0], line[1], CV_RGB(255, 0, 0), 1, CV_AA );
-			}
-			cvReleaseImage(&mProcessedImage);
-			mProcessedImage = lineImage;
-		}
-	}
-
-	//Assert hough is performed
+	CvSeq* lines = hough(param);
 	if(lines == NULL)
 	{
 		return;
@@ -131,6 +108,62 @@ void ImageProcess::run( ImageProcessParam* param )
 
 
 	std::vector<LineSegment> lineSegList;
+	combine(param, lines, lineSegList);
+	if(lineSegList.size() == 0)
+	{
+		return;
+	}
+
+	int minHRho = 5000;
+	int maxHRho = 0;
+	int minVRho = 5000;
+	int maxVRho = 0;
+	LineSegment minH;
+	LineSegment maxH;
+	LineSegment minV;
+	LineSegment maxV;
+	rectangle(param, lineSegList, minHRho, minH, maxHRho, maxH, minVRho, minV, maxVRho, maxV);
+	if(minHRho == 5000 || maxHRho == 0 || minVRho ==5000 || maxVRho == 0)
+	{
+		return;
+	}
+
+	normalize(param, minH, minV, maxV, maxH);
+
+}
+
+CvSeq* ImageProcess::hough( ImageProcessParam* param )
+{
+	CvSeq* lines = NULL;
+	if(param->useHough)
+	{
+		CvMemStorage* storage = cvCreateMemStorage(0);
+		lines = cvHoughLines2( mProcessedImage, storage, CV_HOUGH_PROBABILISTIC, param->houghRho, CV_PI/180 * param->houghTheta, param->houghThreshold, param->houghParam1, param->houghParam2 );
+
+		if(param->debug)
+		{
+			cvReleaseImage(&mProcessedImage);
+			if(param->useBackGround)
+			{
+				mProcessedImage = cvCloneImage(mOriginalImage);
+			}
+			else
+			{
+				 mProcessedImage = cvCreateImage(cvGetSize(mOriginalImage), 8, 3);
+			}
+
+			for( int i = 0; i < lines ->total; i++ )
+			{  
+				CvPoint* line = ( CvPoint* )cvGetSeqElem( lines, i );
+				cvLine( mProcessedImage, line[0], line[1], CV_RGB(255, 0, 0), 1, CV_AA );
+			}
+		}
+	}
+	return lines;
+}
+
+void ImageProcess::combine( ImageProcessParam* param, CvSeq* lines, std::vector<LineSegment>& lineSegList)
+{
 	if(param->useCombine)
 	{
 		for( int i = 0; i < lines ->total; i++ )
@@ -152,42 +185,30 @@ void ImageProcess::run( ImageProcessParam* param )
 			}
 		}
 
-		if(param->useRectangle == false)
+		if(param->debug)
 		{
-			IplImage* lineImage = cvCreateImage(cvGetSize(mProcessedImage), 8, 3);
+			cvReleaseImage(&mProcessedImage);
 			if(param->useBackGround)
 			{
-				cvCvtColor(mProcessedImage, lineImage, CV_GRAY2BGR);
+				mProcessedImage = cvCloneImage(mOriginalImage);
 			}
+			else
+			{
+				mProcessedImage = cvCreateImage(cvGetSize(mOriginalImage), 8, 3);
+			}
+
 			for(int n=0; n<lineSegList.size(); n++)
 			{
-				cvLine( lineImage, lineSegList[n].point[0], lineSegList[n].point[1], CV_RGB(255, 0, 0), 1, CV_AA );
+				cvLine( mProcessedImage, lineSegList[n].point[0], lineSegList[n].point[1], CV_RGB(255, 0, 0), 1, CV_AA );
 			}
-			cvReleaseImage(&mProcessedImage);
-			mProcessedImage = lineImage;
 		}
 	}
+}
 
-	//Assert combine is performed
-	if(lineSegList.size() == 0)
-	{
-		return;
-	}
-
-	int minHRho = 5000;
-	int maxHRho = 0;
-	int minVRho = 5000;
-	int maxVRho = 0;
-	LineSegment minH;
-	LineSegment maxH;
-	LineSegment minV;
-	LineSegment maxV;
+void ImageProcess::rectangle( ImageProcessParam* param, std::vector<LineSegment> &lineSegList, int &minHRho, LineSegment &minH, int &maxHRho, LineSegment &maxH, int &minVRho, LineSegment &minV, int &maxVRho, LineSegment &maxV )
+{
 	if(param->useRectangle)
 	{
-		
-
-		
-
 		for(int n=0; n<lineSegList.size(); n++)
 		{
 			if(lineSegList[n].theta < CV_PI * 0.25 || lineSegList[n].theta > CV_PI * 0.75)//ˮƽ
@@ -214,7 +235,7 @@ void ImageProcess::run( ImageProcessParam* param )
 					&& lineSegList[n].point[0].y < mProcessedImage->height - 100 && lineSegList[n].point[1].y < mProcessedImage->height - 100
 					)
 				{
-					
+
 					if(lineSegList[n].rho < minVRho)
 					{
 
@@ -231,28 +252,31 @@ void ImageProcess::run( ImageProcessParam* param )
 			}
 		}
 
-		IplImage* lineImage = cvCreateImage(cvGetSize(mProcessedImage), 8, 3);
-		if(param->useBackGround)
+		if(param->debug)
 		{
-			cvCvtColor(mProcessedImage, lineImage, CV_GRAY2BGR);
-		}
-		for(int n=0; n<lineSegList.size(); n++)
-		{
-			cvLine( lineImage, maxV.point[0], maxV.point[1], CV_RGB(255, 0, 0), 1, CV_AA );
-			cvLine( lineImage, minV.point[0], minV.point[1], CV_RGB(255, 0, 0), 1, CV_AA );
-			cvLine( lineImage, maxH.point[0], maxH.point[1], CV_RGB(255, 0, 0), 1, CV_AA );
-			cvLine( lineImage, minH.point[0], minH.point[1], CV_RGB(255, 0, 0), 1, CV_AA );
-		}
-		cvReleaseImage(&mProcessedImage);
-		mProcessedImage = lineImage;
-	}
+			cvReleaseImage(&mProcessedImage);
+			if(param->useBackGround)
+			{
+				mProcessedImage = cvCloneImage(mOriginalImage);
+			}
+			else
+			{
+				mProcessedImage = cvCreateImage(cvGetSize(mOriginalImage), 8, 3);
+			}
 
-	//Assert rectangle is performed
-	if(minHRho == 5000 || maxHRho == 0 || minVRho ==5000 || maxVRho == 0)
-	{
-		return;
+			for(int n=0; n<lineSegList.size(); n++)
+			{
+				cvLine( mProcessedImage, maxV.point[0], maxV.point[1], CV_RGB(255, 0, 0), 1, CV_AA );
+				cvLine( mProcessedImage, minV.point[0], minV.point[1], CV_RGB(255, 0, 0), 1, CV_AA );
+				cvLine( mProcessedImage, maxH.point[0], maxH.point[1], CV_RGB(255, 0, 0), 1, CV_AA );
+				cvLine( mProcessedImage, minH.point[0], minH.point[1], CV_RGB(255, 0, 0), 1, CV_AA );
+			}
+		}
 	}
+}
 
+void ImageProcess::normalize( ImageProcessParam* param, LineSegment &minH, LineSegment minV, LineSegment maxV, LineSegment &maxH )
+{
 	if(param->useNormalize)
 	{
 		CvPoint points[4];
@@ -273,20 +297,20 @@ void ImageProcess::run( ImageProcessParam* param )
 		src[3].y = points[3].y;
 
 		dst[0].x = 0;
-		dst[0].y = 200;
-		dst[1].x = 2000;
-		dst[1].y = 200;
-		dst[2].x = 2000;
-		dst[2].y = 1140;
+		dst[0].y = param->normalizeTop;
+		dst[1].x = param->normalizeWidth;
+		dst[1].y = param->normalizeTop;
+		dst[2].x = param->normalizeWidth;
+		dst[2].y = param->normalizeTop + param->normalizeHeight;
 		dst[3].x = 0;
-		dst[3].y = 1140;
+		dst[3].y = param->normalizeTop + param->normalizeHeight;
 
 		CvMat* warp_mat = cvCreateMat( 3, 3, CV_32FC1 );
 
 		cvGetPerspectiveTransform(src, dst, warp_mat);
 
 		cvReleaseImage(&mProcessedImage);
-		mProcessedImage = cvCreateImage(cvGetSize(mOriginalImage), 8, 3);
+		mProcessedImage = cvCreateImage(cvSize(param->normalizeWidth, param->normalizeTop + param->normalizeHeight), 8, 3);
 		cvWarpPerspective(mOriginalImage, mProcessedImage, warp_mat);
 	}
 }

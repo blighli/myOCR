@@ -6,6 +6,8 @@
 
 typedef struct ImageProcessParam
 {
+	bool debug;
+
 	bool useGray;
 
 	bool useCanny;
@@ -36,6 +38,9 @@ typedef struct ImageProcessParam
 	bool useBackGround;
 
 	bool useNormalize;
+	int normalizeTop;
+	int normalizeWidth;
+	int normalizeHeight;
 }
 ImageProcessParam;
 
@@ -51,8 +56,12 @@ public:
 	IplImage* getOriginalImage();
 	IplImage* getProcessedImage();
 
-	
 private:
+	CvSeq* hough( ImageProcessParam* param );
+	void combine( ImageProcessParam* param, CvSeq* lines, std::vector<LineSegment>& lineSegList);
+	void rectangle( ImageProcessParam* param, std::vector<LineSegment> &lineSegList, int &minHRho, LineSegment &minH, int &maxHRho, LineSegment &maxH, int &minVRho, LineSegment &minV, int &maxVRho, LineSegment &maxV );
+	void normalize( ImageProcessParam* param, LineSegment &minH, LineSegment minV, LineSegment maxV, LineSegment &maxH );
+
 	IplImage* mOriginalImage;
 	IplImage* mProcessedImage;
 	bool mProcessed;
