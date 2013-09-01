@@ -7,6 +7,8 @@ ImageWidget::ImageWidget()
 	mBoxes = NULL;
 	mBoxCount = 0;
 
+	mMaskIndex = -1;
+
 	mDrawMesureLines = false;
 	mEnableMesure =false;
 
@@ -21,6 +23,12 @@ ImageWidget::ImageWidget()
 	mTickSizeSmall = 4;
 	mTickSizeMedium = 10;
 	mTickSizeLarge = 20;
+
+	actionDeleteMask = new QAction(tr("Delete"), this);
+	connect(actionDeleteMask, SIGNAL(triggered()), this, SLOT(deleteMask()));
+
+	menuContext = new QMenu(this);
+	menuContext->addAction(actionDeleteMask);
 }
 
 ImageWidget::~ImageWidget()
@@ -184,7 +192,23 @@ void ImageWidget::drawMasks(QPainter* painter)
 	{
 		QRect rect = mMasks->at(i);
 		rect.translate(mImagePadding, mImagePadding);
+
+		if(i == mMaskIndex)
+		{
+			painter->save();
+
+			QPen pen = painter->pen();
+			pen.setWidth(2);
+			pen.setColor(Qt::red);
+			painter->setPen(pen);
+		}
+
 		painter->drawRect(rect);
+
+		if(i == mMaskIndex)
+		{
+			painter->restore();
+		}
 	}
 	if(mEnableMasks && mCurrentMask)
 	{
@@ -206,81 +230,119 @@ void ImageWidget::paintEvent(QPaintEvent *event)
 
 void ImageWidget::mousePressEvent(QMouseEvent *event)
 {
-	mDrawMesureLines = true;
-	mCurrentMousePos = event->pos();
-
-	if(mImage && mEnableMasks && mCurrentMask == NULL)
+	if(event->button() == Qt::LeftButton)
 	{
-		if(mCurrentMousePos.x() >= mImage->width() + mImagePadding)
+		mDrawMesureLines = true;
+		mCurrentMousePos = event->pos();
+
+		if(mImage && mEnableMasks && mCurrentMask == NULL)
 		{
-			mCurrentMousePos.setX(mImage->width() + mImagePadding - 1);
-		}
-		if(mCurrentMousePos.x() < mImagePadding)
-		{
-			mCurrentMousePos.setX(mImagePadding);
-		}
-		if(mCurrentMousePos.y() >= mImage->height() + mImagePadding)
-		{
-			mCurrentMousePos.setY(mImage->height() + mImagePadding - 1);
-		}
-		if(mCurrentMousePos.y() < mImagePadding)
-		{
-			mCurrentMousePos.setY(mImagePadding);
+			if(mCurrentMousePos.x() >= mImage->width() + mImagePadding)
+			{
+				mCurrentMousePos.setX(mImage->width() + mImagePadding - 1);
+			}
+			if(mCurrentMousePos.x() < mImagePadding)
+			{
+				mCurrentMousePos.setX(mImagePadding);
+			}
+			if(mCurrentMousePos.y() >= mImage->height() + mImagePadding)
+			{
+				mCurrentMousePos.setY(mImage->height() + mImagePadding - 1);
+			}
+			if(mCurrentMousePos.y() < mImagePadding)
+			{
+				mCurrentMousePos.setY(mImagePadding);
+			}
+
+			mFirstCorner = QPoint(mCurrentMousePos.x() - mImagePadding, mCurrentMousePos.y() - mImagePadding);
+			mCurrentMask = new QRect(mFirstCorner, mFirstCorner);
 		}
 
-		mFirstCorner = QPoint(mCurrentMousePos.x() - mImagePadding, mCurrentMousePos.y() - mImagePadding);
-		mCurrentMask = new QRect(mFirstCorner, mFirstCorner);
+		update();
 	}
+	else
+	{
+		QPoint point = QPoint(event->x() - mImagePadding, event->y() - mImagePadding);
 
-	update();
+		mMaskIndex = -1;
+		for(int i=0;i<mMasks->size();i++)
+		{
+			QRect rect = mMasks->at(i);
+			if(rect.contains(point))
+			{
+				mMaskIndex = i;
+			}
+		}
+		update();
+		if(mMaskIndex > -1)
+		{
+			menuContext->exec(event->globalPos());
+		}
+	}
 }
 
 
 void ImageWidget::mouseReleaseEvent(QMouseEvent *event)
 {
-	mDrawMesureLines = false;
-
-	if(mImage && mEnableMasks && mCurrentMask)
+	if(event->button() == Qt::LeftButton)
 	{
-		mMasks->push_back(*mCurrentMask);
-		delete mCurrentMask;
-		mCurrentMask = NULL;
-	}
+		mDrawMesureLines = false;
 
-	update();
+		if(mImage && mEnableMasks && mCurrentMask)
+		{
+			mMasks->push_back(*mCurrentMask);
+			delete mCurrentMask;
+			mCurrentMask = NULL;
+		}
+
+		update();
+	}
 }
 
 void ImageWidget::mouseMoveEvent(QMouseEvent *event)
 {
-	mCurrentMousePos = event->pos();
-
-	if(mImage && mEnableMasks && mCurrentMask)
+	if(event->buttons() & Qt::LeftButton)
 	{
-		if(mCurrentMousePos.x() >= mImage->width() + mImagePadding)
+		mCurrentMousePos = event->pos();
+
+		if(mImage && mEnableMasks && mCurrentMask)
 		{
-			mCurrentMousePos.setX(mImage->width() + mImagePadding - 1);
-		}
-		if(mCurrentMousePos.x() < mImagePadding)
-		{
-			mCurrentMousePos.setX(mImagePadding);
-		}
-		if(mCurrentMousePos.y() >= mImage->height() + mImagePadding)
-		{
-			mCurrentMousePos.setY(mImage->height() + mImagePadding - 1);
-		}
-		if(mCurrentMousePos.y() < mImagePadding)
-		{
-			mCurrentMousePos.setY(mImagePadding);
+			if(mCurrentMousePos.x() >= mImage->width() + mImagePadding)
+			{
+				mCurrentMousePos.setX(mImage->width() + mImagePadding - 1);
+			}
+			if(mCurrentMousePos.x() < mImagePadding)
+			{
+				mCurrentMousePos.setX(mImagePadding);
+			}
+			if(mCurrentMousePos.y() >= mImage->height() + mImagePadding)
+			{
+				mCurrentMousePos.setY(mImage->height() + mImagePadding - 1);
+			}
+			if(mCurrentMousePos.y() < mImagePadding)
+			{
+				mCurrentMousePos.setY(mImagePadding);
+			}
+
+			QPoint lastCorner(mCurrentMousePos.x() - mImagePadding, mCurrentMousePos.y() - mImagePadding);
+
+			mCurrentMask->setLeft(mFirstCorner.x() < lastCorner.x() ? mFirstCorner.x() : lastCorner.x());
+			mCurrentMask->setRight(mFirstCorner.x() > lastCorner.x() ? mFirstCorner.x() : lastCorner.x());
+			mCurrentMask->setTop(mFirstCorner.y() < lastCorner.y() ? mFirstCorner.y() : lastCorner.y());
+			mCurrentMask->setBottom(mFirstCorner.y() > lastCorner.y() ? mFirstCorner.y() : lastCorner.y());
+
 		}
 
-		QPoint lastCorner(mCurrentMousePos.x() - mImagePadding, mCurrentMousePos.y() - mImagePadding);
-
-		mCurrentMask->setLeft(mFirstCorner.x() < lastCorner.x() ? mFirstCorner.x() : lastCorner.x());
-		mCurrentMask->setRight(mFirstCorner.x() > lastCorner.x() ? mFirstCorner.x() : lastCorner.x());
-		mCurrentMask->setTop(mFirstCorner.y() < lastCorner.y() ? mFirstCorner.y() : lastCorner.y());
-		mCurrentMask->setBottom(mFirstCorner.y() > lastCorner.y() ? mFirstCorner.y() : lastCorner.y());
-
+		update();
 	}
+}
 
-	update();
+void ImageWidget::deleteMask()
+{
+	if(mMaskIndex > -1)
+	{
+		mMasks->remove(mMaskIndex);
+		mMaskIndex = -1;
+		update();
+	}
 }

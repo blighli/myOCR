@@ -3,6 +3,8 @@
 
 #include <QWidget>
 
+class QMenu;
+
 class ImageWidget : public QWidget
 {
 	Q_OBJECT
@@ -30,7 +32,13 @@ private:
 	void drawBoxes(QPainter* painter);
 	void drawMasks(QPainter* painter);
 
+private slots:
+	void deleteMask();
+
 private:
+	QMenu* menuContext;
+	QAction* actionDeleteMask;
+
 	QImage* mImage;
 	int mImagePadding;
 	int mTickStepSmall;
@@ -51,6 +59,8 @@ private:
 	
 	QRect* mBoxes;
 	int mBoxCount;
+
+	int mMaskIndex;
 };
 
 #endif //IMAGEWIDGET_H
