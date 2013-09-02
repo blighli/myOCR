@@ -320,11 +320,4 @@ void ImageProcess::normalize( ImageProcessParam* param, LineSegment &minH, LineS
 	cvCvtColor(mProcessedImage, grayImage, CV_RGB2GRAY);
 	cvReleaseImage(&mProcessedImage);
 	mProcessedImage = grayImage;
-
-	IplImage* cannyImage = cvCreateImage(cvGetSize(mProcessedImage), 8, 1);
-	cvCanny(mProcessedImage, cannyImage, param->cannyThreshold1, param->cannyThreshold2, 3);
-	cvReleaseImage(&mProcessedImage);
-	mProcessedImage = cannyImage;
-
-	cvNot(mProcessedImage, mProcessedImage);
 }

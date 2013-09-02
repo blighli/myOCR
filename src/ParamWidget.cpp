@@ -33,7 +33,7 @@ ParamWidget::ParamWidget()
 
 	rectangleGroup = addGroup(tr("Rectangle"));
 	rectangleHMinLength = addParam(tr("HMinLength"),0, 3000, 800);
-	rectangleVMinLength = addParam(tr("VMinLength"),0, 2000, 800);
+	rectangleVMinLength = addParam(tr("VMinLength"),0, 2000, 600);
 	rectangleTop = addParam(tr("Top"),0, 1000, 300);
 	rectangleBottom = addParam(tr("Bottom"),0, 1000, 100);
 
