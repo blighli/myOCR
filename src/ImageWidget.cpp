@@ -297,6 +297,7 @@ void ImageWidget::mouseReleaseEvent(QMouseEvent *event)
 			if(mCurrentMask->rect.width() * mCurrentMask->rect.height() > 100)
 			{
 				mMasks->push_back(*mCurrentMask);
+				emit maskChanged();
 			}
 			delete mCurrentMask;
 			mCurrentMask = NULL;
@@ -352,6 +353,7 @@ void ImageWidget::deleteMask()
 	if(mMaskIndex > -1)
 	{
 		mMasks->remove(mMaskIndex);
+		emit maskChanged();
 		mMaskIndex = -1;
 		update();
 	}

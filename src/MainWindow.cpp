@@ -9,6 +9,7 @@
 #include "ParamWidget.h"
 #include "ImageProcess.h"
 #include "TesseractOCR.h"
+#include "OCRWidget.h"
 
 
 MainWindow::MainWindow()
@@ -63,9 +64,13 @@ void MainWindow::buildUI()
 	//build image widget
 	imageWidget = new ImageWidget();
 	imageWidget->setMasks(mOCRMasks);
+
 	QScrollArea* scrollArea = new QScrollArea();
 	scrollArea->setWidget(imageWidget);
 	scrollArea->setWidgetResizable(true);
+
+	ocrWidget = new OCRWidget();
+	ocrWidget->setMasks(mOCRMasks);
 
 	paramWidget = new ParamWidget();
 	connect(paramWidget, SIGNAL(process()), this, SLOT(processImage()));
@@ -80,8 +85,12 @@ void MainWindow::buildUI()
 	//layout the main ui
 
 	QTabWidget* tabWidget = new QTabWidget();
+	tabWidget->addTab(ocrWidget, "Masks");
 	tabWidget->addTab(paramWidget, "Image Process");
 	tabWidget->addTab(textEdit, "Text Recognize");
+
+
+	connect(imageWidget, SIGNAL(maskChanged()), ocrWidget, SLOT(update()));
 
 	QHBoxLayout* hbox = new QHBoxLayout();
 	hbox->addWidget(scrollArea,1);
@@ -339,6 +348,7 @@ void MainWindow::loadMasks()
 		}
 		xml.clear();
 		imageWidget->update();
+		ocrWidget->update();
 	}
 }
 
@@ -346,6 +356,7 @@ void MainWindow::clearMasks()
 {
 	mOCRMasks->clear();
 	imageWidget->update();
+	ocrWidget->update();
 }
 
 void MainWindow::showParamWidget()
@@ -442,11 +453,11 @@ void MainWindow::recognizeText()
 	bool initSuccess = false;
 	if(actionEnableChinese->isChecked())
 	{
-		initSuccess = mTesseractOCR->init(TesseractOCR::TESSERACTOCR_CHINESE_ENGLISH);
+		initSuccess = mTesseractOCR->init(TesseractOCR::TESSERACTOCR_CHINESE);
 	}
 	else
 	{
-		initSuccess = mTesseractOCR->init(TesseractOCR::TESSERACTOCR_DIGIT);
+		initSuccess = mTesseractOCR->init(TesseractOCR::TESSERACTOCR_ENGLISH);
 	}
 	if(initSuccess == false)
 	{
@@ -459,7 +470,7 @@ void MainWindow::recognizeText()
 	mTesseractOCR->setImage(cvImage);
 	mTesseractOCR->setMasks(mOCRMasks);
 	QString tesseractText = mTesseractOCR->recognizeText();
-	
+	ocrWidget->update();
 	textEdit->clear();
 	//textEdit->setText(QString("%1\n%2\n%3\n%4").arg("Abbyy OCR:", abbyyText, "Tesseract OCR:", tesseractText));
 	textEdit->setText(QString("%1").arg(tesseractText));

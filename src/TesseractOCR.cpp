@@ -20,7 +20,7 @@ bool TesseractOCR::init( Language lang )
 {
 	QString tessdata = AppInfo::instance()->appDir();
 
-	if(lang == TESSERACTOCR_CHINESE_ENGLISH)
+	if(lang == TESSERACTOCR_CHINESE)
 	{
 		if (tessBaseAPI->Init(tessdata.toAscii(), "chi_sim+eng"))
 		{
@@ -32,21 +32,6 @@ bool TesseractOCR::init( Language lang )
 		tessBaseAPI->SetVariable("enable_new_segsearch", "0");
 		tessBaseAPI->SetVariable("language_model_ngram_on", "0");
 		tessBaseAPI->SetVariable("textord_force_make_prop_words", "F");
-	}
-	else if(lang == TESSERACTOCR_DIGIT)
-	{
-		if (tessBaseAPI->Init(tessdata.toAscii(), "eng"))
-		{
-			return false;
-		}
-		tessBaseAPI->SetVariable("tessedit_char_whitelist", "0123456789.+-*/<>");
-	}
-	else if(lang == TESSERACTOCR_CHINESE)
-	{
-		if (tessBaseAPI->Init(tessdata.toAscii(), "chi_sim"))
-		{
-			return false;
-		}
 	}
 	else if(lang == TESSERACTOCR_ENGLISH)
 	{
@@ -85,6 +70,15 @@ QString TesseractOCR::recognizeText()
 			OCRMask mask = mMasks->at(i);
 			tessBaseAPI->SetRectangle(mask.rect.x(), mask.rect.y(), mask.rect.width(), mask.rect.height());
 
+			if(mask.key == QString::fromLocal8Bit("购货单位")  || mask.key == QString::fromLocal8Bit("销货单位"))
+			{
+				tessBaseAPI->SetVariable("tessedit_char_whitelist", "0123456789");
+			}
+			else if(mask.key == QString::fromLocal8Bit("密码区"))
+			{
+				tessBaseAPI->SetVariable("tessedit_char_whitelist", "0123456789.+-*/<>");
+			}
+
 			Boxa* boxes = tessBaseAPI->GetComponentImages(tesseract::RIL_WORD, true, NULL, NULL);
 			if(boxes)
 			{
@@ -96,7 +90,25 @@ QString TesseractOCR::recognizeText()
 				}
 
 				char* ocrText = tessBaseAPI->GetUTF8Text();
-				allText += QString(ocrText);
+				QString value(ocrText);
+
+				if(mask.key == QString::fromLocal8Bit("购货单位")  || mask.key == QString::fromLocal8Bit("销货单位"))
+				{
+					value.replace("\n\n", "\n");
+					value.replace(" ", "");
+
+					int start = value.indexOf("\n");
+					int end = value.indexOf("\n", start + 1);
+					
+					value = value.mid(start + 1, end - start);
+				}
+				else if(mask.key == QString::fromLocal8Bit("密码区"))
+				{
+					value.replace("\n\n", "\n");
+				}
+
+				(*mMasks)[i].value = value;
+				allText += value;
 			}
 		}
 	}

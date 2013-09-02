@@ -14,6 +14,7 @@ class CubeWidget;
 class ParamWidget;
 class ImageProcess;
 class TesseractOCR;
+class OCRWidget;
 
 class MainWindow : public QMainWindow
 {
@@ -43,6 +44,7 @@ private:
 	void buildUI();
 	//user interface components
 	ImageWidget* imageWidget;
+	OCRWidget* ocrWidget;
 	CubeWidget* cubeWidget;
 	ParamWidget* paramWidget;
 	QTextEdit* textEdit;

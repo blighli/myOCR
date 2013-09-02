@@ -33,6 +33,9 @@ private:
 	void drawBoxes(QPainter* painter);
 	void drawMasks(QPainter* painter);
 
+signals:
+	void maskChanged();
+
 private slots:
 	void deleteMask();
 
