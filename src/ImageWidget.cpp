@@ -290,7 +290,10 @@ void ImageWidget::mouseReleaseEvent(QMouseEvent *event)
 
 		if(mImage && mEnableMasks && mCurrentMask)
 		{
-			mMasks->push_back(*mCurrentMask);
+			if(mCurrentMask->width() * mCurrentMask->height() > 100)
+			{
+				mMasks->push_back(*mCurrentMask);
+			}
 			delete mCurrentMask;
 			mCurrentMask = NULL;
 		}

@@ -420,6 +420,7 @@ void MainWindow::recognizeText()
 
 	QVector<QRect>* masks = imageWidget->getMasks();
 
+	/*
 	if(mAbbyyOCR == NULL)
 	{
 		mAbbyyOCR = new AbbyyOCR();
@@ -427,6 +428,7 @@ void MainWindow::recognizeText()
 	mAbbyyOCR->setImage(cvImage);
 	mAbbyyOCR->setMasks(masks);
 	QString abbyyText = mAbbyyOCR->recognizeText();
+	*/
 
 	if(mTesseractOCR == NULL)
 	{
@@ -454,7 +456,8 @@ void MainWindow::recognizeText()
 	QString tesseractText = mTesseractOCR->recognizeText();
 	
 	textEdit->clear();
-	textEdit->setText(QString("%1\n%2\n%3\n%4").arg("Abbyy OCR:", abbyyText, "Tesseract OCR:", tesseractText));
+	//textEdit->setText(QString("%1\n%2\n%3\n%4").arg("Abbyy OCR:", abbyyText, "Tesseract OCR:", tesseractText));
+	textEdit->setText(QString("%1").arg(tesseractText));
 
 	int rectCount = mTesseractOCR->getBoxes()->size();
 	QRect* rects = new QRect[rectCount];
