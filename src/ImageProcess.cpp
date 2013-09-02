@@ -68,8 +68,6 @@ void ImageProcess::run( ImageProcessParam* param )
 		return;
 	}
 
-	
-
 	if(param->useGray)
 	{
 		//IplImage* grayImage = cvCreateImage(cvGetSize(mProcessedImage), 8, 1);
@@ -335,8 +333,36 @@ void ImageProcess::normalize( ImageProcessParam* param, LineSegment &minH, LineS
 	mProcessedImage = cvCreateImage(cvSize(param->normalizeWidth, param->normalizeTop + param->normalizeHeight), 8, 3);
 	cvWarpPerspective(mOriginalImage, mProcessedImage, warp_mat);
 
-	IplImage* grayImage = cvCreateImage(cvGetSize(mProcessedImage), 8, 1);
-	cvCvtColor(mProcessedImage, grayImage, CV_RGB2GRAY);
-	cvReleaseImage(&mProcessedImage);
-	mProcessedImage = grayImage;
+	//IplImage* grayImage = cvCreateImage(cvGetSize(mProcessedImage), 8, 1);
+	//cvCvtColor(mProcessedImage, grayImage, CV_RGB2GRAY);
+	//cvReleaseImage(&mProcessedImage);
+	//mProcessedImage = grayImage;
+
+	//构建不同的灰度方法，针对扫描和手机照片效果很不一样
+	for(int y=0; y<mProcessedImage->height; y++)
+	{
+		for(int x=0; x<mProcessedImage->width; x++)
+		{
+			uchar* ptr = (uchar*)(mProcessedImage->imageData + y * mProcessedImage->widthStep + x * 3);
+
+			int b = ptr[0];
+			int g = ptr[1];
+			int r = ptr[2];
+
+			int gray = b - (g+r)/2;
+
+			if(gray > 0)
+			{
+				gray = 255 - gray * 2;
+			}
+			else
+			{
+				gray = 255;
+			}
+
+			ptr[0] = gray;
+			ptr[1] = gray;
+			ptr[2] = gray;
+		}
+	}
 }

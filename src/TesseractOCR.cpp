@@ -79,6 +79,14 @@ QString TesseractOCR::recognizeText()
 			{
 				tessBaseAPI->SetVariable("tessedit_char_whitelist", "0123456789.+-*/<>");
 			}
+			else if(mask.key == QString::fromLocal8Bit("½ð¶î") || mask.key == QString::fromLocal8Bit("Ë°¶î"))
+			{
+				tessBaseAPI->SetVariable("tessedit_char_whitelist", "0123456789.");
+			}
+			else
+			{
+				tessBaseAPI->SetVariable("tessedit_char_whitelist", "0123456789.+-*/<>");
+			}
 
 			Boxa* boxes = tessBaseAPI->GetComponentImages(tesseract::RIL_WORD, true, NULL, NULL);
 			if(boxes)
