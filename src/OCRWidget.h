@@ -15,6 +15,8 @@ public:
 	void setMasks(QVector<OCRMask>* masks);
 public slots:
 	void update();
+private slots:
+	void keyChanged();
 private:
 	QVector<OCRMask>* mMasks;
 	QVBoxLayout* mainLayout;

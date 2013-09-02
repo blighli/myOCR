@@ -70,7 +70,8 @@ QString TesseractOCR::recognizeText()
 			OCRMask mask = mMasks->at(i);
 			tessBaseAPI->SetRectangle(mask.rect.x(), mask.rect.y(), mask.rect.width(), mask.rect.height());
 
-			if(mask.key == QString::fromLocal8Bit("购货单位")  || mask.key == QString::fromLocal8Bit("销货单位"))
+			if(mask.key == QString::fromLocal8Bit("购货单位")  || mask.key == QString::fromLocal8Bit("销货单位")
+				|| mask.key == QString::fromLocal8Bit("发票代码")|| mask.key == QString::fromLocal8Bit("发票号码"))
 			{
 				tessBaseAPI->SetVariable("tessedit_char_whitelist", "0123456789");
 			}

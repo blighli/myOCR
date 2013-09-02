@@ -40,6 +40,7 @@ void OCRWidget::update()
 	for(int i=0; i<mMasks->size(); i++)
 	{
 		QLineEdit* keyEdit = new QLineEdit();
+
 		QTextEdit* valueEdit = new QTextEdit();
 		valueEdit->setFixedHeight(100);
 
@@ -54,6 +55,18 @@ void OCRWidget::update()
 		groupLayout->addWidget(valueEdit);
 		
 		mainLayout->addWidget(groupBox);
+
+		keyEdit->setProperty("index", i);
+		connect(keyEdit, SIGNAL(textChanged(const QString &)), this, SLOT(keyChanged()));
 	}
 	mainLayout->addStretch();
+}
+
+void OCRWidget::keyChanged()
+{
+	QLineEdit* keyEdit = (QLineEdit*)sender();
+	int index = keyEdit->property("index").toInt();
+	QString key = keyEdit->text();
+
+	(*mMasks)[index].key = key;
 }
