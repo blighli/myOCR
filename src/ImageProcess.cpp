@@ -68,12 +68,31 @@ void ImageProcess::run( ImageProcessParam* param )
 		return;
 	}
 
+	
+
 	if(param->useGray)
 	{
-		IplImage* grayImage = cvCreateImage(cvGetSize(mProcessedImage), 8, 1);
-		cvCvtColor(mProcessedImage, grayImage, CV_RGB2GRAY);
-		cvReleaseImage(&mProcessedImage);
-		mProcessedImage = grayImage;
+		//IplImage* grayImage = cvCreateImage(cvGetSize(mProcessedImage), 8, 1);
+		//cvCvtColor(mProcessedImage, grayImage, CV_RGB2GRAY);
+		//cvReleaseImage(&mProcessedImage);
+		//mProcessedImage = grayImage;
+
+		//使用blue进行灰度化
+		for(int y=0; y<mProcessedImage->height; y++)
+		{
+			for(int x=0; x<mProcessedImage->width; x++)
+			{
+				uchar* ptr = (uchar*)(mProcessedImage->imageData + y * mProcessedImage->widthStep + x * 3);
+
+				int b = ptr[0];
+				int g = ptr[1];
+				int r = ptr[2];
+
+				ptr[0] = b;
+				ptr[1] = b;
+				ptr[2] = b;
+			}
+		}
 	}
 	else
 	{
