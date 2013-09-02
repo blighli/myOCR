@@ -34,7 +34,6 @@ ImageWidget::~ImageWidget()
 {
 	delete mImage;
 	delete[] mBoxes;
-	delete mMasks;
 }
 
 void ImageWidget::enableMesure(bool enabled)

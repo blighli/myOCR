@@ -14,8 +14,6 @@ class ParamWidget : public QWidget
 public:
 	ParamWidget();
 
-	QGroupBox* debugGroup;
-
 	QGroupBox* grayGroup;
 
 	QGroupBox* cannyGroup;

@@ -67,6 +67,9 @@ void MainWindow::buildUI()
 	scrollArea->setWidget(imageWidget);
 	scrollArea->setWidgetResizable(true);
 
+	paramWidget = new ParamWidget();
+	connect(paramWidget, SIGNAL(process()), this, SLOT(processImage()));
+
 	//build text widget
 	textEdit = new QTextEdit();
 	textEdit->setFixedWidth(400);
@@ -75,12 +78,18 @@ void MainWindow::buildUI()
 	textEdit->setFont(fontTextEdit);
 
 	//layout the main ui
+
+	QTabWidget* tabWidget = new QTabWidget();
+	tabWidget->addTab(paramWidget, "Image Process");
+	tabWidget->addTab(textEdit, "Text Recognize");
+
 	QHBoxLayout* hbox = new QHBoxLayout();
 	hbox->addWidget(scrollArea,1);
-	hbox->addWidget(textEdit);
+	hbox->addWidget(tabWidget);
 	QWidget* centerWidget = new QWidget();
 	centerWidget->setLayout(hbox);
 	setCentralWidget(centerWidget);
+
 
 	//build the main menu
 	menuFile = menuBar()->addMenu(tr("File"));
@@ -341,14 +350,7 @@ void MainWindow::clearMasks()
 
 void MainWindow::showParamWidget()
 {
-	if(paramWidget == NULL)
-	{
-		paramWidget = new ParamWidget();
-		connect(paramWidget, SIGNAL(process()), this, SLOT(processImage()));
-	}
-	paramWidget->show();
-	paramWidget->raise();
-	paramWidget->activateWindow();
+	processImage();
 }
 
 
@@ -366,7 +368,7 @@ void MainWindow::processImage()
 
 	ImageProcessParam param;
 
-	param.debug = paramWidget->debugGroup->isChecked();
+	param.debug = true;
 	
 	param.useGray = paramWidget->grayGroup->isChecked();
 
