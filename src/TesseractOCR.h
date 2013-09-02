@@ -5,6 +5,7 @@
 #include <leptonica/allheaders.h>
 #include <tesseract/baseapi.h>
 #include <opencv2/opencv.hpp>
+#include "OCRMask.h"
 
 class TesseractOCR
 {
@@ -24,14 +25,14 @@ public:
 	bool init(Language lang);
 
 	void setImage(IplImage* image);
-	void setMasks(QVector<QRect>* masks);
+	void setMasks(QVector<OCRMask>* masks);
 
 	QString recognizeText();
 	QVector<QRect>* getBoxes();
 
 private:
 	tesseract::TessBaseAPI* tessBaseAPI;
-	QVector<QRect>* mMasks;
+	QVector<OCRMask>* mMasks;
 	QVector<QRect>* mBoxes;
 };
 

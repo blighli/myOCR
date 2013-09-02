@@ -68,7 +68,7 @@ void TesseractOCR::setImage( IplImage* image )
 	tessBaseAPI->SetImage((uchar*)image->imageData, image->width, image->height, image->nChannels, image->widthStep);
 }
 
-void TesseractOCR::setMasks( QVector<QRect>* masks )
+void TesseractOCR::setMasks( QVector<OCRMask>* masks )
 {
 	mMasks = masks;
 }
@@ -82,8 +82,8 @@ QString TesseractOCR::recognizeText()
 		mBoxes->clear();
 		for(int i=0;i<mMasks->size();i++)
 		{
-			QRect mask = mMasks->at(i);
-			tessBaseAPI->SetRectangle(mask.x(), mask.y(), mask.width(), mask.height());
+			OCRMask mask = mMasks->at(i);
+			tessBaseAPI->SetRectangle(mask.rect.x(), mask.rect.y(), mask.rect.width(), mask.rect.height());
 
 			Boxa* boxes = tessBaseAPI->GetComponentImages(tesseract::RIL_WORD, true, NULL, NULL);
 			if(boxes)
@@ -91,7 +91,7 @@ QString TesseractOCR::recognizeText()
 				for(int i = 0; i< boxes->n; i++)
 				{
 					QRect box(boxes->box[i]->x, boxes->box[i]->y, boxes->box[i]->w, boxes->box[i]->h);
-					box.translate(mask.x(), mask.y());
+					box.translate(mask.rect.x(), mask.rect.y());
 					mBoxes->append(box);
 				}
 

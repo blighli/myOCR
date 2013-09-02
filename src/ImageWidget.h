@@ -2,6 +2,7 @@
 #define IMAGEWIDGET_H
 
 #include <QWidget>
+#include "OCRMask.h"
 
 class QMenu;
 
@@ -16,7 +17,7 @@ public:
 	void enableMesure(bool enabled);
 	void enableMasks(bool enabled);
 
-	QVector<QRect>* getMasks();
+	void setMasks(QVector<OCRMask>* masks);
 
 protected:
 	void paintEvent(QPaintEvent *event);
@@ -54,13 +55,12 @@ private:
 	QPoint mFirstCorner;
 
 	bool mEnableMasks;
-	QVector<QRect>* mMasks;
-	QRect* mCurrentMask;
+	QVector<OCRMask>* mMasks;
+	OCRMask* mCurrentMask;
+	int mMaskIndex;
 	
 	QRect* mBoxes;
 	int mBoxCount;
-
-	int mMaskIndex;
 };
 
 #endif //IMAGEWIDGET_H

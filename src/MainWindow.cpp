@@ -13,7 +13,8 @@
 
 MainWindow::MainWindow()
 {
-	mImageProcess = new ImageProcess();\
+	mOCRMasks = new QVector<OCRMask>();
+	mImageProcess = new ImageProcess();
 	mAbbyyOCR = NULL;
 	mTesseractOCR = NULL;
 
@@ -25,6 +26,10 @@ MainWindow::MainWindow()
 
 MainWindow::~MainWindow()
 {
+	if(mOCRMasks)
+	{
+		delete mOCRMasks;
+	}
 	if(mImageProcess)
 	{
 		delete mImageProcess;
@@ -57,6 +62,7 @@ void MainWindow::buildUI()
 
 	//build image widget
 	imageWidget = new ImageWidget();
+	imageWidget->setMasks(mOCRMasks);
 	QScrollArea* scrollArea = new QScrollArea();
 	scrollArea->setWidget(imageWidget);
 	scrollArea->setWidgetResizable(true);
@@ -220,8 +226,7 @@ void MainWindow::enableMasks()
 
 void MainWindow::saveMasks()
 {
-	QVector<QRect>* masks = imageWidget->getMasks();
-	if(masks->size() == 0)
+	if(mOCRMasks->size() == 0)
 	{
 		QMessageBox msgBox;
 		msgBox.setIcon(QMessageBox::Warning);
@@ -248,15 +253,16 @@ void MainWindow::saveMasks()
 		xmlWriter->writeStartDocument();
 		xmlWriter->writeStartElement("masks");
 
-		for(int i=0; i<masks->size(); i++)
+		for(int i=0; i<mOCRMasks->size(); i++)
 		{
-			QRect rect = masks->at(i);
+			OCRMask mask = mOCRMasks->at(i);
 			xmlWriter->writeStartElement("mask");
 
-			xmlWriter->writeAttribute("x", QString::number(rect.x()));
-			xmlWriter->writeAttribute("y", QString::number(rect.y()));
-			xmlWriter->writeAttribute("w", QString::number(rect.width()));
-			xmlWriter->writeAttribute("h", QString::number(rect.height()));
+			xmlWriter->writeAttribute("key", mask.key);
+			xmlWriter->writeAttribute("x", QString::number(mask.rect.x()));
+			xmlWriter->writeAttribute("y", QString::number(mask.rect.y()));
+			xmlWriter->writeAttribute("w", QString::number(mask.rect.width()));
+			xmlWriter->writeAttribute("h", QString::number(mask.rect.height()));
 
 			xmlWriter->writeEndElement();
 		}
@@ -284,8 +290,7 @@ void MainWindow::loadMasks()
 			return;
 		}
 
-		QVector<QRect>* masks = imageWidget->getMasks();
-		masks->clear();
+		mOCRMasks->clear();
 
 		QXmlStreamReader xml;
 		xml.setDevice(&file);
@@ -305,14 +310,14 @@ void MainWindow::loadMasks()
 				}
 				if(xml.name() == "mask")
 				{
-					QRect rect;
 					QXmlStreamAttributes attributes = xml.attributes();
-					rect.setX(attributes.value("x").toString().toInt());
-					rect.setY(attributes.value("y").toString().toInt());
-					rect.setWidth(attributes.value("w").toString().toInt());
-					rect.setHeight(attributes.value("h").toString().toInt());
-
-					masks->push_back(rect);
+					OCRMask mask;
+					mask.key = attributes.value("key").toString();
+					mask.rect.setX(attributes.value("x").toString().toInt());
+					mask.rect.setY(attributes.value("y").toString().toInt());
+					mask.rect.setWidth(attributes.value("w").toString().toInt());
+					mask.rect.setHeight(attributes.value("h").toString().toInt());
+					mOCRMasks->push_back(mask);
 				}
 			}
 		}
@@ -330,7 +335,7 @@ void MainWindow::loadMasks()
 
 void MainWindow::clearMasks()
 {
-	imageWidget->getMasks()->clear();
+	mOCRMasks->clear();
 	imageWidget->update();
 }
 
@@ -418,8 +423,6 @@ void MainWindow::recognizeText()
 		return;
 	}
 
-	QVector<QRect>* masks = imageWidget->getMasks();
-
 	/*
 	if(mAbbyyOCR == NULL)
 	{
@@ -452,7 +455,7 @@ void MainWindow::recognizeText()
 		return;
 	}
 	mTesseractOCR->setImage(cvImage);
-	mTesseractOCR->setMasks(masks);
+	mTesseractOCR->setMasks(mOCRMasks);
 	QString tesseractText = mTesseractOCR->recognizeText();
 	
 	textEdit->clear();

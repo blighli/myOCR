@@ -8,6 +8,8 @@ class OCRMask
 public:
 	QRect rect;
 	QString key;
+
+	OCRMask();
 };
 
 #endif //OCRMASK_H

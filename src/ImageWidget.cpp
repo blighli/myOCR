@@ -7,14 +7,13 @@ ImageWidget::ImageWidget()
 	mBoxes = NULL;
 	mBoxCount = 0;
 
-	mMaskIndex = -1;
-
 	mDrawMesureLines = false;
 	mEnableMesure =false;
 
 	mEnableMasks = false;
-	mMasks = new QVector<QRect>();
+	mMasks = NULL;
 	mCurrentMask = NULL;
+	mMaskIndex = -1;
 
 	mImagePadding = 20;
 	mTickStepSmall = 10;
@@ -48,9 +47,9 @@ void ImageWidget::enableMasks(bool enabled)
 	mEnableMasks = enabled;
 }
 
-QVector<QRect>* ImageWidget::getMasks()
+void ImageWidget::setMasks(QVector<OCRMask>* masks)
 {
-	return mMasks;
+	mMasks = masks;
 }
 
 void ImageWidget::setImage(QImage* image)
@@ -188,10 +187,15 @@ void ImageWidget::drawBoxes(QPainter* painter)
 
 void ImageWidget::drawMasks(QPainter* painter)
 {
+	if(mMasks == NULL)
+	{
+		return;
+	}
+
 	for(int i=0;i<mMasks->size();i++)
 	{
-		QRect rect = mMasks->at(i);
-		rect.translate(mImagePadding, mImagePadding);
+		OCRMask mask = mMasks->at(i);
+		mask.rect.translate(mImagePadding, mImagePadding);
 
 		if(i == mMaskIndex)
 		{
@@ -203,7 +207,7 @@ void ImageWidget::drawMasks(QPainter* painter)
 			painter->setPen(pen);
 		}
 
-		painter->drawRect(rect);
+		painter->drawRect(mask.rect);
 
 		if(i == mMaskIndex)
 		{
@@ -212,9 +216,9 @@ void ImageWidget::drawMasks(QPainter* painter)
 	}
 	if(mEnableMasks && mCurrentMask)
 	{
-		QRect rect = *mCurrentMask;
-		rect.translate(mImagePadding, mImagePadding);
-		painter->drawRect(rect);
+		OCRMask mask = *mCurrentMask;
+		mask.rect.translate(mImagePadding, mImagePadding);
+		painter->drawRect(mask.rect);
 	}
 }
 
@@ -255,7 +259,8 @@ void ImageWidget::mousePressEvent(QMouseEvent *event)
 			}
 
 			mFirstCorner = QPoint(mCurrentMousePos.x() - mImagePadding, mCurrentMousePos.y() - mImagePadding);
-			mCurrentMask = new QRect(mFirstCorner, mFirstCorner);
+			mCurrentMask = new OCRMask();
+			mCurrentMask->rect = QRect(mFirstCorner, mFirstCorner);
 		}
 
 		update();
@@ -267,8 +272,8 @@ void ImageWidget::mousePressEvent(QMouseEvent *event)
 		mMaskIndex = -1;
 		for(int i=0;i<mMasks->size();i++)
 		{
-			QRect rect = mMasks->at(i);
-			if(rect.contains(point))
+			OCRMask mask = mMasks->at(i);
+			if(mask.rect.contains(point))
 			{
 				mMaskIndex = i;
 			}
@@ -290,7 +295,7 @@ void ImageWidget::mouseReleaseEvent(QMouseEvent *event)
 
 		if(mImage && mEnableMasks && mCurrentMask)
 		{
-			if(mCurrentMask->width() * mCurrentMask->height() > 100)
+			if(mCurrentMask->rect.width() * mCurrentMask->rect.height() > 100)
 			{
 				mMasks->push_back(*mCurrentMask);
 			}
@@ -329,10 +334,13 @@ void ImageWidget::mouseMoveEvent(QMouseEvent *event)
 
 			QPoint lastCorner(mCurrentMousePos.x() - mImagePadding, mCurrentMousePos.y() - mImagePadding);
 
-			mCurrentMask->setLeft(mFirstCorner.x() < lastCorner.x() ? mFirstCorner.x() : lastCorner.x());
-			mCurrentMask->setRight(mFirstCorner.x() > lastCorner.x() ? mFirstCorner.x() : lastCorner.x());
-			mCurrentMask->setTop(mFirstCorner.y() < lastCorner.y() ? mFirstCorner.y() : lastCorner.y());
-			mCurrentMask->setBottom(mFirstCorner.y() > lastCorner.y() ? mFirstCorner.y() : lastCorner.y());
+			if(mCurrentMask)
+			{
+				mCurrentMask->rect.setLeft(mFirstCorner.x() < lastCorner.x() ? mFirstCorner.x() : lastCorner.x());
+				mCurrentMask->rect.setRight(mFirstCorner.x() > lastCorner.x() ? mFirstCorner.x() : lastCorner.x());
+				mCurrentMask->rect.setTop(mFirstCorner.y() < lastCorner.y() ? mFirstCorner.y() : lastCorner.y());
+				mCurrentMask->rect.setBottom(mFirstCorner.y() > lastCorner.y() ? mFirstCorner.y() : lastCorner.y());
+			}
 
 		}
 

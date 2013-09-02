@@ -5,6 +5,7 @@
 #include <opencv2/opencv.hpp>
 #include <leptonica/allheaders.h>
 #include <tesseract/baseapi.h>
+#include "OCRMask.h"
 
 class ImageWidget;
 class QTextEdit;
@@ -69,9 +70,9 @@ private:
 	//internal variables
 	AbbyyOCR* mAbbyyOCR;
 	TesseractOCR* mTesseractOCR;
-	
-
 	ImageProcess* mImageProcess;
+
+	QVector<OCRMask>* mOCRMasks;
 };
 
 #endif //MAINWINDOW_H
