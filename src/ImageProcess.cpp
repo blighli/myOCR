@@ -1,4 +1,5 @@
 #include "ImageProcess.h"
+#include <vector>
 
 ImageProcess::ImageProcess()
 {
@@ -76,8 +77,29 @@ void ImageProcess::run( ImageProcessParam* param )
 		//mProcessedImage = grayImage;
 
 		//使用blue进行灰度化
+
+		int top = 0;
+		int bottom = 0;
+		int left = 0;
+		int right = 0;
+
+		const int minPixCount = 10;
+		const int minPixStack = 3;
+		const int minRowHitStack = 5;
+		const int minRowMissStack = 10;
+		
+		
+		int rowHitStack = 0;
+		int rowMissStack = 0;
+
 		for(int y=0; y<mProcessedImage->height; y++)
 		{
+		
+			int pixCount = 0;
+			int pixStack = 0;
+			int rowLeft = 0;
+			int rowRight = 0;
+
 			for(int x=0; x<mProcessedImage->width; x++)
 			{
 				uchar* ptr = (uchar*)(mProcessedImage->imageData + y * mProcessedImage->widthStep + x * 3);
@@ -86,16 +108,85 @@ void ImageProcess::run( ImageProcessParam* param )
 				int g = ptr[1];
 				int r = ptr[2];
 
-				ptr[0] = b;
-				ptr[1] = b;
-				ptr[2] = b;
+				int gray = 255;
+				if(r > 100 && r > b*2 && r > g*2)
+				{
+					gray = 0;
+
+					pixCount++;
+					pixStack++;
+
+					if(pixStack > minPixStack)
+					{
+						if(rowLeft == 0)
+						{
+							rowLeft = x - minPixStack;
+						}
+						rowRight = x;
+					}
+				}
+				else
+				{
+					pixStack = 0;
+				}
+
+				ptr[0] = gray;
+				ptr[1] = gray;
+				ptr[2] = gray;
+			}
+
+			if(pixCount > minPixCount)
+			{
+				rowHitStack++;
+				rowMissStack = 0;
+
+				if(rowHitStack > minRowHitStack)
+				{
+					if(top == 0)
+					{
+						top = y - minRowHitStack;
+					}
+
+
+					if(left == 0 || rowLeft < left)
+					{
+						left = rowLeft;
+					}
+					if(rowRight > right)
+					{
+						right = rowRight;
+					}
+
+				}
+			}
+			else
+			{
+				rowMissStack++;
+				rowHitStack = 0;
+
+				if(rowMissStack > minRowMissStack && top != 0)
+				{
+					bottom = y - rowMissStack;
+					break;
+				}
 			}
 		}
+
+		cvLine( mProcessedImage, cvPoint(left,top),cvPoint(right,top), CV_RGB(255, 0, 0));
+		cvLine( mProcessedImage, cvPoint(left,bottom),cvPoint(right,bottom), CV_RGB(255, 0, 0));
+		cvLine( mProcessedImage, cvPoint(left,top),cvPoint(left,bottom), CV_RGB(255, 0, 0));
+		cvLine( mProcessedImage, cvPoint(right,top),cvPoint(right,bottom), CV_RGB(255, 0, 0));
+
 	}
 	else
 	{
 		return;
 	}
+
+
+
+	//test
+	return;
 
 	if(param->useCanny)
 	{
