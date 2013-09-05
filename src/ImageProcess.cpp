@@ -256,10 +256,6 @@ void ImageProcess::run( ImageProcessParam* param )
 	}
 
 	//blueText(mProcessedImage, 120, 170);
-
-	
-
-	
 	
 	//CvRect redStampRect = redStamp(mProcessedImage);
 	//cvRectangleR(mProcessedImage, redStampRect, CV_RGB(255, 0, 0));

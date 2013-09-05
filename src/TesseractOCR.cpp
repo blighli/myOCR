@@ -112,8 +112,11 @@ QString TesseractOCR::recognizeText()
 
 					int start = value.indexOf("\n");
 					int end = value.indexOf("\n", start + 1);
+					if( start!= -1 && end != -1 )
+					{
+						value = value.mid(start + 1, end - start);
+					}
 					
-					value = value.mid(start + 1, end - start);
 				}
 				else if(mask.key == QString::fromLocal8Bit("·¢Æ±´úÂë")|| mask.key == QString::fromLocal8Bit("·¢Æ±ºÅÂë"))
 				{
