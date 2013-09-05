@@ -59,6 +59,11 @@ public:
 	IplImage* getProcessedImage();
 
 private:
+	CvRect redStamp( IplImage* image, int minPixCount = 10, int minPixStack = 3, int minRowHitStack = 5, int minRowMissStack = 10);
+	void blueText(IplImage* image, int minHue, int maxHue);
+
+	void rgb2hsl(int red, int green, int blue, int& hue, int& saturation, int& luminance);
+
 	CvSeq* hough( ImageProcessParam* param );
 	void combine( ImageProcessParam* param, CvSeq* lines, std::vector<LineSegment>& lineSegList);
 	void rectangle( ImageProcessParam* param, std::vector<LineSegment> &lineSegList, int &minHRho, LineSegment &minH, int &maxHRho, LineSegment &maxH, int &minVRho, LineSegment &minV, int &maxVRho, LineSegment &maxV );

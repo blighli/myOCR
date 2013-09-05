@@ -83,6 +83,10 @@ QString TesseractOCR::recognizeText()
 			{
 				tessBaseAPI->SetVariable("tessedit_char_whitelist", "0123456789.");
 			}
+			else if(mask.key == QString::fromLocal8Bit("开票日期"))
+			{
+				tessBaseAPI->SetVariable("tessedit_char_whitelist", "0123456789");
+			}
 			else
 			{
 				tessBaseAPI->SetVariable("tessedit_char_whitelist", "0123456789.+-*/<>");
@@ -111,9 +115,53 @@ QString TesseractOCR::recognizeText()
 					
 					value = value.mid(start + 1, end - start);
 				}
+				else if(mask.key == QString::fromLocal8Bit("发票代码")|| mask.key == QString::fromLocal8Bit("发票号码"))
+				{
+					value.replace(" ", "");
+				}
 				else if(mask.key == QString::fromLocal8Bit("密码区"))
 				{
 					value.replace("\n\n", "\n");
+					value.replace(" ", "");
+				}
+				else if(mask.key == QString::fromLocal8Bit("金额") || mask.key == QString::fromLocal8Bit("税额"))
+				{
+					int start = value.indexOf(" ");
+					int end = value.length();
+					value = value.mid(start + 1, end - start);
+					value.replace(" ", "");
+				}
+				else if(mask.key == QString::fromLocal8Bit("开票日期"))
+				{
+					value.replace(" ", "");
+					
+					QString year = value.mid(0, 4);
+
+					QString month = "01";
+					QString day = "01";
+
+					int pos = 5;//年后至少跳一位
+					for(int i = pos; i<value.length() - 1; i++)
+					{
+						month = value.mid(i,2);
+						if(month.toInt() <= 12 && month.toInt() >= 1)
+						{
+							pos = i+3;//月后至少跳一位
+							break;
+						}
+					}
+
+					for(int i = pos; i<value.length() - 1; i++)
+					{
+						day = value.mid(i,2);
+						if(day.toInt() <= 31 && day.toInt() >= 1)
+						{
+							break;
+						}
+					}
+
+					value = year+month+day;
+
 				}
 
 				(*mMasks)[i].value = value;

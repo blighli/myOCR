@@ -1,6 +1,9 @@
 #include "ImageProcess.h"
 #include <vector>
 
+#define min3v(v1, v2, v3)   ((v1)>(v2)? ((v2)>(v3)?(v3):(v2)):((v1)>(v3)?(v3):(v2)))
+#define max3v(v1, v2, v3)   ((v1)<(v2)? ((v2)<(v3)?(v3):(v2)):((v1)<(v3)?(v3):(v1)))
+
 ImageProcess::ImageProcess()
 {
 	mOriginalImage = NULL;
@@ -46,6 +49,188 @@ IplImage* ImageProcess::getProcessedImage()
 	return mProcessedImage;
 }
 
+
+CvRect ImageProcess::redStamp( IplImage* image, int minPixCount, int minPixStack, int minRowHitStack, int minRowMissStack )
+{
+	int top = 0;
+	int bottom = 0;
+	int left = 0;
+	int right = 0;
+
+	int rowHitStack = 0;
+	int rowMissStack = 0;
+
+	for(int y=0; y<mProcessedImage->height; y++)
+	{
+
+		int pixCount = 0;
+		int pixStack = 0;
+		int rowLeft = 0;
+		int rowRight = 0;
+
+		for(int x=0; x<mProcessedImage->width; x++)
+		{
+			uchar* ptr = (uchar*)(mProcessedImage->imageData + y * mProcessedImage->widthStep + x * 3);
+
+			int b = ptr[0];
+			int g = ptr[1];
+			int r = ptr[2];
+
+			//int gray = 255;
+			if(r > 100 && r > b*2 && r > g*2)
+			{
+				//gray = 0;
+
+				pixCount++;
+				pixStack++;
+
+				if(pixStack > minPixStack)
+				{
+					if(rowLeft == 0)
+					{
+						rowLeft = x - minPixStack;
+					}
+					rowRight = x;
+				}
+			}
+			else
+			{
+				pixStack = 0;
+			}
+
+			//ptr[0] = gray;
+			//ptr[1] = gray;
+			//ptr[2] = gray;
+		}
+
+		if(pixCount > minPixCount)
+		{
+			rowHitStack++;
+			rowMissStack = 0;
+
+			if(rowHitStack > minRowHitStack)
+			{
+				if(top == 0)
+				{
+					top = y - minRowHitStack;
+				}
+
+
+				if(left == 0 || rowLeft < left)
+				{
+					left = rowLeft;
+				}
+				if(rowRight > right)
+				{
+					right = rowRight;
+				}
+
+			}
+		}
+		else
+		{
+			rowMissStack++;
+			rowHitStack = 0;
+
+			if(rowMissStack > minRowMissStack && top != 0)
+			{
+				bottom = y - rowMissStack;
+				break;
+			}
+		}
+	}
+
+	return cvRect(left, top, right - left, bottom - top);
+}
+
+
+void ImageProcess::rgb2hsl(int red, int green, int blue, int& hue, int& saturation, int& luminance)
+{
+	float h=0, s=0, l=0;
+
+	float r = red/255.f;
+	float g = green/255.f;
+	float b = blue/255.f;
+
+	float maxVal = max3v(r, g, b);
+	float minVal = min3v(r, g, b);
+
+	if(maxVal == minVal)  
+	{
+		h = 0; // undefined  
+	}
+	else if(maxVal==r && g>=b)
+	{
+		h = 40.0f*(g-b)/(maxVal-minVal);
+	}
+	else if(maxVal==r && g<b)
+	{
+		h = 40.0f*(g-b)/(maxVal-minVal) + 240.0f;
+	}
+	else if(maxVal==g)  
+	{
+		h = 40.0f*(b-r)/(maxVal-minVal) + 80.0f;  
+	}
+	else if(maxVal==b)
+	{
+		h = 40.0f*(r-g)/(maxVal-minVal) + 160.0f;
+	}
+	
+	// luminance  
+	l = (maxVal+minVal)/2.0f;
+
+	// saturation  
+	if(l == 0 || maxVal == minVal)  
+	{
+		s = 0;
+	}  
+	else if(0<l && l<=0.5f)  
+	{
+		s = (maxVal-minVal)/(maxVal+minVal);
+	}
+	else if(l>0.5f)
+	{
+		s = (maxVal-minVal)/(2 - (maxVal+minVal)); //(maxVal-minVal > 0)?  
+	}
+
+	hue = (h>240)? 240 : ((h<0)?0:h);
+	saturation = ((s>1)? 1 : ((s<0)?0:s))*240;
+	luminance = ((l>1)? 1 : ((l<0)?0:l))*240;
+}
+
+void ImageProcess::blueText(IplImage* image, int minHue, int maxHue)
+{
+	for(int y=0; y<mProcessedImage->height; y++)
+	{
+		for(int x=0; x<mProcessedImage->width; x++)
+		{
+			uchar* ptr = (uchar*)(mProcessedImage->imageData + y * mProcessedImage->widthStep + x * 3);
+
+			int b = ptr[0];
+			int g = ptr[1];
+			int r = ptr[2];
+
+			int hue = 0;
+			int saturation = 0;
+			int luminance = 0;
+
+			rgb2hsl(r,g,b,hue,saturation,luminance);
+
+
+			int gray = 255;
+			if(hue > minHue && hue < maxHue && luminance < 200)
+			{
+				gray = 0;
+			}
+
+			ptr[0] = gray;
+			ptr[1] = gray;
+			ptr[2] = gray;
+		}
+	}
+}
+
+
 void ImageProcess::run( ImageProcessParam* param )
 {
 	if(mOriginalImage == NULL || mProcessedImage == NULL || param == NULL)
@@ -69,124 +254,30 @@ void ImageProcess::run( ImageProcessParam* param )
 		return;
 	}
 
+	//blueText(mProcessedImage, 120, 170);
+	CvRect redStampRect = redStamp(mProcessedImage);
+	cvRectangleR(mProcessedImage, redStampRect, CV_RGB(255, 0, 0));
+
+	CvRect tableRect;
+	tableRect.x = redStampRect.x - redStampRect.width * 2.95;
+	tableRect.width = redStampRect.x + redStampRect.width * 3.95 - tableRect.x;
+	tableRect.y = redStampRect.y + redStampRect.height * 1.10;
+	tableRect.height = redStampRect.y + redStampRect.height * 6.05 - tableRect.y;
+	cvRectangleR(mProcessedImage, tableRect, CV_RGB(255, 0, 0));
+
+	return;
+
 	if(param->useGray)
 	{
-		//IplImage* grayImage = cvCreateImage(cvGetSize(mProcessedImage), 8, 1);
-		//cvCvtColor(mProcessedImage, grayImage, CV_RGB2GRAY);
-		//cvReleaseImage(&mProcessedImage);
-		//mProcessedImage = grayImage;
-
-		//使用blue进行灰度化
-
-		int top = 0;
-		int bottom = 0;
-		int left = 0;
-		int right = 0;
-
-		const int minPixCount = 10;
-		const int minPixStack = 3;
-		const int minRowHitStack = 5;
-		const int minRowMissStack = 10;
-		
-		
-		int rowHitStack = 0;
-		int rowMissStack = 0;
-
-		for(int y=0; y<mProcessedImage->height; y++)
-		{
-		
-			int pixCount = 0;
-			int pixStack = 0;
-			int rowLeft = 0;
-			int rowRight = 0;
-
-			for(int x=0; x<mProcessedImage->width; x++)
-			{
-				uchar* ptr = (uchar*)(mProcessedImage->imageData + y * mProcessedImage->widthStep + x * 3);
-
-				int b = ptr[0];
-				int g = ptr[1];
-				int r = ptr[2];
-
-				int gray = 255;
-				if(r > 100 && r > b*2 && r > g*2)
-				{
-					gray = 0;
-
-					pixCount++;
-					pixStack++;
-
-					if(pixStack > minPixStack)
-					{
-						if(rowLeft == 0)
-						{
-							rowLeft = x - minPixStack;
-						}
-						rowRight = x;
-					}
-				}
-				else
-				{
-					pixStack = 0;
-				}
-
-				ptr[0] = gray;
-				ptr[1] = gray;
-				ptr[2] = gray;
-			}
-
-			if(pixCount > minPixCount)
-			{
-				rowHitStack++;
-				rowMissStack = 0;
-
-				if(rowHitStack > minRowHitStack)
-				{
-					if(top == 0)
-					{
-						top = y - minRowHitStack;
-					}
-
-
-					if(left == 0 || rowLeft < left)
-					{
-						left = rowLeft;
-					}
-					if(rowRight > right)
-					{
-						right = rowRight;
-					}
-
-				}
-			}
-			else
-			{
-				rowMissStack++;
-				rowHitStack = 0;
-
-				if(rowMissStack > minRowMissStack && top != 0)
-				{
-					bottom = y - rowMissStack;
-					break;
-				}
-			}
-		}
-
-		cvLine( mProcessedImage, cvPoint(left,top),cvPoint(right,top), CV_RGB(255, 0, 0));
-		cvLine( mProcessedImage, cvPoint(left,bottom),cvPoint(right,bottom), CV_RGB(255, 0, 0));
-		cvLine( mProcessedImage, cvPoint(left,top),cvPoint(left,bottom), CV_RGB(255, 0, 0));
-		cvLine( mProcessedImage, cvPoint(right,top),cvPoint(right,bottom), CV_RGB(255, 0, 0));
-
+		IplImage* grayImage = cvCreateImage(cvGetSize(mProcessedImage), 8, 1);
+		cvCvtColor(mProcessedImage, grayImage, CV_RGB2GRAY);
+		cvReleaseImage(&mProcessedImage);
+		mProcessedImage = grayImage;
 	}
 	else
 	{
 		return;
 	}
-
-
-
-	//test
-	return;
 
 	if(param->useCanny)
 	{
@@ -424,36 +515,5 @@ void ImageProcess::normalize( ImageProcessParam* param, LineSegment &minH, LineS
 	mProcessedImage = cvCreateImage(cvSize(param->normalizeWidth, param->normalizeTop + param->normalizeHeight), 8, 3);
 	cvWarpPerspective(mOriginalImage, mProcessedImage, warp_mat);
 
-	//IplImage* grayImage = cvCreateImage(cvGetSize(mProcessedImage), 8, 1);
-	//cvCvtColor(mProcessedImage, grayImage, CV_RGB2GRAY);
-	//cvReleaseImage(&mProcessedImage);
-	//mProcessedImage = grayImage;
-
-	//构建不同的灰度方法，针对扫描和手机照片效果很不一样
-	for(int y=0; y<mProcessedImage->height; y++)
-	{
-		for(int x=0; x<mProcessedImage->width; x++)
-		{
-			uchar* ptr = (uchar*)(mProcessedImage->imageData + y * mProcessedImage->widthStep + x * 3);
-
-			int b = ptr[0];
-			int g = ptr[1];
-			int r = ptr[2];
-
-			int gray = b - (g+r)/2;
-
-			if(gray > 0)
-			{
-				gray = 255 - gray * 2;
-			}
-			else
-			{
-				gray = 255;
-			}
-
-			ptr[0] = gray;
-			ptr[1] = gray;
-			ptr[2] = gray;
-		}
-	}
+	blueText(mProcessedImage, 130, 170);
 }
