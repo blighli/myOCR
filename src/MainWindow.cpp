@@ -417,6 +417,7 @@ void MainWindow::processImage()
 	param.normalizeWidth = paramWidget->normalizeWidth->value();
 	param.normalizeHeight = paramWidget->normalizeHeight->value();
 
+	mImageProcess->setMasks(mOCRMasks);
 	mImageProcess->run(&param);
 
 	IplImage* cvImage = mImageProcess->getProcessedImage();

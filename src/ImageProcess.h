@@ -3,6 +3,8 @@
 
 #include <opencv2/opencv.hpp>
 #include "LineSegment.h"
+#include <QtCore/QtCore>
+#include "OCRMask.h"
 
 typedef struct ImageProcessParam
 {
@@ -53,6 +55,7 @@ public:
 	~ImageProcess();
 
 	void setImage(IplImage* image);
+	void setMasks(QVector<OCRMask>* masks);
 	void run(ImageProcessParam* param);
 
 	IplImage* getOriginalImage();
@@ -63,11 +66,15 @@ private:
 	void blueText(IplImage* image, int minHue, int maxHue);
 
 	void rgb2hsl(int red, int green, int blue, int& hue, int& saturation, int& luminance);
+	int countInRect(IplImage* image, CvRect* rect);
+	int adjustRect(IplImage* image, CvRect* rect);
 
 	CvSeq* hough( ImageProcessParam* param );
 	void combine( ImageProcessParam* param, CvSeq* lines, std::vector<LineSegment>& lineSegList);
 	void rectangle( ImageProcessParam* param, std::vector<LineSegment> &lineSegList, int &minHRho, LineSegment &minH, int &maxHRho, LineSegment &maxH, int &minVRho, LineSegment &minV, int &maxVRho, LineSegment &maxV );
 	void normalize( ImageProcessParam* param, LineSegment &minH, LineSegment minV, LineSegment maxV, LineSegment &maxH );
+
+	QVector<OCRMask>* mMasks;
 
 	IplImage* mOriginalImage;
 	IplImage* mProcessedImage;

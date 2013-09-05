@@ -6,6 +6,7 @@
 
 ImageProcess::ImageProcess()
 {
+	mMasks = NULL;
 	mOriginalImage = NULL;
 	mProcessedImage = NULL;
 	mProcessed = false;
@@ -255,17 +256,22 @@ void ImageProcess::run( ImageProcessParam* param )
 	}
 
 	//blueText(mProcessedImage, 120, 170);
-	CvRect redStampRect = redStamp(mProcessedImage);
-	cvRectangleR(mProcessedImage, redStampRect, CV_RGB(255, 0, 0));
 
-	CvRect tableRect;
-	tableRect.x = redStampRect.x - redStampRect.width * 2.95;
-	tableRect.width = redStampRect.x + redStampRect.width * 3.95 - tableRect.x;
-	tableRect.y = redStampRect.y + redStampRect.height * 1.10;
-	tableRect.height = redStampRect.y + redStampRect.height * 6.05 - tableRect.y;
-	cvRectangleR(mProcessedImage, tableRect, CV_RGB(255, 0, 0));
+	
 
-	return;
+	
+	
+	//CvRect redStampRect = redStamp(mProcessedImage);
+	//cvRectangleR(mProcessedImage, redStampRect, CV_RGB(255, 0, 0));
+
+	//CvRect tableRect;
+	//tableRect.x = redStampRect.x - redStampRect.width * 2.95;
+	//tableRect.width = redStampRect.x + redStampRect.width * 3.95 - tableRect.x;
+	//tableRect.y = redStampRect.y + redStampRect.height * 1.10;
+	//tableRect.height = redStampRect.y + redStampRect.height * 6.05 - tableRect.y;
+	//cvRectangleR(mProcessedImage, tableRect, CV_RGB(255, 0, 0));
+
+	//return;
 
 	if(param->useGray)
 	{
@@ -516,4 +522,75 @@ void ImageProcess::normalize( ImageProcessParam* param, LineSegment &minH, LineS
 	cvWarpPerspective(mOriginalImage, mProcessedImage, warp_mat);
 
 	blueText(mProcessedImage, 130, 170);
+
+	if(mMasks)
+	{
+		for(int i = 0;i<mMasks->size(); i++)
+		{
+			OCRMask& mask = (*mMasks)[i];
+			CvRect rect = cvRect(mask.rect.x(), mask.rect.y(), mask.rect.width(), mask.rect.height());
+
+			adjustRect(mProcessedImage, &rect);
+
+			mask.rect.moveTo(rect.x, rect.y);
+		}
+	}
+}
+
+int ImageProcess::countInRect( IplImage* image, CvRect* rect )
+{
+	int count = 0;
+
+	for(int y=rect->y; y<rect->y + rect->height && y < image->height; y++)
+	{
+		for(int x=rect->x; x<rect->x + rect->width && x <image->width; x++)
+		{
+			uchar* ptr = (uchar*)(mProcessedImage->imageData + y * mProcessedImage->widthStep + x * 3);
+
+			if(ptr[0] == 0)
+			{
+				count++;
+			}
+		}
+	}
+
+	return count;
+}
+
+void ImageProcess::setMasks( QVector<OCRMask>* masks )
+{
+	mMasks = masks;
+}
+
+int ImageProcess::adjustRect( IplImage* image, CvRect* rect )
+{
+	const int moveStep = 1;
+	int count = countInRect(image, rect);
+
+	CvRect right = (*rect);
+	right.x += moveStep;
+	int rightCount = countInRect(image, &right);
+
+	CvRect down = (*rect);
+	down.y += moveStep;
+	int downCount = countInRect(image, &down);
+
+	if(count > rightCount && count > downCount)
+	{
+		return 0;
+	}
+	else
+	{
+		if(rightCount > downCount)
+		{
+			(*rect) = right;
+		}
+		else
+		{
+			(*rect) = down;
+		}
+		adjustRect(image, rect);
+	}
+
+	return 0;
 }
