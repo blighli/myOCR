@@ -1,4 +1,4 @@
-#include "TesseractOCR.h"
+ï»¿#include "TesseractOCR.h"
 #include "AppInfo.h"
 
 using namespace tesseract;
@@ -26,6 +26,7 @@ bool TesseractOCR::init( Language lang )
 		{
 			return false;
 		}
+
 		tessBaseAPI->SetVariable("chop_enable", "T");
 		tessBaseAPI->SetVariable("use_new_state_cost", "F");
 		tessBaseAPI->SetVariable("segment_segcost_rating", "F");
@@ -35,7 +36,7 @@ bool TesseractOCR::init( Language lang )
 	}
 	else if(lang == TESSERACTOCR_ENGLISH)
 	{
-		if (tessBaseAPI->Init(tessdata.toAscii(), "eng"))
+		if (tessBaseAPI->Init(tessdata.toAscii(), "chi_sim+eng"))
 		{
 			return false;
 		}
@@ -70,26 +71,30 @@ QString TesseractOCR::recognizeText()
 			OCRMask mask = mMasks->at(i);
 			tessBaseAPI->SetRectangle(mask.rect.x(), mask.rect.y(), mask.rect.width(), mask.rect.height());
 
-			if(mask.key == QString::fromLocal8Bit("¹º»õµ¥Î»")  || mask.key == QString::fromLocal8Bit("Ïú»õµ¥Î»")
-				|| mask.key == QString::fromLocal8Bit("·¢Æ±´úÂë")|| mask.key == QString::fromLocal8Bit("·¢Æ±ºÅÂë"))
+			if(mask.key == QString::fromLocal8Bit("è´­è´§å•ä½")  || mask.key == QString::fromLocal8Bit("é”€è´§å•ä½")
+				|| mask.key == QString::fromLocal8Bit("å‘ç¥¨ä»£ç ")|| mask.key == QString::fromLocal8Bit("å‘ç¥¨å·ç "))
 			{
 				tessBaseAPI->SetVariable("tessedit_char_whitelist", "0123456789");
 			}
-			else if(mask.key == QString::fromLocal8Bit("ÃÜÂëÇø"))
+			else if(mask.key == QString::fromLocal8Bit("å¯†ç åŒº"))
 			{
 				tessBaseAPI->SetVariable("tessedit_char_whitelist", "0123456789.+-*/<>");
 			}
-			else if(mask.key == QString::fromLocal8Bit("½ğ¶î") || mask.key == QString::fromLocal8Bit("Ë°¶î"))
+			else if(mask.key == QString::fromLocal8Bit("é‡‘é¢") || mask.key == QString::fromLocal8Bit("ç¨é¢"))
 			{
 				tessBaseAPI->SetVariable("tessedit_char_whitelist", "0123456789.");
 			}
-			else if(mask.key == QString::fromLocal8Bit("¿ªÆ±ÈÕÆÚ"))
+			else if(mask.key == QString::fromLocal8Bit("å¼€ç¥¨æ—¥æœŸ"))
 			{
-				tessBaseAPI->SetVariable("tessedit_char_whitelist", "0123456789");
+				//tessBaseAPI->SetVariable("tessedit_char_whitelist", "0123456789");
+				QString str = QString::fromLocal8Bit("å¹´æœˆæ—¥");
+				QByteArray ba = str.toAscii();
+				ba.append("0123456789");
+				tessBaseAPI->SetVariable("tessedit_char_whitelist", ba.constData());
 			}
 			else
 			{
-				tessBaseAPI->SetVariable("tessedit_char_whitelist", "0123456789.+-*/<>");
+				//tessBaseAPI->SetVariable("tessedit_char_whitelist", "0123456789.+-*/<>");
 			}
 
 			Boxa* boxes = tessBaseAPI->GetComponentImages(tesseract::RIL_WORD, true, NULL, NULL);
@@ -105,7 +110,7 @@ QString TesseractOCR::recognizeText()
 				char* ocrText = tessBaseAPI->GetUTF8Text();
 				QString value(ocrText);
 
-				if(mask.key == QString::fromLocal8Bit("¹º»õµ¥Î»")  || mask.key == QString::fromLocal8Bit("Ïú»õµ¥Î»"))
+				if(mask.key == QString::fromLocal8Bit("è´­è´§å•ä½")  || mask.key == QString::fromLocal8Bit("é”€è´§å•ä½"))
 				{
 					value.replace("\n\n", "\n");
 					value.replace(" ", "");
@@ -118,53 +123,26 @@ QString TesseractOCR::recognizeText()
 					}
 					
 				}
-				else if(mask.key == QString::fromLocal8Bit("·¢Æ±´úÂë")|| mask.key == QString::fromLocal8Bit("·¢Æ±ºÅÂë"))
+				else if(mask.key == QString::fromLocal8Bit("å‘ç¥¨ä»£ç ")|| mask.key == QString::fromLocal8Bit("å‘ç¥¨å·ç "))
 				{
 					value.replace(" ", "");
 				}
-				else if(mask.key == QString::fromLocal8Bit("ÃÜÂëÇø"))
+				else if(mask.key == QString::fromLocal8Bit("å¯†ç åŒº"))
 				{
 					value.replace("\n\n", "\n");
 					value.replace(" ", "");
+					value.replace(">1<", "*");
 				}
-				else if(mask.key == QString::fromLocal8Bit("½ğ¶î") || mask.key == QString::fromLocal8Bit("Ë°¶î"))
+				else if(mask.key == QString::fromLocal8Bit("é‡‘é¢") || mask.key == QString::fromLocal8Bit("ç¨é¢"))
 				{
 					int start = value.indexOf(" ");
 					int end = value.length();
 					value = value.mid(start + 1, end - start);
 					value.replace(" ", "");
 				}
-				else if(mask.key == QString::fromLocal8Bit("¿ªÆ±ÈÕÆÚ"))
+				else if(mask.key == QString::fromLocal8Bit("å¼€ç¥¨æ—¥æœŸ"))
 				{
 					value.replace(" ", "");
-					
-					QString year = value.mid(0, 4);
-
-					QString month = "01";
-					QString day = "01";
-
-					int pos = 5;//ÄêºóÖÁÉÙÌøÒ»Î»
-					for(int i = pos; i<value.length() - 1; i++)
-					{
-						month = value.mid(i,2);
-						if(month.toInt() <= 12 && month.toInt() >= 1)
-						{
-							pos = i+3;//ÔÂºóÖÁÉÙÌøÒ»Î»
-							break;
-						}
-					}
-
-					for(int i = pos; i<value.length() - 1; i++)
-					{
-						day = value.mid(i,2);
-						if(day.toInt() <= 31 && day.toInt() >= 1)
-						{
-							break;
-						}
-					}
-
-					value = year+month+day;
-
 				}
 
 				(*mMasks)[i].value = value;
