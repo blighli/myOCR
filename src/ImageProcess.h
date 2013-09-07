@@ -76,7 +76,7 @@ private:
 	void findCornerRects(CvRect* cornerRects, const CvRect& rect, float rate);
 
 	CvSeq* hough(IplImage* image, ImageProcessParam* param );
-	void findCornerPoints(ImageProcessParam* param, CvSeq* lines, CvPoint* points);
+	bool findCornerPoint(ImageProcessParam* param, CvSeq* lines, CvPoint* point);
 	void normalize( ImageProcessParam* param, LineSegment &minH, LineSegment minV, LineSegment maxV, LineSegment &maxH );
 
 	QVector<OCRMask>* mMasks;

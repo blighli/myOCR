@@ -351,6 +351,27 @@ void ImageProcess::run( ImageProcessParam* param )
 			}
 		}
 
+		if(param->useCombine)
+		{
+			CvPoint point;
+			if(findCornerPoint(param, lines, &point))
+			{
+				if(param->debug)
+				{
+					if(param->useBackGround)
+					{
+						cvCopy(mProcessedImage, outImage);
+					}
+					else
+					{
+						cvSetZero(outImage);
+					}
+
+					cvCircle(outImage, point, 10, CV_RGB(255, 0, 0));
+				}
+			}
+		}
+
 		cvCopy(outImage, mProcessedImage);
 	}
 	cvResetImageROI(mProcessedImage);
@@ -366,31 +387,41 @@ CvSeq* ImageProcess::hough(IplImage* image, ImageProcessParam* param )
 	return lines;
 }
 
-void ImageProcess::findCornerPoints(ImageProcessParam* param, CvSeq* lines, CvPoint* points)
+bool ImageProcess::findCornerPoint(ImageProcessParam* param, CvSeq* lines, CvPoint* point)
 {
+	int left = 9999;
+	int found = false;
+
 	for( int i = 0; i < lines ->total; i++ )
 	{  
 		for( int j = 0; j < lines ->total; j++ )
 		{ 
 			if(i > j)
 			{
-				CvPoint* lineA = ( CvPoint* )cvGetSeqElem( lines, i );
-				CvPoint* lineB = ( CvPoint* )cvGetSeqElem( lines, j );
+				LineSegment lineA(( CvPoint* )cvGetSeqElem( lines, i ));
+				LineSegment lineB(( CvPoint* )cvGetSeqElem( lines, j ));
 
-
-
+				CvPoint crossPoint;
+				if( lineA.cross(lineB, &crossPoint) )
+				{
+					found = true;
+					if(crossPoint.x < left)
+					{
+						left = crossPoint.x;
+						*point = crossPoint;
+					}
+				}
 			}
 		}
 	}
+
+	return found;
 }
 
 void ImageProcess::normalize( ImageProcessParam* param, LineSegment &minH, LineSegment minV, LineSegment maxV, LineSegment &maxH )
 {
 	CvPoint points[4];
-	points[0] = minH.intersect(minV);
-	points[1] = minH.intersect(maxV);
-	points[2] = maxH.intersect(maxV);
-	points[3] = maxH.intersect(minV);
+	
 
 	CvPoint2D32f src[4], dst[4];
 	src[0].x = points[0].x;
