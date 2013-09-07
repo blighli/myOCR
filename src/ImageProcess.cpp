@@ -227,11 +227,11 @@ void ImageProcess::blueText(IplImage* image, int minHue, int maxHue)
 			rgb2hsl(r,g,b,hue,saturation,luminance);
 
 
-			int gray = hue;
-			/*if(hue > minHue && hue < maxHue && luminance < 200)
+			int gray = 255;
+			if(hue > minHue && hue < maxHue && luminance < 200)
 			{
 				gray = 0;
-			}*/
+			}
 
 			ptr[0] = gray;
 			ptr[1] = gray;
@@ -439,9 +439,22 @@ int ImageProcess::run( ImageProcessParam* param )
 		}
 	}
 
-	if(param->blueText)
+	/*if(param->blueText)
 	{
 		blueText(mProcessedImage, param->blueTextMin, param->blueTextMax);
+	}*/
+
+	if(param->blueText)
+	{
+		if( param->blueTextMin % 2 == 0)
+		{
+			param->blueTextMin++;
+		}
+		IplImage* grayImage = cvCreateImage(cvGetSize(mProcessedImage), 8, 1);
+		cvCvtColor(mProcessedImage, grayImage, CV_RGB2GRAY);
+		cvAdaptiveThreshold(grayImage, grayImage, 255, CV_ADAPTIVE_THRESH_GAUSSIAN_C, CV_THRESH_BINARY, param->blueTextMin, param->blueTextMax);
+		cvReleaseImage(&mProcessedImage);
+		mProcessedImage = grayImage;
 	}
 
 	if(mMasks)

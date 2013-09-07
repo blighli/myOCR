@@ -31,9 +31,9 @@ ParamWidget::ParamWidget()
 	normalizeWidth = addParam(tr("Width"),0, 4000, 2000);
 	normalizeHeight = addParam(tr("Height"),0, 4000, 940);
 
-	blueTextGroup =  addGroup(tr("BlueText"));
-	blueTextMin = addParam(tr("Min"),0, 240, 130);
-	blueTextMax = addParam(tr("Max"),0, 240, 170);
+	blueTextGroup =  addGroup(tr("Full Threshold"));
+	blueTextMin = addParam(tr("BlockSize"),1, 1000, 100);
+	blueTextMax = addParam(tr("MeanBias"),1, 1000, 1);
 
 	setFixedSize(sizeHint());
 }
