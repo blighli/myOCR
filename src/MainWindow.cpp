@@ -381,41 +381,34 @@ void MainWindow::processImage()
 
 	param.debug = true;
 	
-	param.useGray = paramWidget->grayGroup->isChecked();
+	param.gray = paramWidget->grayGroup->isChecked();
 
-	param.useCanny = paramWidget->cannyGroup->isChecked();
-	param.cannyThreshold1 = paramWidget->cannyThreshold1->value();
-	param.cannyThreshold2 = paramWidget->cannyThreshold2->value();
-	
-	param.useDilate = paramWidget->dilateGroup->isChecked();
-	param.dilateIter = paramWidget->dilateIter->value();
-	param.useErode = paramWidget->erodeGroup->isChecked();
-	param.erodeIter = paramWidget->erodeIter->value();
+	param.threshold = paramWidget->threshold->isChecked();
+	param.thresholdBlockSize = paramWidget->thresholdBlockSize->value();
+	param.thresholdMeanBias = paramWidget->thresholdMeanBias->value();
 
-	param.useHough = paramWidget->houghGroup->isChecked();
+	param.hough = paramWidget->houghGroup->isChecked();
 	param.houghRho = paramWidget->houghRho->value();
 	param.houghTheta = paramWidget->houghTheta->value();
 	param.houghThreshold = paramWidget->houghThreshold->value();
 	param.houghParam1 = paramWidget->houghParam1->value();
 	param.houghParam2 = paramWidget->houghParam2->value();
 
-	param.useCombine = paramWidget->combineGroup->isChecked();
-	param.combineTheta = paramWidget->combineTheta->value();
-	param.combineRho = paramWidget->combineRho->value();
-	param.combineDistance = paramWidget->combineDistance->value();
+	param.corner = paramWidget->cornerGroup->isChecked();
+	param.cornerDegree = paramWidget->cornerDegree->value();
+	param.cornerGap = paramWidget->cornerGap->value();
 
-	param.useRectangle = paramWidget->rectangleGroup->isChecked();
-	param.rectangleHMinLength = paramWidget->rectangleHMinLength->value();
-	param.rectangleVMinLength = paramWidget->rectangleVMinLength->value();
-	param.rectangleTop = paramWidget->rectangleTop->value();
-	param.rectangleBottom = paramWidget->rectangleBottom->value();
+	param.background = paramWidget->backgroundGroup->isChecked();
 
-	param.useBackGround = paramWidget->backGroundGroup->isChecked();
-
-	param.useNormalize = paramWidget->normalizeGroup->isChecked();
-	param.normalizeTop = paramWidget->normalizeTop->value();
+	param.normalize = paramWidget->normalizeGroup->isChecked();
+	param.normalizeTopMargin = paramWidget->normalizeTopMargin->value();
+	param.normalizeSideMargin = paramWidget->normalizeSideMargin->value();
 	param.normalizeWidth = paramWidget->normalizeWidth->value();
 	param.normalizeHeight = paramWidget->normalizeHeight->value();
+
+	param.blueText =  paramWidget->blueTextGroup->isChecked();
+	param.blueTextMin = paramWidget->blueTextMin->value();
+	param.blueTextMax = paramWidget->blueTextMax->value();
 
 	mImageProcess->setMasks(mOCRMasks);
 	mImageProcess->run(&param);

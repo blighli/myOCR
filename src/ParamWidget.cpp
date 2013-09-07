@@ -8,15 +8,10 @@ ParamWidget::ParamWidget()
 
 	grayGroup = addGroup(tr("Gray"));
 
-	cannyGroup = addGroup(tr("Binary"));
-	cannyThreshold1 = addParam(tr("Size"),1, 1000, 100);
-	cannyThreshold2 = addParam(tr("Offset"),1, 1000, 1);
+	threshold = addGroup(tr("Threshold"));
+	thresholdBlockSize = addParam(tr("BlockSize"),1, 1000, 100);
+	thresholdMeanBias = addParam(tr("MeanBias"),1, 1000, 1);
 	
-	dilateGroup = addGroup(tr("Dilate"));
-	dilateIter = addParam(tr("Iter"),0,10, 1);
-	erodeGroup = addGroup(tr("Erode"));
-	erodeIter = addParam(tr("Iter"),0,10, 0);
-
 	houghGroup = addGroup(tr("Hough"));
 	houghRho = addParam(tr("Rho"),1,100, 1);
 	houghTheta = addParam(tr("Theta"),1,90, 1);
@@ -24,26 +19,21 @@ ParamWidget::ParamWidget()
 	houghParam1 = addParam(tr("Param1"),1, 1000, 50);
 	houghParam2 = addParam(tr("Param2"),1, 100, 1);
 
-	combineGroup = addGroup(tr("Combine"));
-	combineTheta = addParam(tr("Theta"),0, 180, 1);
-	combineRho = addParam(tr("Rho"),0, 500, 10);
-	combineDistance = addParam(tr("Distance"),0,1000, 100);
+	cornerGroup = addGroup(tr("Corner"));
+	cornerDegree = addParam(tr("Degree"),0, 90, 80);
+	cornerGap = addParam(tr("Gap"),0, 100, 10);
 
-	rectangleGroup = addGroup(tr("Rectangle"));
-	rectangleHMinLength = addParam(tr("HMinLength"),0, 3000, 800);
-	rectangleVMinLength = addParam(tr("VMinLength"),0, 2000, 600);
-	rectangleTop = addParam(tr("Top"),0, 1000, 300);
-	rectangleBottom = addParam(tr("Bottom"),0, 1000, 100);
-
-	backGroundGroup =  addGroup(tr("Background"));
+	backgroundGroup =  addGroup(tr("Background"));
 
 	normalizeGroup =  addGroup(tr("Normalize"));
-	normalizeTop = addParam(tr("Top"),0, 4000, 200);
+	normalizeTopMargin = addParam(tr("Top"),0, 1000, 200);
+	normalizeSideMargin = addParam(tr("Width"),0, 1000, 100);
 	normalizeWidth = addParam(tr("Width"),0, 4000, 2000);
 	normalizeHeight = addParam(tr("Height"),0, 4000, 940);
 
-	//buttonProcess = addButton(tr("Process"));
-	//connect(buttonProcess, SIGNAL(pressed()), this, SLOT(buttonPressed()));
+	blueTextGroup =  addGroup(tr("BlueText"));
+	blueTextMin = addParam(tr("Min"),0, 240, 130);
+	blueTextMax = addParam(tr("Max"),0, 240, 170);
 
 	setFixedSize(sizeHint());
 }

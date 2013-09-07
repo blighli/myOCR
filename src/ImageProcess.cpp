@@ -144,6 +144,16 @@ CvRect ImageProcess::findRedStampRect( IplImage* image, int minPixCount, int min
 }
 
 
+const CvRect& ImageProcess::findTableRect(const CvRect &redStampRect )
+{
+	CvRect tableRect;
+	tableRect.x = redStampRect.x - redStampRect.width * 2.95;
+	tableRect.width = redStampRect.x + redStampRect.width * 3.95 - tableRect.x;
+	tableRect.y = redStampRect.y + redStampRect.height * 1.10;
+	tableRect.height = redStampRect.y + redStampRect.height * 6.05 - tableRect.y;
+	return tableRect;
+}
+
 void ImageProcess::rgb2hsl(int red, int green, int blue, int& hue, int& saturation, int& luminance)
 {
 	float h=0, s=0, l=0;
@@ -217,11 +227,11 @@ void ImageProcess::blueText(IplImage* image, int minHue, int maxHue)
 			rgb2hsl(r,g,b,hue,saturation,luminance);
 
 
-			int gray = 255;
-			if(hue > minHue && hue < maxHue && luminance < 200)
+			int gray = hue;
+			/*if(hue > minHue && hue < maxHue && luminance < 200)
 			{
 				gray = 0;
-			}
+			}*/
 
 			ptr[0] = gray;
 			ptr[1] = gray;
@@ -269,11 +279,11 @@ void ImageProcess::findCornerRects(CvRect* cornerRects, const CvRect& rect, floa
 }
 
 
-void ImageProcess::run( ImageProcessParam* param )
+int ImageProcess::run( ImageProcessParam* param )
 {
 	if(mOriginalImage == NULL || mProcessedImage == NULL || param == NULL)
 	{
-		return;
+		return -1;
 	}
 	
 	if(mProcessed)
@@ -289,17 +299,13 @@ void ImageProcess::run( ImageProcessParam* param )
 	//Assert rgb image
 	if(mProcessedImage->nChannels != 3)
 	{
-		return;
+		return -1;
 	}
 
 	CvRect redStampRect = findRedStampRect(mProcessedImage);
 	////cvRectangleR(mProcessedImage, redStampRect, CV_RGB(255, 0, 0));
 
-	CvRect tableRect;
-	tableRect.x = redStampRect.x - redStampRect.width * 2.95;
-	tableRect.width = redStampRect.x + redStampRect.width * 3.95 - tableRect.x;
-	tableRect.y = redStampRect.y + redStampRect.height * 1.10;
-	tableRect.height = redStampRect.y + redStampRect.height * 6.05 - tableRect.y;
+	CvRect tableRect = findTableRect(redStampRect);
 	////cvRectangleR(mProcessedImage, tableRect, CV_RGB(255, 0, 0));
 
 	CvRect cornerRects[4];
@@ -308,34 +314,52 @@ void ImageProcess::run( ImageProcessParam* param )
 	//{
 	//	//cvRectangleR(mProcessedImage, cornerRects[i], CV_RGB(255, 0, 0));
 	//}
+	CvPoint* cornerPoints[4];
+	for(int i=0; i<4; i++)
+	{
+		cornerPoints[i] = NULL;
+	}
 
 	for(int i=0; i<4; i++)
 	{
 		cvSetImageROI(mProcessedImage, cornerRects[i]);
 
+		IplImage* grayImage = cvCreateImage(cvGetSize(mProcessedImage), 8, 1);
 		IplImage* outImage = cvCreateImage(cvGetSize(mProcessedImage), 8, 3);
 
 		//灰度化
-		IplImage* grayImage = cvCreateImage(cvGetSize(mProcessedImage), 8, 1);
-		cvCvtColor(mProcessedImage, grayImage, CV_RGB2GRAY);
+		if(param->gray)
+		{
+			cvCvtColor(mProcessedImage, grayImage, CV_RGB2GRAY);
+			if(param->debug)
+			{
+				cvCvtColor(grayImage, outImage, CV_GRAY2BGR);
+			}
+		}
 		
 		//二值化
-		if( param->cannyThreshold1 % 2 == 0)
+		if(param->threshold && param->gray)
 		{
-			param->cannyThreshold1++;
+			if( param->thresholdBlockSize % 2 == 0)
+			{
+				param->thresholdBlockSize++;
+			}
+			cvAdaptiveThreshold(grayImage, grayImage, 255, CV_ADAPTIVE_THRESH_GAUSSIAN_C, CV_THRESH_BINARY_INV, param->thresholdBlockSize, param->thresholdMeanBias);
+			if(param->debug)
+			{
+				cvCvtColor(grayImage, outImage, CV_GRAY2BGR);
+			}
 		}
-		cvAdaptiveThreshold(grayImage, grayImage, 255, CV_ADAPTIVE_THRESH_GAUSSIAN_C, CV_THRESH_BINARY_INV, param->cannyThreshold1, param->cannyThreshold2);
-		cvCvtColor(grayImage, outImage, CV_GRAY2BGR);
 		
 
 		//霍夫变换
 		CvSeq* lines = NULL;
-		if(param->useHough)
+		if(param->hough && param->threshold && param->gray)
 		{
 			lines = hough(grayImage, param);
 			if(param->debug)
 			{
-				if(param->useBackGround)
+				if(param->background)
 				{
 					cvCopy(mProcessedImage, outImage);
 				}
@@ -351,14 +375,20 @@ void ImageProcess::run( ImageProcessParam* param )
 			}
 		}
 
-		if(param->useCombine)
+		//寻找角点
+		if(param->corner && param->hough && param->threshold && param->gray)
 		{
 			CvPoint point;
 			if(findCornerPoint(param, lines, &point))
 			{
+				cornerPoints[i] = new CvPoint;
+				cornerPoints[i]->x = point.x;
+				cornerPoints[i]->y = point.y;
+
+
 				if(param->debug)
 				{
-					if(param->useBackGround)
+					if(param->background)
 					{
 						cvCopy(mProcessedImage, outImage);
 					}
@@ -367,16 +397,66 @@ void ImageProcess::run( ImageProcessParam* param )
 						cvSetZero(outImage);
 					}
 
-					cvCircle(outImage, point, 10, CV_RGB(255, 0, 0));
+					int radius = 30;
+					cvCircle(outImage, point, radius, CV_RGB(255, 0, 0));
+					cvLine( outImage, cvPoint(point.x - radius/2, point.y), cvPoint(point.x + radius/2, point.y), CV_RGB(255, 0, 0), 1, CV_AA );
+					cvLine( outImage, cvPoint(point.x, point.y - radius/2), cvPoint(point.x, point.y + radius/2), CV_RGB(255, 0, 0), 1, CV_AA );
 				}
 			}
 		}
 
-		cvCopy(outImage, mProcessedImage);
+		if(param->debug)
+		{
+			cvCopy(outImage, mProcessedImage);
+		}
 	}
+
 	cvResetImageROI(mProcessedImage);
 
-	return;
+	for(int i=0; i<4; i++)
+	{
+		if(cornerPoints[i] == NULL)
+		{
+			return -1;
+		}
+		else
+		{
+			cornerPoints[i]->x += cornerRects[i].x;
+			cornerPoints[i]->y += cornerRects[i].y;
+		}
+	}
+
+	if(param->normalize)
+	{
+		normalize(param, cornerPoints);
+	}
+
+	for(int i=0; i<4; i++)
+	{
+		if(cornerPoints[i] != NULL)
+		{
+			delete cornerPoints[i];
+		}
+	}
+
+	if(param->blueText)
+	{
+		blueText(mProcessedImage, param->blueTextMin, param->blueTextMax);
+	}
+
+	if(mMasks)
+	{
+		for(int i = 0;i<mMasks->size(); i++)
+		{
+			OCRMask& mask = (*mMasks)[i];
+			CvRect rect = cvRect(mask.rect.x(), mask.rect.y(), mask.rect.width(), mask.rect.height());
+
+			adjustRect(mProcessedImage, &rect);
+
+			mask.rect.moveTo(rect.x, rect.y);
+		}
+	}
+	return 0;
 }
 
 CvSeq* ImageProcess::hough(IplImage* image, ImageProcessParam* param )
@@ -418,52 +498,34 @@ bool ImageProcess::findCornerPoint(ImageProcessParam* param, CvSeq* lines, CvPoi
 	return found;
 }
 
-void ImageProcess::normalize( ImageProcessParam* param, LineSegment &minH, LineSegment minV, LineSegment maxV, LineSegment &maxH )
+void ImageProcess::normalize( ImageProcessParam* param, CvPoint** cornerPoints)
 {
-	CvPoint points[4];
-	
-
 	CvPoint2D32f src[4], dst[4];
-	src[0].x = points[0].x;
-	src[0].y = points[0].y;
-	src[1].x = points[1].x;
-	src[1].y = points[1].y;
-	src[2].x = points[2].x;
-	src[2].y = points[2].y;
-	src[3].x = points[3].x;
-	src[3].y = points[3].y;
+	src[0].x = cornerPoints[0]->x;
+	src[0].y = cornerPoints[0]->y;
+	src[1].x = cornerPoints[1]->x;
+	src[1].y = cornerPoints[1]->y;
+	src[2].x = cornerPoints[2]->x;
+	src[2].y = cornerPoints[2]->y;
+	src[3].x = cornerPoints[3]->x;
+	src[3].y = cornerPoints[3]->y;
 
-	dst[0].x = 0;
-	dst[0].y = param->normalizeTop;
-	dst[1].x = param->normalizeWidth;
-	dst[1].y = param->normalizeTop;
-	dst[2].x = param->normalizeWidth;
-	dst[2].y = param->normalizeTop + param->normalizeHeight;
-	dst[3].x = 0;
-	dst[3].y = param->normalizeTop + param->normalizeHeight;
+	dst[0].x = param->normalizeSideMargin;
+	dst[0].y = param->normalizeTopMargin;
+	dst[1].x = param->normalizeWidth + param->normalizeSideMargin;
+	dst[1].y = param->normalizeTopMargin;
+	dst[2].x = param->normalizeWidth + param->normalizeSideMargin;
+	dst[2].y = param->normalizeTopMargin + param->normalizeHeight;
+	dst[3].x = param->normalizeSideMargin;
+	dst[3].y = param->normalizeTopMargin + param->normalizeHeight;
 
 	CvMat* warp_mat = cvCreateMat( 3, 3, CV_32FC1 );
 
 	cvGetPerspectiveTransform(src, dst, warp_mat);
 
 	cvReleaseImage(&mProcessedImage);
-	mProcessedImage = cvCreateImage(cvSize(param->normalizeWidth, param->normalizeTop + param->normalizeHeight), 8, 3);
+	mProcessedImage = cvCreateImage(cvSize(param->normalizeWidth + param->normalizeSideMargin * 2, param->normalizeTopMargin + param->normalizeSideMargin + param->normalizeHeight), 8, 3);
 	cvWarpPerspective(mOriginalImage, mProcessedImage, warp_mat);
-
-	blueText(mProcessedImage, 130, 170);
-
-	if(mMasks)
-	{
-		for(int i = 0;i<mMasks->size(); i++)
-		{
-			OCRMask& mask = (*mMasks)[i];
-			CvRect rect = cvRect(mask.rect.x(), mask.rect.y(), mask.rect.width(), mask.rect.height());
-
-			adjustRect(mProcessedImage, &rect);
-
-			mask.rect.moveTo(rect.x, rect.y);
-		}
-	}
 }
 
 int ImageProcess::countInRect( IplImage* image, CvRect* rect )

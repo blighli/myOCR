@@ -16,15 +16,9 @@ public:
 
 	QGroupBox* grayGroup;
 
-	QGroupBox* cannyGroup;
-	QSlider* cannyThreshold1;
-	QSlider* cannyThreshold2;
-	
-	QGroupBox* dilateGroup;
-	QSlider* dilateIter;
-
-	QGroupBox* erodeGroup;
-	QSlider* erodeIter;
+	QGroupBox* threshold;
+	QSlider* thresholdBlockSize;
+	QSlider* thresholdMeanBias;
 
 	QGroupBox* houghGroup;
 	QSlider* houghRho;
@@ -33,23 +27,22 @@ public:
 	QSlider* houghParam1;
 	QSlider* houghParam2;
 
-	QGroupBox* combineGroup;
-	QSlider* combineTheta;
-	QSlider* combineRho;
-	QSlider* combineDistance;
+	QGroupBox* cornerGroup;
+	QSlider* cornerDegree;
+	QSlider* cornerGap;
 
-	QGroupBox* rectangleGroup;
-	QSlider* rectangleHMinLength;
-	QSlider* rectangleVMinLength;
-	QSlider* rectangleTop;
-	QSlider* rectangleBottom;
-
-	QGroupBox* backGroundGroup;
+	QGroupBox* backgroundGroup;
 
 	QGroupBox* normalizeGroup;
-	QSlider* normalizeTop;
-	QSlider* normalizeWidth;
-	QSlider* normalizeHeight;
+	QSlider*  normalizeTopMargin;
+	QSlider*  normalizeSideMargin;
+	QSlider*  normalizeWidth;
+	QSlider*  normalizeHeight;
+
+	QGroupBox* blueTextGroup;
+	QSlider*  blueTextMin;
+	QSlider*  blueTextMax;
+
 
 signals:
 	void process();

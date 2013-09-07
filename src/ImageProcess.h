@@ -10,41 +10,34 @@ typedef struct ImageProcessParam
 {
 	bool debug;
 
-	bool useGray;
+	bool gray;
 
-	bool useCanny;
-	int cannyThreshold1;
-	int cannyThreshold2;
+	bool threshold;
+	int thresholdBlockSize;
+	int thresholdMeanBias;
 
-	bool useDilate;
-	int dilateIter;
-	bool useErode;
-	int erodeIter;
-
-	bool useHough;
+	bool hough;
 	int houghRho;
 	int houghTheta;
 	int houghThreshold;
 	int houghParam1;
 	int houghParam2;
 
-	bool useCombine;
-	int combineTheta;
-	int combineRho;
-	int combineDistance;
+	bool corner;
+	int cornerDegree;
+	int cornerGap;
 
-	bool useRectangle;
-	int rectangleHMinLength;
-	int rectangleVMinLength;
-	int rectangleTop;
-	int rectangleBottom;
+	bool background;
 
-	bool useBackGround;
-
-	bool useNormalize;
-	int normalizeTop;
+	bool normalize;
+	int normalizeTopMargin;
+	int normalizeSideMargin;
 	int normalizeWidth;
 	int normalizeHeight;
+
+	bool blueText;
+	int blueTextMin;
+	int blueTextMax;
 }
 ImageProcessParam;
 
@@ -56,7 +49,8 @@ public:
 
 	void setImage(IplImage* image);
 	void setMasks(QVector<OCRMask>* masks);
-	void run(ImageProcessParam* param);
+	int run(ImageProcessParam* param);
+
 
 	IplImage* getOriginalImage();
 	IplImage* getProcessedImage();
@@ -73,11 +67,13 @@ private:
 
 	CvRect makeRect(int centerX, int centerY, int width, int height = 0);
 	CvRect findRedStampRect( IplImage* image, int minPixCount = 10, int minPixStack = 3, int minRowHitStack = 5, int minRowMissStack = 10);
+	const CvRect& findTableRect(const CvRect &redStampRect);
+
 	void findCornerRects(CvRect* cornerRects, const CvRect& rect, float rate);
 
 	CvSeq* hough(IplImage* image, ImageProcessParam* param );
 	bool findCornerPoint(ImageProcessParam* param, CvSeq* lines, CvPoint* point);
-	void normalize( ImageProcessParam* param, LineSegment &minH, LineSegment minV, LineSegment maxV, LineSegment &maxH );
+	void normalize( ImageProcessParam* param, CvPoint** cornerPoints);
 
 	QVector<OCRMask>* mMasks;
 
