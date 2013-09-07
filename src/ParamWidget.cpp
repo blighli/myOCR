@@ -8,9 +8,9 @@ ParamWidget::ParamWidget()
 
 	grayGroup = addGroup(tr("Gray"));
 
-	cannyGroup = addGroup(tr("Canny"));
-	cannyThreshold1 = addParam(tr("Threshold1"),1, 400, 50);
-	cannyThreshold2 = addParam(tr("Threshold2"),1, 400, 150);
+	cannyGroup = addGroup(tr("Binary"));
+	cannyThreshold1 = addParam(tr("Size"),1, 1000, 100);
+	cannyThreshold2 = addParam(tr("Offset"),1, 1000, 1);
 	
 	dilateGroup = addGroup(tr("Dilate"));
 	dilateIter = addParam(tr("Iter"),0,10, 1);
@@ -20,9 +20,9 @@ ParamWidget::ParamWidget()
 	houghGroup = addGroup(tr("Hough"));
 	houghRho = addParam(tr("Rho"),1,100, 1);
 	houghTheta = addParam(tr("Theta"),1,90, 1);
-	houghThreshold = addParam(tr("Threshold"),1,1000, 500);
-	houghParam1 = addParam(tr("Param1"),1, 1000, 100);
-	houghParam2 = addParam(tr("Param2"),1, 100, 5);
+	houghThreshold = addParam(tr("Threshold"),1,1000, 50);
+	houghParam1 = addParam(tr("Param1"),1, 1000, 50);
+	houghParam2 = addParam(tr("Param2"),1, 100, 1);
 
 	combineGroup = addGroup(tr("Combine"));
 	combineTheta = addParam(tr("Theta"),0, 180, 1);

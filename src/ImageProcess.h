@@ -62,16 +62,21 @@ public:
 	IplImage* getProcessedImage();
 
 private:
-	CvRect redStamp( IplImage* image, int minPixCount = 10, int minPixStack = 3, int minRowHitStack = 5, int minRowMissStack = 10);
+	int limit(int value, int min, int max);
+	void rgb2hsl(int red, int green, int blue, int& hue, int& saturation, int& luminance);
+	
 	void blueText(IplImage* image, int minHue, int maxHue);
 
-	void rgb2hsl(int red, int green, int blue, int& hue, int& saturation, int& luminance);
 	int countInRect(IplImage* image, CvRect* rect);
 	int adjustRect(IplImage* image, CvRect* rect);
 
-	CvSeq* hough( ImageProcessParam* param );
-	void combine( ImageProcessParam* param, CvSeq* lines, std::vector<LineSegment>& lineSegList);
-	void rectangle( ImageProcessParam* param, std::vector<LineSegment> &lineSegList, int &minHRho, LineSegment &minH, int &maxHRho, LineSegment &maxH, int &minVRho, LineSegment &minV, int &maxVRho, LineSegment &maxV );
+
+	CvRect makeRect(int centerX, int centerY, int width, int height = 0);
+	CvRect findRedStampRect( IplImage* image, int minPixCount = 10, int minPixStack = 3, int minRowHitStack = 5, int minRowMissStack = 10);
+	void findCornerRects(CvRect* cornerRects, const CvRect& rect, float rate);
+
+	CvSeq* hough(IplImage* image, ImageProcessParam* param );
+	void findCornerPoints(ImageProcessParam* param, CvSeq* lines, CvPoint* points);
 	void normalize( ImageProcessParam* param, LineSegment &minH, LineSegment minV, LineSegment maxV, LineSegment &maxH );
 
 	QVector<OCRMask>* mMasks;

@@ -50,8 +50,7 @@ IplImage* ImageProcess::getProcessedImage()
 	return mProcessedImage;
 }
 
-
-CvRect ImageProcess::redStamp( IplImage* image, int minPixCount, int minPixStack, int minRowHitStack, int minRowMissStack )
+CvRect ImageProcess::findRedStampRect( IplImage* image, int minPixCount, int minPixStack, int minRowHitStack, int minRowMissStack )
 {
 	int top = 0;
 	int bottom = 0;
@@ -231,6 +230,44 @@ void ImageProcess::blueText(IplImage* image, int minHue, int maxHue)
 	}
 }
 
+int ImageProcess::limit(int value, int min, int max)
+{
+	if(value < min)
+	{
+		value = min;
+	}
+	else if(value > max)
+	{
+		value = max;
+	}
+	return value;
+}
+
+CvRect ImageProcess::makeRect(int centerX, int centerY, int width, int height)
+{
+	if(height == 0)
+	{
+		height = width;
+	}
+
+	int left = centerX- width / 2;
+	int top = centerY - height / 2;
+	
+	left = left>0?left:0;
+	top = top>0?top:0;
+
+	return cvRect(left, top, width, height);
+}
+
+void ImageProcess::findCornerRects(CvRect* cornerRects, const CvRect& rect, float rate)
+{
+	int cornerRectWidth = rect.width * rate;
+	cornerRects[0] = makeRect(rect.x, rect.y, cornerRectWidth, cornerRectWidth);
+	cornerRects[1] = makeRect(rect.x + rect.width, rect.y, cornerRectWidth, cornerRectWidth);
+	cornerRects[2] = makeRect(rect.x + rect.width, rect.y + rect.height, cornerRectWidth, cornerRectWidth);
+	cornerRects[3] = makeRect(rect.x, rect.y + rect.height, cornerRectWidth, cornerRectWidth);
+}
+
 
 void ImageProcess::run( ImageProcessParam* param )
 {
@@ -255,229 +292,94 @@ void ImageProcess::run( ImageProcessParam* param )
 		return;
 	}
 
-	//blueText(mProcessedImage, 120, 170);
-	
-	//CvRect redStampRect = redStamp(mProcessedImage);
-	//cvRectangleR(mProcessedImage, redStampRect, CV_RGB(255, 0, 0));
+	CvRect redStampRect = findRedStampRect(mProcessedImage);
+	////cvRectangleR(mProcessedImage, redStampRect, CV_RGB(255, 0, 0));
 
-	//CvRect tableRect;
-	//tableRect.x = redStampRect.x - redStampRect.width * 2.95;
-	//tableRect.width = redStampRect.x + redStampRect.width * 3.95 - tableRect.x;
-	//tableRect.y = redStampRect.y + redStampRect.height * 1.10;
-	//tableRect.height = redStampRect.y + redStampRect.height * 6.05 - tableRect.y;
-	//cvRectangleR(mProcessedImage, tableRect, CV_RGB(255, 0, 0));
+	CvRect tableRect;
+	tableRect.x = redStampRect.x - redStampRect.width * 2.95;
+	tableRect.width = redStampRect.x + redStampRect.width * 3.95 - tableRect.x;
+	tableRect.y = redStampRect.y + redStampRect.height * 1.10;
+	tableRect.height = redStampRect.y + redStampRect.height * 6.05 - tableRect.y;
+	////cvRectangleR(mProcessedImage, tableRect, CV_RGB(255, 0, 0));
 
-	//return;
+	CvRect cornerRects[4];
+	findCornerRects(cornerRects, tableRect, 0.1);
+	//for(int i=0; i<4; i++)
+	//{
+	//	//cvRectangleR(mProcessedImage, cornerRects[i], CV_RGB(255, 0, 0));
+	//}
 
-	if(param->useGray)
+	for(int i=0; i<4; i++)
 	{
+		cvSetImageROI(mProcessedImage, cornerRects[i]);
+
+		IplImage* outImage = cvCreateImage(cvGetSize(mProcessedImage), 8, 3);
+
+		//灰度化
 		IplImage* grayImage = cvCreateImage(cvGetSize(mProcessedImage), 8, 1);
 		cvCvtColor(mProcessedImage, grayImage, CV_RGB2GRAY);
-		cvReleaseImage(&mProcessedImage);
-		mProcessedImage = grayImage;
-	}
-	else
-	{
-		return;
-	}
+		
+		//二值化
+		if( param->cannyThreshold1 % 2 == 0)
+		{
+			param->cannyThreshold1++;
+		}
+		cvAdaptiveThreshold(grayImage, grayImage, 255, CV_ADAPTIVE_THRESH_GAUSSIAN_C, CV_THRESH_BINARY_INV, param->cannyThreshold1, param->cannyThreshold2);
+		cvCvtColor(grayImage, outImage, CV_GRAY2BGR);
+		
 
-	if(param->useCanny)
-	{
-		IplImage* cannyImage = cvCreateImage(cvGetSize(mProcessedImage), 8, 1);
-		cvCanny(mProcessedImage, cannyImage, param->cannyThreshold1, param->cannyThreshold2, 3);
-		cvReleaseImage(&mProcessedImage);
-		mProcessedImage = cannyImage;
-	}
-	else
-	{
-		return;
-	}
+		//霍夫变换
+		CvSeq* lines = NULL;
+		if(param->useHough)
+		{
+			lines = hough(grayImage, param);
+			if(param->debug)
+			{
+				if(param->useBackGround)
+				{
+					cvCopy(mProcessedImage, outImage);
+				}
+				else
+				{
+					cvSetZero(outImage);
+				}
+				for( int i = 0; i < lines ->total; i++ )
+				{  
+					CvPoint* line = ( CvPoint* )cvGetSeqElem( lines, i );
+					cvLine( outImage, line[0], line[1], CV_RGB(255, 0, 0), 1, CV_AA );
+				}
+			}
+		}
 
-	if(param->useDilate && param->dilateIter>0)
-	{
-		cvDilate(mProcessedImage, mProcessedImage, 0, param->dilateIter);
+		cvCopy(outImage, mProcessedImage);
 	}
+	cvResetImageROI(mProcessedImage);
 
-	if(param->useErode && param->erodeIter>0)
-	{
-		cvErode(mProcessedImage, mProcessedImage, 0, param->erodeIter);
-	}
-
-	CvSeq* lines = NULL;
-	if(param->useHough)
-	{
-		lines = hough(param);
-	}
-	else
-	{
-		return;
-	}
-
-
-	std::vector<LineSegment> lineSegList;
-	if(param->useCombine)
-	{
-		combine(param, lines, lineSegList);
-	}
-	else
-	{
-		return;
-	}
-
-	int minHRho = 5000;
-	int maxHRho = 0;
-	int minVRho = 5000;
-	int maxVRho = 0;
-	LineSegment minH;
-	LineSegment maxH;
-	LineSegment minV;
-	LineSegment maxV;
-	if(param->useRectangle)
-	{
-		rectangle(param, lineSegList, minHRho, minH, maxHRho, maxH, minVRho, minV, maxVRho, maxV);
-	}
-	else
-	{
-		return;
-	}
-
-	if(param->useNormalize)
-	{
-		normalize(param, minH, minV, maxV, maxH);
-	}
-
+	return;
 }
 
-CvSeq* ImageProcess::hough( ImageProcessParam* param )
+CvSeq* ImageProcess::hough(IplImage* image, ImageProcessParam* param )
 {
 	CvMemStorage* storage = cvCreateMemStorage(0);
-	CvSeq* lines = cvHoughLines2( mProcessedImage, storage, CV_HOUGH_PROBABILISTIC, param->houghRho, CV_PI/180 * param->houghTheta, param->houghThreshold, param->houghParam1, param->houghParam2 );
-
-	if(param->debug)
-	{
-		cvReleaseImage(&mProcessedImage);
-		if(param->useBackGround)
-		{
-			mProcessedImage = cvCloneImage(mOriginalImage);
-		}
-		else
-		{
-			mProcessedImage = cvCreateImage(cvGetSize(mOriginalImage), 8, 3);
-		}
-
-		for( int i = 0; i < lines ->total; i++ )
-		{  
-			CvPoint* line = ( CvPoint* )cvGetSeqElem( lines, i );
-			cvLine( mProcessedImage, line[0], line[1], CV_RGB(255, 0, 0), 1, CV_AA );
-		}
-	}
-	
+	CvSeq* lines = cvHoughLines2( image, storage, CV_HOUGH_PROBABILISTIC, param->houghRho, CV_PI/180 * param->houghTheta,
+		param->houghThreshold, param->houghParam1, param->houghParam2 );
 	return lines;
 }
 
-void ImageProcess::combine( ImageProcessParam* param, CvSeq* lines, std::vector<LineSegment>& lineSegList)
+void ImageProcess::findCornerPoints(ImageProcessParam* param, CvSeq* lines, CvPoint* points)
 {
 	for( int i = 0; i < lines ->total; i++ )
 	{  
-		CvPoint* line = ( CvPoint* )cvGetSeqElem( lines, i );
-		LineSegment lineSeg(line[0], line[1], param->combineTheta, param->combineRho, param->combineDistance);
-		bool combined = false;
-		for(int n=0; n<lineSegList.size(); n++)
-		{
-			if(lineSegList[n].combine(lineSeg))
+		for( int j = 0; j < lines ->total; j++ )
+		{ 
+			if(i > j)
 			{
-				combined = true;
-				break;
+				CvPoint* lineA = ( CvPoint* )cvGetSeqElem( lines, i );
+				CvPoint* lineB = ( CvPoint* )cvGetSeqElem( lines, j );
+
+
+
 			}
-		}
-		if(combined == false)
-		{
-			lineSegList.push_back(lineSeg);
-		}
-	}
-
-	if(param->debug)
-	{
-		cvReleaseImage(&mProcessedImage);
-		if(param->useBackGround)
-		{
-			mProcessedImage = cvCloneImage(mOriginalImage);
-		}
-		else
-		{
-			mProcessedImage = cvCreateImage(cvGetSize(mOriginalImage), 8, 3);
-		}
-
-		for(int n=0; n<lineSegList.size(); n++)
-		{
-			cvLine( mProcessedImage, lineSegList[n].point[0], lineSegList[n].point[1], CV_RGB(255, 0, 0), 1, CV_AA );
-		}
-	}
-}
-
-void ImageProcess::rectangle( ImageProcessParam* param, std::vector<LineSegment> &lineSegList, int &minHRho, LineSegment &minH, int &maxHRho, LineSegment &maxH, int &minVRho, LineSegment &minV, int &maxVRho, LineSegment &maxV )
-{
-	for(int n=0; n<lineSegList.size(); n++)
-	{
-		if(lineSegList[n].theta < CV_PI * 0.25 || lineSegList[n].theta > CV_PI * 0.75)//ˮƽ
-		{
-			if(lineSegList[n].length > param->rectangleHMinLength)
-			{
-				if(lineSegList[n].rho < minHRho && lineSegList[n].rho > param->rectangleTop)
-				{
-					minHRho = lineSegList[n].rho;
-					minH = lineSegList[n];
-				}
-				if(lineSegList[n].rho > maxHRho && lineSegList[n].rho < mProcessedImage->height - param->rectangleBottom)
-				{
-					maxHRho = lineSegList[n].rho;
-					maxH = lineSegList[n];
-				}
-			}
-
-		}
-		else
-		{
-			if(lineSegList[n].length > param->rectangleVMinLength 
-				&& lineSegList[n].point[0].y > param->rectangleTop && lineSegList[n].point[1].y > param->rectangleTop
-				&& lineSegList[n].point[0].y < mProcessedImage->height - param->rectangleBottom && lineSegList[n].point[1].y < mProcessedImage->height - param->rectangleBottom
-				)
-			{
-
-				if(lineSegList[n].rho < minVRho)
-				{
-
-					minVRho = lineSegList[n].rho;
-					minV = lineSegList[n];
-
-				}
-				if(lineSegList[n].rho > maxVRho)
-				{
-					maxVRho = lineSegList[n].rho;
-					maxV = lineSegList[n];
-				}
-			}
-		}
-	}
-
-	if(param->debug)
-	{
-		cvReleaseImage(&mProcessedImage);
-		if(param->useBackGround)
-		{
-			mProcessedImage = cvCloneImage(mOriginalImage);
-		}
-		else
-		{
-			mProcessedImage = cvCreateImage(cvGetSize(mOriginalImage), 8, 3);
-		}
-
-		for(int n=0; n<lineSegList.size(); n++)
-		{
-			cvLine( mProcessedImage, maxV.point[0], maxV.point[1], CV_RGB(255, 0, 0), 1, CV_AA );
-			cvLine( mProcessedImage, minV.point[0], minV.point[1], CV_RGB(255, 0, 0), 1, CV_AA );
-			cvLine( mProcessedImage, maxH.point[0], maxH.point[1], CV_RGB(255, 0, 0), 1, CV_AA );
-			cvLine( mProcessedImage, minH.point[0], minH.point[1], CV_RGB(255, 0, 0), 1, CV_AA );
 		}
 	}
 }
@@ -560,7 +462,7 @@ void ImageProcess::setMasks( QVector<OCRMask>* masks )
 
 int ImageProcess::adjustRect( IplImage* image, CvRect* rect )
 {
-	const int moveStep = 1;
+	const int moveStep = 10;
 	int count = countInRect(image, rect);
 
 	CvRect right = (*rect);
@@ -590,3 +492,4 @@ int ImageProcess::adjustRect( IplImage* image, CvRect* rect )
 
 	return 0;
 }
+
