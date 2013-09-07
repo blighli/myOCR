@@ -78,7 +78,7 @@ QString TesseractOCR::recognizeText()
 			}
 			else if(mask.key == QString::fromLocal8Bit("密码区"))
 			{
-				tessBaseAPI->SetVariable("tessedit_char_whitelist", "0123456789.+-*/<>");
+				tessBaseAPI->SetVariable("tessedit_char_whitelist", "0123456789+-*/<>");
 			}
 			else if(mask.key == QString::fromLocal8Bit("金额") || mask.key == QString::fromLocal8Bit("税额"))
 			{
