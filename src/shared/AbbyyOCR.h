@@ -1,9 +1,9 @@
 #ifndef ABBYYOCR_H
 #define ABBYYOCR_H
 
+#include "Common.h"
 #include <QtCore/QtCore>
 #include <abbyy/MobilOCR.h>
-#include <opencv2/opencv.hpp>
 
 class AbbyyOCR
 {

@@ -1,7 +1,7 @@
 #ifndef IMAGEADAPTER_H
 #define IMAGEADAPTER_H
 
-#include <opencv2/opencv.hpp>
+#include "Common.h"
 #include <QImage>
 
 class ImageAdapter

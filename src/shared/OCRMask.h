@@ -1,7 +1,7 @@
 #ifndef OCRMASK_H
 #define OCRMASK_H
 
-#include <opencv2/opencv.hpp>
+#include "Common.h"
 #include <vector>
 #include <string>
 

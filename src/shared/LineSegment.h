@@ -1,7 +1,7 @@
 #ifndef LINESEGMENT_H
 #define LINESEGMENT_H
 
-#include <opencv2/opencv.hpp>
+#include "Common.h"
 
 class LineSegment
 {

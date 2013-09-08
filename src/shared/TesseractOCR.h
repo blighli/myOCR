@@ -1,9 +1,7 @@
 #ifndef TESSERACTOCR_H
 #define TESSERACTOCR_H
 
-#include <leptonica/allheaders.h>
-#include <tesseract/baseapi.h>
-#include <opencv2/opencv.hpp>
+#include "Common.h"
 #include "OCRMask.h"
 #include <vector>
 #include <string>

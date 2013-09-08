@@ -1,7 +1,7 @@
 #ifndef IMAGEPROCESS_H
 #define IMAGEPROCESS_H
 
-#include <opencv2/opencv.hpp>
+#include "Common.h"
 #include "LineSegment.h"
 #include "OCRMask.h"
 #include <vector>
