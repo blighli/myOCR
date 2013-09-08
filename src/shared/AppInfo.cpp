@@ -29,12 +29,20 @@ const std::string& AppInfo::appPath()
 
 std::string AppInfo::appDir()
 {
-	QFileInfo fileInfo(QString::fromStdString(mAppPath));
-	return fileInfo.dir().absolutePath().toStdString();
+	QFileInfo fileInfo(QString::fromLocal8Bit(mAppPath.c_str()));
+	return fileInfo.dir().absolutePath().toLocal8Bit().constData();
 }
 
-std::string AppInfo::toUnicode(std::string text )
+std::string AppInfo::toUTF8(std::string localString )
 {
-	QString locatText = QString::fromLocal8Bit(text.c_str());
-	return std::string(locatText.toAscii().constData());
+	QString locatText = QString::fromLocal8Bit(localString.c_str());
+	std::string unicodeString = locatText.toAscii().constData();
+	return unicodeString;
+}
+
+std::string AppInfo::fromUTF8( std::string unicodeString )
+{
+	QString unicodeText = QString::fromStdString(unicodeString);
+	std::string localString = unicodeText.toLocal8Bit().constData();
+	return localString;
 }

@@ -44,8 +44,8 @@ void OCRWidget::update()
 		QTextEdit* valueEdit = new QTextEdit();
 		valueEdit->setFixedHeight(100);
 
-		keyEdit->setText(mMasks->at(i).key.c_str());
-		valueEdit->setText(mMasks->at(i).value.c_str());
+		keyEdit->setText(QString::fromLocal8Bit(mMasks->at(i).key.c_str()));
+		valueEdit->setText(QString::fromLocal8Bit(mMasks->at(i).value.c_str()));
 
 		QGroupBox* groupBox = new QGroupBox();
 		QVBoxLayout* groupLayout = new QVBoxLayout();
@@ -67,7 +67,5 @@ void OCRWidget::keyChanged()
 	QLineEdit* keyEdit = (QLineEdit*)sender();
 	int index = keyEdit->property("index").toInt();
 	QString key = keyEdit->text();
-
-	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("gbk"));
-	(*mMasks)[index].key = key.toStdString();
+	(*mMasks)[index].key = key.toLocal8Bit();
 }

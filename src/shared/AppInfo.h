@@ -10,7 +10,8 @@ public:
 	void setAppPath(const std::string& appPath);
 	const std::string& appPath();
 	std::string appDir();
-	std::string toUnicode(std::string text);
+	std::string toUTF8(std::string localString);
+	std::string fromUTF8(std::string unicodeString);
 protected:
 	AppInfo();
 	static AppInfo* mInstance;

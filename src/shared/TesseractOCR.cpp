@@ -86,7 +86,7 @@ std::string TesseractOCR::recognizeText()
 			else if(mask.key == "开票日期")
 			{
 				std::string localText = "年月日0123456789";
-				std::string unicodeText = AppInfo::instance()->toUnicode(localText);
+				std::string unicodeText = AppInfo::instance()->toUTF8(localText);
 				tessBaseAPI->SetVariable("tessedit_char_whitelist", unicodeText.c_str());
 			}
 			else
@@ -106,7 +106,7 @@ std::string TesseractOCR::recognizeText()
 				}
 
 				char* ocrText = tessBaseAPI->GetUTF8Text();
-				std::string value(ocrText);
+				std::string value = AppInfo::instance()->fromUTF8(ocrText);
 
 				if(mask.key == "购货单位"  || mask.key == "销货单位")
 				{

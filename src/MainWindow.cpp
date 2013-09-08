@@ -199,8 +199,7 @@ void MainWindow::openImageFile()
 		tr("Image files (*.png *.jpg *.bmp *.tiff)"));
     if (!fileName.isEmpty())
 	{
-		QTextCodec::setCodecForCStrings(QTextCodec::codecForName("gbk"));//解决中文路径的问题
-		IplImage* cvImage = cvLoadImage(fileName.toStdString().c_str());
+		IplImage* cvImage = cvLoadImage(fileName.toLocal8Bit().constData());
 		if(cvImage)
 		{
 			mImageProcess->setImage(cvImage);
@@ -217,11 +216,10 @@ void MainWindow::saveImageFile()
 		tr("Image files (*.png *.jpg *.bmp *.tiff)"));
     if (!fileName.isEmpty())
 	{
-		QTextCodec::setCodecForCStrings(QTextCodec::codecForName("gbk"));//解决中文路径的问题
 		IplImage* cvImage = mImageProcess->getProcessedImage();
 		if(cvImage)
 		{
-			cvSaveImage(fileName.toStdString().c_str(), cvImage);
+			cvSaveImage(fileName.toLocal8Bit().constData(), cvImage);
 		}
 	}
 }
@@ -266,6 +264,7 @@ void MainWindow::saveMasks()
 			msgBox.exec();
 			return;
 		}
+		
 		QXmlStreamWriter* xmlWriter = new QXmlStreamWriter();
 		xmlWriter->setDevice(&file);
 		xmlWriter->writeStartDocument();
@@ -276,7 +275,7 @@ void MainWindow::saveMasks()
 			OCRMask mask = mOCRMasks->at(i);
 			xmlWriter->writeStartElement("mask");
 
-			xmlWriter->writeAttribute("key", QString::fromStdString(mask.key));
+			xmlWriter->writeAttribute("key", QString::fromLocal8Bit(mask.key.c_str()));
 			xmlWriter->writeAttribute("x", QString::number(mask.rect.x));
 			xmlWriter->writeAttribute("y", QString::number(mask.rect.y));
 			xmlWriter->writeAttribute("w", QString::number(mask.rect.width));
@@ -330,7 +329,7 @@ void MainWindow::loadMasks()
 				{
 					QXmlStreamAttributes attributes = xml.attributes();
 					OCRMask mask;
-					mask.key = attributes.value("key").toString().toStdString();
+					mask.key = attributes.value("key").toString().toLocal8Bit();
 					mask.rect.x = (attributes.value("x").toString().toInt());
 					mask.rect.y = (attributes.value("y").toString().toInt());
 					mask.rect.width = (attributes.value("w").toString().toInt());
@@ -464,8 +463,8 @@ void MainWindow::recognizeText()
 	mTesseractOCR->setImage(cvImage);
 	mTesseractOCR->setMasks(mOCRMasks);
 
-	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf-8"));
-	QString tesseractText = QString::fromStdString( mTesseractOCR->recognizeText() );
+	QString tesseractText = QString::fromLocal8Bit( mTesseractOCR->recognizeText().c_str() );
+
 	ocrWidget->update();
 	textEdit->clear();
 	//textEdit->setText(QString("%1\n%2\n%3\n%4").arg("Abbyy OCR:", abbyyText, "Tesseract OCR:", tesseractText));
