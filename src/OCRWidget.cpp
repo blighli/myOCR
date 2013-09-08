@@ -68,5 +68,6 @@ void OCRWidget::keyChanged()
 	int index = keyEdit->property("index").toInt();
 	QString key = keyEdit->text();
 
+	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("gbk"));
 	(*mMasks)[index].key = key.toStdString();
 }

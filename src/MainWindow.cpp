@@ -463,6 +463,8 @@ void MainWindow::recognizeText()
 	}
 	mTesseractOCR->setImage(cvImage);
 	mTesseractOCR->setMasks(mOCRMasks);
+
+	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf-8"));
 	QString tesseractText = QString::fromStdString( mTesseractOCR->recognizeText() );
 	ocrWidget->update();
 	textEdit->clear();
