@@ -59,24 +59,6 @@ void TesseractOCR::setMasks( std::vector<OCRMask>* masks )
 	mMasks = masks;
 }
 
-std::string narrow(std::wstring const& text)
-{
-	std::setlocale(LC_ALL, "");
-	const std::locale locale("");
-	typedef std::codecvt<wchar_t, char, std::mbstate_t> converter_type;
-	const converter_type& converter = std::use_facet<converter_type>(locale);
-	std::vector<char> to(text.length() * converter.max_length());
-	std::mbstate_t state;
-	const wchar_t* from_next;
-	char* to_next;
-	const converter_type::result result = converter.out(state, text.data(), text.data() + text.length(), from_next, &to[0], &to[0] + to.size(), to_next);
-	if (result == converter_type::ok || result == converter_type::noconv) {
-		const std::string s(&to[0], to_next);
-		return s;
-	}
-	return "";
-}
-
 std::string TesseractOCR::recognizeText()
 {
 	std::string allText;
@@ -103,10 +85,9 @@ std::string TesseractOCR::recognizeText()
 			}
 			else if(mask.key == "开票日期")
 			{
-				std::wstring wstr = L"年月日";
-				std::string str = narrow(wstr)+ "0123456789";
-
-				tessBaseAPI->SetVariable("tessedit_char_whitelist", str.c_str());
+				std::string localText = "年月日0123456789";
+				std::string unicodeText = AppInfo::instance()->toUnicode(localText);
+				tessBaseAPI->SetVariable("tessedit_char_whitelist", unicodeText.c_str());
 			}
 			else
 			{

@@ -32,3 +32,9 @@ std::string AppInfo::appDir()
 	QFileInfo fileInfo(QString::fromStdString(mAppPath));
 	return fileInfo.dir().absolutePath().toStdString();
 }
+
+std::string AppInfo::toUnicode(std::string text )
+{
+	QString locatText = QString::fromLocal8Bit(text.c_str());
+	return std::string(locatText.toAscii().constData());
+}
