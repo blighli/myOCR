@@ -81,7 +81,9 @@ std::string TesseractOCR::recognizeText()
 			}
 			else if(mask.key == "金额" || mask.key == "税额")
 			{
-				tessBaseAPI->SetVariable("tessedit_char_whitelist", "0123456789.");
+				std::string localText = "￥0123456789.";
+				std::string unicodeText = AppInfo::instance()->toUTF8(localText);
+				tessBaseAPI->SetVariable("tessedit_char_whitelist", unicodeText.c_str());
 			}
 			else if(mask.key == "开票日期")
 			{
@@ -91,7 +93,7 @@ std::string TesseractOCR::recognizeText()
 			}
 			else
 			{
-				//tessBaseAPI->SetVariable("tessedit_char_whitelist", "0123456789.+-*/<>");
+				tessBaseAPI->SetVariable("tessedit_char_whitelist", "");
 			}
 
 			Boxa* boxes = tessBaseAPI->GetComponentImages(tesseract::RIL_WORD, true, NULL, NULL);
@@ -133,6 +135,7 @@ std::string TesseractOCR::recognizeText()
 				}
 				else if(mask.key == "金额" || mask.key == "税额")
 				{
+					//replaceString(value,"￥", "");
 					int start = value.find(" ");
 					int end = value.length();
 					value = value.substr(start + 1, end - start);
