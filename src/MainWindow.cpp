@@ -2,13 +2,13 @@
 
 #include <QtGui>
 #include "ImageWidget.h"
-#include "Shared/ImageAdapter.h"
-#include "Shared/AppInfo.h"
-#include "Shared/AbbyyOCR.h"
+#include "Share/ImageAdapter.h"
+#include "Share/AppInfo.h"
+#include "Share/AbbyyOCR.h"
 #include "CubeWidget.h"
 #include "ParamWidget.h"
-#include "Shared/ImageProcess.h"
-#include "Shared/TesseractOCR.h"
+#include "Share/ImageProcess.h"
+#include "Share/TesseractOCR.h"
 #include "OCRWidget.h"
 
 
