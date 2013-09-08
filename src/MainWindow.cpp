@@ -11,6 +11,7 @@
 #include "Share/TesseractOCR.h"
 #include "OCRWidget.h"
 #include "twain/qtwain.h"
+#include "twain/dib.h"
 
 
 MainWindow::MainWindow()
@@ -254,8 +255,15 @@ void MainWindow::onDibAcquired(CDIB* pDib)
 {
 	if(pDib)
 	{
+		int width = pDib->Width();
+		int height = pDib->Height();
+		int depth = pDib->GetBitmapInfo()->bmiHeader.biBitCount == 1?IPL_DEPTH_1U : IPL_DEPTH_8U;
+		int nChannels = 3;
+
+		IplImage* cvImage = cvCreateImage(cvSize(width, height), depth, nChannels);
+		memcpy(cvImage->imageData, pDib->GetLinePtr(0), width * height * nChannels);
 		//Convert dib to iplImage herer!!
-		IplImage* cvImage = NULL;
+
 		if(cvImage)
 		{
 			mImageProcess->setImage(cvImage);
