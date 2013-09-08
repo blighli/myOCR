@@ -10,10 +10,13 @@
 #include "Share/ImageProcess.h"
 #include "Share/TesseractOCR.h"
 #include "OCRWidget.h"
+#include "twain/qtwain.h"
 
 
 MainWindow::MainWindow()
 {
+	mTwain = new QTwain();
+
 	mOCRMasks = new std::vector<OCRMask>();
 	mImageProcess = new ImageProcess();
 	mAbbyyOCR = NULL;
@@ -129,6 +132,7 @@ void MainWindow::buildUI()
 	actionEnableChinese = new QAction(tr("Enable Chinese"), this);
 	actionEnableChinese->setCheckable(true);
 	actionShowCube = new QAction(tr("Show Cube"), this);
+	actionScan = new QAction(tr("Scan"), this);
 
 	actionOpenImage->setIcon(QIcon(":/open.png"));
 	actionSaveImage->setIcon(QIcon(":/save.png"));
@@ -153,9 +157,11 @@ void MainWindow::buildUI()
 	connect(actionEnableMesure, SIGNAL(triggered()), this, SLOT(enableMesure()));
 	connect(actionEnableChinese, SIGNAL(triggered()), this, SLOT(enableChinese()));
 	connect(actionShowCube, SIGNAL(triggered()), this, SLOT(showCube()));
+	connect(actionScan, SIGNAL(triggered()), this, SLOT(scanImage()));
 
 	menuFile->addAction(actionOpenImage);
 	menuFile->addAction(actionSaveImage);
+	menuFile->addAction(actionScan);
 	menuImage->addAction(actionEnableMesure);
 	menuImage->addSeparator();
 	menuImage->addAction(actionEnableMasks);
@@ -172,6 +178,7 @@ void MainWindow::buildUI()
 
 	toolBarFile->addAction(actionOpenImage);
 	toolBarFile->addAction(actionSaveImage);
+	toolBarFile->addAction(actionScan);
 	toolBarImage->addAction(actionEnableMesure);
 	toolBarImage->addSeparator();
 	toolBarImage->addAction(actionEnableMasks);
@@ -184,6 +191,8 @@ void MainWindow::buildUI()
 	toolBarImage->addSeparator();
 	toolBarImage->addAction(actionEnableChinese);
 	toolBarImage->addAction(actionShowCube);
+
+	connect(mTwain, SIGNAL(dibAcquired(CDIB*)), this, SLOT(onDibAcquired(CDIB*))); 
 
 	//QComboBox* recognizeMethods = new QComboBox();
 	//recognizeMethods->addItem(tr("Chinese and English"),QVariant(0));
@@ -223,6 +232,39 @@ void MainWindow::saveImageFile()
 		}
 	}
 }
+
+void MainWindow::scanImage()
+{
+	mTwain->selectSource();
+	mTwain->acquire();
+}
+
+void MainWindow::showEvent(QShowEvent* thisEvent)
+{
+	mTwain->setParent(this);
+}
+
+bool MainWindow::winEvent(MSG* pMsg, long* result)
+{
+	mTwain->processMessage(*pMsg); 
+	return false;
+}
+
+void MainWindow::onDibAcquired(CDIB* pDib)
+{
+	if(pDib)
+	{
+		//Convert dib to iplImage herer!!
+		IplImage* cvImage = NULL;
+		if(cvImage)
+		{
+			mImageProcess->setImage(cvImage);
+			QImage* qtImage= ImageAdapter::IplImage2QImage(cvImage);
+			imageWidget->setImage(qtImage);
+		}
+		delete pDib;
+	}
+} 
 
 void MainWindow::enableMesure()
 {

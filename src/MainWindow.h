@@ -9,6 +9,7 @@
 #include <vector>
 #include <string>
 
+
 class ImageWidget;
 class QTextEdit;
 class AbbyyOCR;
@@ -17,6 +18,8 @@ class ParamWidget;
 class ImageProcess;
 class TesseractOCR;
 class OCRWidget;
+class QTwain;
+class CDIB;
 
 class MainWindow : public QMainWindow
 {
@@ -25,9 +28,16 @@ class MainWindow : public QMainWindow
 public:
 	MainWindow();
 	~MainWindow();
+protected:
+	void showEvent(QShowEvent* thisEvent);
+	bool winEvent(MSG* pMsg, long* result);
+
 private slots:
+	void onDibAcquired(CDIB* pDib);
+
 	void openImageFile();
 	void saveImageFile();
+	void scanImage();
 	void recognizeText();
 
 	void showParamWidget();
@@ -71,7 +81,11 @@ private:
 	QAction* actionShowCube;
 	QAction* actionAbout;
 
+	QAction* actionScan;
+
 	//internal variables
+	QTwain* mTwain;
+
 	AbbyyOCR* mAbbyyOCR;
 	TesseractOCR* mTesseractOCR;
 	ImageProcess* mImageProcess;
