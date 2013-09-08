@@ -5,7 +5,7 @@
 #include <opencv2/opencv.hpp>
 #include <leptonica/allheaders.h>
 #include <tesseract/baseapi.h>
-#include "OCRMask.h"
+#include "Shared/OCRMask.h"
 #include <vector>
 #include <string>
 

@@ -26,7 +26,7 @@ ParamWidget::ParamWidget()
 	backgroundGroup =  addGroup(tr("Background"));
 
 	normalizeGroup =  addGroup(tr("Normalize"));
-	normalizeTopMargin = addParam(tr("Top"),0, 1000, 200);
+	normalizeTopMargin = addParam(tr("Top"),0, 1000, 300);
 	normalizeSideMargin = addParam(tr("Width"),0, 1000, 100);
 	normalizeWidth = addParam(tr("Width"),0, 4000, 2000);
 	normalizeHeight = addParam(tr("Height"),0, 4000, 940);

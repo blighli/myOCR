@@ -1,7 +1,7 @@
 #include <QApplication>
 #include <QtCore/QtCore>
 #include "MainWindow.h"
-#include "AppInfo.h"
+#include "Shared/AppInfo.h"
 
 int main(int argc, char** argv)
 {

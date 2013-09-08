@@ -2,7 +2,7 @@
 #define IMAGEWIDGET_H
 
 #include <QWidget>
-#include "OCRMask.h"
+#include "Shared/OCRMask.h"
 #include <vector>
 
 class QMenu;
