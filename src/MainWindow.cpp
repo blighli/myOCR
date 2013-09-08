@@ -14,7 +14,7 @@
 
 MainWindow::MainWindow()
 {
-	mOCRMasks = new QVector<OCRMask>();
+	mOCRMasks = new std::vector<OCRMask>();
 	mImageProcess = new ImageProcess();
 	mAbbyyOCR = NULL;
 	mTesseractOCR = NULL;
@@ -195,7 +195,7 @@ void MainWindow::buildUI()
 void MainWindow::openImageFile()
 {
 	QString fileName = QFileDialog::getOpenFileName(this,
-		tr("Open Image"), AppInfo::instance()->appDir(),
+		tr("Open Image"), AppInfo::instance()->appDir().c_str(),
 		tr("Image files (*.png *.jpg *.bmp *.tiff)"));
     if (!fileName.isEmpty())
 	{
@@ -213,7 +213,7 @@ void MainWindow::openImageFile()
 void MainWindow::saveImageFile()
 {
 	QString fileName = QFileDialog::getSaveFileName(this,
-		tr("Save Image"), AppInfo::instance()->appDir(),
+		tr("Save Image"), AppInfo::instance()->appDir().c_str(),
 		tr("Image files (*.png *.jpg *.bmp *.tiff)"));
     if (!fileName.isEmpty())
 	{
@@ -253,7 +253,7 @@ void MainWindow::saveMasks()
 		return;
 	}
 	QString fileName = QFileDialog::getSaveFileName(this,
-		tr("Save Masks"), AppInfo::instance()->appDir(),
+		tr("Save Masks"), AppInfo::instance()->appDir().c_str(),
 		tr("XML files (*.xml)"));
     if (!fileName.isEmpty())
 	{
@@ -276,11 +276,11 @@ void MainWindow::saveMasks()
 			OCRMask mask = mOCRMasks->at(i);
 			xmlWriter->writeStartElement("mask");
 
-			xmlWriter->writeAttribute("key", mask.key);
-			xmlWriter->writeAttribute("x", QString::number(mask.rect.x()));
-			xmlWriter->writeAttribute("y", QString::number(mask.rect.y()));
-			xmlWriter->writeAttribute("w", QString::number(mask.rect.width()));
-			xmlWriter->writeAttribute("h", QString::number(mask.rect.height()));
+			xmlWriter->writeAttribute("key", QString::fromStdString(mask.key));
+			xmlWriter->writeAttribute("x", QString::number(mask.rect.x));
+			xmlWriter->writeAttribute("y", QString::number(mask.rect.y));
+			xmlWriter->writeAttribute("w", QString::number(mask.rect.width));
+			xmlWriter->writeAttribute("h", QString::number(mask.rect.height));
 
 			xmlWriter->writeEndElement();
 		}
@@ -294,7 +294,7 @@ void MainWindow::saveMasks()
 void MainWindow::loadMasks()
 {
 	QString fileName = QFileDialog::getOpenFileName(this,
-		tr("Load Masks"), AppInfo::instance()->appDir(),
+		tr("Load Masks"), AppInfo::instance()->appDir().c_str(),
 		tr("XML files (*.xml)"));
     if (!fileName.isEmpty())
 	{
@@ -330,11 +330,11 @@ void MainWindow::loadMasks()
 				{
 					QXmlStreamAttributes attributes = xml.attributes();
 					OCRMask mask;
-					mask.key = attributes.value("key").toString();
-					mask.rect.setX(attributes.value("x").toString().toInt());
-					mask.rect.setY(attributes.value("y").toString().toInt());
-					mask.rect.setWidth(attributes.value("w").toString().toInt());
-					mask.rect.setHeight(attributes.value("h").toString().toInt());
+					mask.key = attributes.value("key").toString().toStdString();
+					mask.rect.x = (attributes.value("x").toString().toInt());
+					mask.rect.y = (attributes.value("y").toString().toInt());
+					mask.rect.width = (attributes.value("w").toString().toInt());
+					mask.rect.height = (attributes.value("h").toString().toInt());
 					mOCRMasks->push_back(mask);
 				}
 			}
@@ -463,7 +463,7 @@ void MainWindow::recognizeText()
 	}
 	mTesseractOCR->setImage(cvImage);
 	mTesseractOCR->setMasks(mOCRMasks);
-	QString tesseractText = mTesseractOCR->recognizeText();
+	QString tesseractText = QString::fromStdString( mTesseractOCR->recognizeText() );
 	ocrWidget->update();
 	textEdit->clear();
 	//textEdit->setText(QString("%1\n%2\n%3\n%4").arg("Abbyy OCR:", abbyyText, "Tesseract OCR:", tesseractText));
@@ -473,7 +473,10 @@ void MainWindow::recognizeText()
 	QRect* rects = new QRect[rectCount];
 	for(int i = 0; i< rectCount; i++)
 	{
-		rects[i] = mTesseractOCR->getBoxes()->at(i);
+		rects[i].setX(mTesseractOCR->getBoxes()->at(i).x);
+		rects[i].setY(mTesseractOCR->getBoxes()->at(i).y);
+		rects[i].setWidth(mTesseractOCR->getBoxes()->at(i).width);
+		rects[i].setHeight(mTesseractOCR->getBoxes()->at(i).height);
 	}
 	imageWidget->setBoxes(rects, rectCount);
 	

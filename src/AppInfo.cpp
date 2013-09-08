@@ -1,4 +1,5 @@
 #include "AppInfo.h"
+#include <QtCore/QtCore>
 
 AppInfo* AppInfo::mInstance = 0;
 
@@ -16,18 +17,18 @@ AppInfo::AppInfo()
 
 }
 
-void AppInfo::setAppPath(const QString& appPath)
+void AppInfo::setAppPath(const std::string& appPath)
 {
 	mAppPath = appPath;
 }
 
-const QString& AppInfo::appPath()
+const std::string& AppInfo::appPath()
 {
 	return mAppPath;
 }
 
-QString AppInfo::appDir()
+std::string AppInfo::appDir()
 {
-	QFileInfo fileInfo(mAppPath);
-	return fileInfo.dir().absolutePath();
+	QFileInfo fileInfo(QString::fromStdString(mAppPath));
+	return fileInfo.dir().absolutePath().toStdString();
 }

@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include "OCRMask.h"
+#include <vector>
 
 class QVBoxLayout;
 
@@ -12,13 +13,13 @@ class OCRWidget : public QWidget
 public:
 	OCRWidget();
 	~OCRWidget();
-	void setMasks(QVector<OCRMask>* masks);
+	void setMasks(std::vector<OCRMask>* masks);
 public slots:
 	void update();
 private slots:
 	void keyChanged();
 private:
-	QVector<OCRMask>* mMasks;
+	std::vector<OCRMask>* mMasks;
 	QVBoxLayout* mainLayout;
 };
 

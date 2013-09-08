@@ -1,5 +1,6 @@
 ﻿#include "TesseractOCR.h"
 #include "AppInfo.h"
+#include <QtCore/QtCore>
 
 using namespace tesseract;
 
@@ -7,7 +8,7 @@ TesseractOCR::TesseractOCR()
 {
 	mMasks = NULL;
 	tessBaseAPI = new tesseract::TessBaseAPI(); 
-	mBoxes = new QVector<QRect>();
+	mBoxes = new std::vector<CvRect>();
 }
 
 TesseractOCR::~TesseractOCR()
@@ -18,11 +19,11 @@ TesseractOCR::~TesseractOCR()
 
 bool TesseractOCR::init( Language lang )
 {
-	QString tessdata = AppInfo::instance()->appDir();
+	std::string tessdata = AppInfo::instance()->appDir();
 
 	if(lang == TESSERACTOCR_CHINESE)
 	{
-		if (tessBaseAPI->Init(tessdata.toAscii(), "chi_sim+eng"))
+		if (tessBaseAPI->Init(tessdata.c_str(), "chi_sim+eng"))
 		{
 			return false;
 		}
@@ -36,7 +37,7 @@ bool TesseractOCR::init( Language lang )
 	}
 	else if(lang == TESSERACTOCR_ENGLISH)
 	{
-		if (tessBaseAPI->Init(tessdata.toAscii(), "chi_sim+eng"))
+		if (tessBaseAPI->Init(tessdata.c_str(), "chi_sim+eng"))
 		{
 			return false;
 		}
@@ -54,43 +55,41 @@ void TesseractOCR::setImage( IplImage* image )
 	tessBaseAPI->SetImage((uchar*)image->imageData, image->width, image->height, image->nChannels, image->widthStep);
 }
 
-void TesseractOCR::setMasks( QVector<OCRMask>* masks )
+void TesseractOCR::setMasks( std::vector<OCRMask>* masks )
 {
 	mMasks = masks;
 }
 
-QString TesseractOCR::recognizeText()
+std::string TesseractOCR::recognizeText()
 {
-	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf-8"));
-	QString allText;
+	std::string allText;
 	if(mMasks)
 	{
 		mBoxes->clear();
 		for(int i=0;i<mMasks->size();i++)
 		{
 			OCRMask mask = mMasks->at(i);
-			tessBaseAPI->SetRectangle(mask.rect.x(), mask.rect.y(), mask.rect.width(), mask.rect.height());
+			tessBaseAPI->SetRectangle(mask.rect.x, mask.rect.y, mask.rect.width, mask.rect.height);
 
-			if(mask.key == QString::fromLocal8Bit("购货单位")  || mask.key == QString::fromLocal8Bit("销货单位")
-				|| mask.key == QString::fromLocal8Bit("发票代码")|| mask.key == QString::fromLocal8Bit("发票号码"))
+			if(mask.key == "购货单位" || mask.key == "销货单位"
+				|| mask.key == "发票代码"|| mask.key == "发票号码")
 			{
 				tessBaseAPI->SetVariable("tessedit_char_whitelist", "0123456789");
 			}
-			else if(mask.key == QString::fromLocal8Bit("密码区"))
+			else if(mask.key == "密码区")
 			{
 				tessBaseAPI->SetVariable("tessedit_char_whitelist", "0123456789+-*/<>");
 			}
-			else if(mask.key == QString::fromLocal8Bit("金额") || mask.key == QString::fromLocal8Bit("税额"))
+			else if(mask.key == "金额" || mask.key == "税额")
 			{
 				tessBaseAPI->SetVariable("tessedit_char_whitelist", "0123456789.");
 			}
-			else if(mask.key == QString::fromLocal8Bit("开票日期"))
+			else if(mask.key == "开票日期")
 			{
-				//tessBaseAPI->SetVariable("tessedit_char_whitelist", "0123456789");
-				QString str = QString::fromLocal8Bit("年月日");
-				QByteArray ba = str.toAscii();
-				ba.append("0123456789");
-				tessBaseAPI->SetVariable("tessedit_char_whitelist", ba.constData());
+				std::wstring wstr = L"年月日";
+				std::string str = std::string(wstr.begin(), wstr.end()) + "0123456789";
+
+				tessBaseAPI->SetVariable("tessedit_char_whitelist", str.c_str());
 			}
 			else
 			{
@@ -102,47 +101,48 @@ QString TesseractOCR::recognizeText()
 			{
 				for(int i = 0; i< boxes->n; i++)
 				{
-					QRect box(boxes->box[i]->x, boxes->box[i]->y, boxes->box[i]->w, boxes->box[i]->h);
-					box.translate(mask.rect.x(), mask.rect.y());
-					mBoxes->append(box);
+					CvRect box = cvRect(boxes->box[i]->x, boxes->box[i]->y, boxes->box[i]->w, boxes->box[i]->h);
+					box.x += mask.rect.x;
+					box.y += mask.rect.y;
+					mBoxes->push_back(box);
 				}
 
 				char* ocrText = tessBaseAPI->GetUTF8Text();
-				QString value(ocrText);
+				std::string value(ocrText);
 
-				if(mask.key == QString::fromLocal8Bit("购货单位")  || mask.key == QString::fromLocal8Bit("销货单位"))
+				if(mask.key == "购货单位"  || mask.key == "销货单位")
 				{
-					value.replace("\n\n", "\n");
-					value.replace(" ", "");
+					replaceString(value,"\n\n", "\n");
+					replaceString(value," ", "");
 
-					int start = value.indexOf("\n");
-					int end = value.indexOf("\n", start + 1);
+					int start = value.find("\n");
+					int end = value.find("\n", start + 1);
 					if( start!= -1 && end != -1 )
 					{
-						value = value.mid(start + 1, end - start);
+						value = value.substr(start + 1, end - start);
 					}
 					
 				}
-				else if(mask.key == QString::fromLocal8Bit("发票代码")|| mask.key == QString::fromLocal8Bit("发票号码"))
+				else if(mask.key == "发票代码"|| mask.key == "发票号码")
 				{
-					value.replace(" ", "");
+					replaceString(value, " ", "");
 				}
-				else if(mask.key == QString::fromLocal8Bit("密码区"))
+				else if(mask.key == "密码区")
 				{
-					value.replace("\n\n", "\n");
-					value.replace(" ", "");
-					value.replace(">1<", "*");
+					replaceString(value,"\n\n", "\n");
+					replaceString(value," ", "");
+					replaceString(value,">1<", "*");
 				}
-				else if(mask.key == QString::fromLocal8Bit("金额") || mask.key == QString::fromLocal8Bit("税额"))
+				else if(mask.key == "金额" || mask.key == "税额")
 				{
-					int start = value.indexOf(" ");
+					int start = value.find(" ");
 					int end = value.length();
-					value = value.mid(start + 1, end - start);
-					value.replace(" ", "");
+					value = value.substr(start + 1, end - start);
+					replaceString(value," ", "");
 				}
-				else if(mask.key == QString::fromLocal8Bit("开票日期"))
+				else if(mask.key == "开票日期")
 				{
-					value.replace(" ", "");
+					replaceString(value," ", "");
 				}
 
 				(*mMasks)[i].value = value;
@@ -153,7 +153,17 @@ QString TesseractOCR::recognizeText()
 	return allText;
 }
 
-QVector<QRect>* TesseractOCR::getBoxes()
+std::vector<CvRect>* TesseractOCR::getBoxes()
 {
 	return mBoxes;
+}
+
+void TesseractOCR::replaceString( std::string& str, const std::string& oldStr, const std::string& newStr )
+{
+	size_t pos = 0;
+	while((pos = str.find(oldStr, pos)) != std::string::npos)
+	{
+		str.replace(pos, oldStr.length(), newStr);
+		pos += newStr.length();
+	}
 }

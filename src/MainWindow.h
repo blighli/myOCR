@@ -6,6 +6,8 @@
 #include <leptonica/allheaders.h>
 #include <tesseract/baseapi.h>
 #include "OCRMask.h"
+#include <vector>
+#include <string>
 
 class ImageWidget;
 class QTextEdit;
@@ -74,7 +76,7 @@ private:
 	TesseractOCR* mTesseractOCR;
 	ImageProcess* mImageProcess;
 
-	QVector<OCRMask>* mOCRMasks;
+	std::vector<OCRMask>* mOCRMasks;
 };
 
 #endif //MAINWINDOW_H

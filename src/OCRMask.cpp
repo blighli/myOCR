@@ -2,5 +2,5 @@
 
 OCRMask::OCRMask()
 {
-	key = "noname";
+	key = "NoName";
 }

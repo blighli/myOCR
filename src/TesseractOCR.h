@@ -1,11 +1,12 @@
 #ifndef TESSERACTOCR_H
 #define TESSERACTOCR_H
 
-#include <QtCore/QtCore>
 #include <leptonica/allheaders.h>
 #include <tesseract/baseapi.h>
 #include <opencv2/opencv.hpp>
 #include "OCRMask.h"
+#include <vector>
+#include <string>
 
 class TesseractOCR
 {
@@ -23,15 +24,17 @@ public:
 	bool init(Language lang);
 
 	void setImage(IplImage* image);
-	void setMasks(QVector<OCRMask>* masks);
+	void setMasks(std::vector<OCRMask>* masks);
 
-	QString recognizeText();
-	QVector<QRect>* getBoxes();
+	std::string recognizeText();
+	std::vector<CvRect>* getBoxes();
 
 private:
+	void replaceString(std::string& str, const std::string& oldStr, const std::string& newStr);
+
 	tesseract::TessBaseAPI* tessBaseAPI;
-	QVector<OCRMask>* mMasks;
-	QVector<QRect>* mBoxes;
+	std::vector<OCRMask>* mMasks;
+	std::vector<CvRect>* mBoxes;
 };
 
 #endif //TESSERACTOCR_H

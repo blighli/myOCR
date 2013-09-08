@@ -1,4 +1,5 @@
 #include <QApplication>
+#include <QtCore/QtCore>
 #include "MainWindow.h"
 #include "AppInfo.h"
 
@@ -6,8 +7,9 @@ int main(int argc, char** argv)
 {
 	QApplication app(argc, argv);
 
-	QString appPath = QString::fromAscii(argv[0]);
-	AppInfo::instance()->setAppPath(appPath);
+	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf-8"));
+
+	AppInfo::instance()->setAppPath(argv[0]);
 
 	MainWindow mainWindow;
 	mainWindow.show();

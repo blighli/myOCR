@@ -1,21 +1,19 @@
 #ifndef APPINFO_H
 #define APPINFO_H
 
-#include <QtCore/QtCore>
+#include <string>
 
 class AppInfo
 {
 public:
 	static AppInfo* instance();
-
-	void setAppPath(const QString& appPath);
-	const QString& appPath();
-	QString appDir();
+	void setAppPath(const std::string& appPath);
+	const std::string& appPath();
+	std::string appDir();
 protected:
 	AppInfo();
 	static AppInfo* mInstance;
-
-	QString mAppPath;
+	std::string mAppPath;
 };
 
 #endif //APPINFO_H

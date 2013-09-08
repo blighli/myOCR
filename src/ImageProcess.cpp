@@ -1,5 +1,4 @@
 #include "ImageProcess.h"
-#include <vector>
 
 #define min3v(v1, v2, v3)   ((v1)>(v2)? ((v2)>(v3)?(v3):(v2)):((v1)>(v3)?(v3):(v2)))
 #define max3v(v1, v2, v3)   ((v1)<(v2)? ((v2)<(v3)?(v3):(v2)):((v1)<(v3)?(v3):(v1)))
@@ -462,11 +461,12 @@ int ImageProcess::run( ImageProcessParam* param )
 		for(int i = 0;i<mMasks->size(); i++)
 		{
 			OCRMask& mask = (*mMasks)[i];
-			CvRect rect = cvRect(mask.rect.x(), mask.rect.y(), mask.rect.width(), mask.rect.height());
+			CvRect rect = cvRect(mask.rect.x, mask.rect.y, mask.rect.width, mask.rect.height);
 
 			adjustRect(mProcessedImage, &rect);
 
-			mask.rect.moveTo(rect.x, rect.y);
+			mask.rect.x = rect.x;
+			mask.rect.y = rect.y;
 		}
 	}
 	return 0;
@@ -561,7 +561,7 @@ int ImageProcess::countInRect( IplImage* image, CvRect* rect )
 	return count;
 }
 
-void ImageProcess::setMasks( QVector<OCRMask>* masks )
+void ImageProcess::setMasks( std::vector<OCRMask>* masks )
 {
 	mMasks = masks;
 }

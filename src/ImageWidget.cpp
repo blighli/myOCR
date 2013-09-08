@@ -46,7 +46,7 @@ void ImageWidget::enableMasks(bool enabled)
 	mEnableMasks = enabled;
 }
 
-void ImageWidget::setMasks(QVector<OCRMask>* masks)
+void ImageWidget::setMasks(std::vector<OCRMask>* masks)
 {
 	mMasks = masks;
 }
@@ -194,7 +194,8 @@ void ImageWidget::drawMasks(QPainter* painter)
 	for(int i=0;i<mMasks->size();i++)
 	{
 		OCRMask mask = mMasks->at(i);
-		mask.rect.translate(mImagePadding, mImagePadding);
+		QRect rect(mask.rect.x, mask.rect.y, mask.rect.width, mask.rect.height);
+		rect.translate(mImagePadding, mImagePadding);
 
 		if(i == mMaskIndex)
 		{
@@ -206,7 +207,7 @@ void ImageWidget::drawMasks(QPainter* painter)
 			painter->setPen(pen);
 		}
 
-		painter->drawRect(mask.rect);
+		painter->drawRect(rect);
 
 		if(i == mMaskIndex)
 		{
@@ -216,8 +217,9 @@ void ImageWidget::drawMasks(QPainter* painter)
 	if(mEnableMasks && mCurrentMask)
 	{
 		OCRMask mask = *mCurrentMask;
-		mask.rect.translate(mImagePadding, mImagePadding);
-		painter->drawRect(mask.rect);
+		QRect rect(mask.rect.x, mask.rect.y, mask.rect.width, mask.rect.height);
+		rect.translate(mImagePadding, mImagePadding);
+		painter->drawRect(rect);
 	}
 }
 
@@ -259,7 +261,7 @@ void ImageWidget::mousePressEvent(QMouseEvent *event)
 
 			mFirstCorner = QPoint(mCurrentMousePos.x() - mImagePadding, mCurrentMousePos.y() - mImagePadding);
 			mCurrentMask = new OCRMask();
-			mCurrentMask->rect = QRect(mFirstCorner, mFirstCorner);
+			mCurrentMask->rect = cvRect(mFirstCorner.x(), mFirstCorner.y(), 0, 0);
 		}
 
 		update();
@@ -272,7 +274,8 @@ void ImageWidget::mousePressEvent(QMouseEvent *event)
 		for(int i=0;i<mMasks->size();i++)
 		{
 			OCRMask mask = mMasks->at(i);
-			if(mask.rect.contains(point))
+			QRect rect(mask.rect.x, mask.rect.y, mask.rect.width, mask.rect.height);
+			if(rect.contains(point))
 			{
 				mMaskIndex = i;
 			}
@@ -294,7 +297,7 @@ void ImageWidget::mouseReleaseEvent(QMouseEvent *event)
 
 		if(mImage && mEnableMasks && mCurrentMask)
 		{
-			if(mCurrentMask->rect.width() * mCurrentMask->rect.height() > 100)
+			if(mCurrentMask->rect.width * mCurrentMask->rect.height > 100)
 			{
 				mMasks->push_back(*mCurrentMask);
 				emit maskChanged();
@@ -336,10 +339,10 @@ void ImageWidget::mouseMoveEvent(QMouseEvent *event)
 
 			if(mCurrentMask)
 			{
-				mCurrentMask->rect.setLeft(mFirstCorner.x() < lastCorner.x() ? mFirstCorner.x() : lastCorner.x());
-				mCurrentMask->rect.setRight(mFirstCorner.x() > lastCorner.x() ? mFirstCorner.x() : lastCorner.x());
-				mCurrentMask->rect.setTop(mFirstCorner.y() < lastCorner.y() ? mFirstCorner.y() : lastCorner.y());
-				mCurrentMask->rect.setBottom(mFirstCorner.y() > lastCorner.y() ? mFirstCorner.y() : lastCorner.y());
+				mCurrentMask->rect.x = (mFirstCorner.x() < lastCorner.x() ? mFirstCorner.x() : lastCorner.x());
+				mCurrentMask->rect.width = (mFirstCorner.x() > lastCorner.x() ? mFirstCorner.x() : lastCorner.x()) - mCurrentMask->rect.x;
+				mCurrentMask->rect.y = (mFirstCorner.y() < lastCorner.y() ? mFirstCorner.y() : lastCorner.y());
+				mCurrentMask->rect.height = (mFirstCorner.y() > lastCorner.y() ? mFirstCorner.y() : lastCorner.y()) - mCurrentMask->rect.y;
 			}
 
 		}
@@ -352,7 +355,7 @@ void ImageWidget::deleteMask()
 {
 	if(mMaskIndex > -1)
 	{
-		mMasks->remove(mMaskIndex);
+		mMasks->erase(mMasks->begin() + mMaskIndex);
 		emit maskChanged();
 		mMaskIndex = -1;
 		update();

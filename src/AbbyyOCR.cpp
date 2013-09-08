@@ -6,7 +6,7 @@ AbbyyOCR::AbbyyOCR()
 	mMasks = 0;
 	mMaskCount = 0;
 
-	QString abbyyDataDir = AppInfo::instance()->appDir() + "/abbyydata";
+	QString abbyyDataDir = QString::fromStdString( AppInfo::instance()->appDir() + "/abbyydata" );
 	mChinesePatternPath = abbyyDataDir + "/ChineseJapanese.rom";
 	mEnglishPatternPath = abbyyDataDir + "/European.rom";
 	mEnglishDictPath = abbyyDataDir + "/English.edc";

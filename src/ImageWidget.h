@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include "OCRMask.h"
+#include <vector>
 
 class QMenu;
 
@@ -17,7 +18,7 @@ public:
 	void enableMesure(bool enabled);
 	void enableMasks(bool enabled);
 
-	void setMasks(QVector<OCRMask>* masks);
+	void setMasks(std::vector<OCRMask>* masks);
 
 protected:
 	void paintEvent(QPaintEvent *event);
@@ -58,7 +59,7 @@ private:
 	QPoint mFirstCorner;
 
 	bool mEnableMasks;
-	QVector<OCRMask>* mMasks;
+	std::vector<OCRMask>* mMasks;
 	OCRMask* mCurrentMask;
 	int mMaskIndex;
 	

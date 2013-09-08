@@ -3,8 +3,9 @@
 
 #include <opencv2/opencv.hpp>
 #include "LineSegment.h"
-#include <QtCore/QtCore>
 #include "OCRMask.h"
+#include <vector>
+#include <string>
 
 typedef struct ImageProcessParam
 {
@@ -48,7 +49,7 @@ public:
 	~ImageProcess();
 
 	void setImage(IplImage* image);
-	void setMasks(QVector<OCRMask>* masks);
+	void setMasks(std::vector<OCRMask>* masks);
 	int run(ImageProcessParam* param);
 
 
@@ -75,7 +76,7 @@ private:
 	bool findCornerPoint(ImageProcessParam* param, CvSeq* lines, CvPoint* point);
 	void normalize( ImageProcessParam* param, CvPoint** cornerPoints);
 
-	QVector<OCRMask>* mMasks;
+	std::vector<OCRMask>* mMasks;
 
 	IplImage* mOriginalImage;
 	IplImage* mProcessedImage;

@@ -1,14 +1,16 @@
 #ifndef OCRMASK_H
 #define OCRMASK_H
 
-#include <QtCore/QtCore>
+#include <opencv2/opencv.hpp>
+#include <vector>
+#include <string>
 
 class OCRMask
 {
 public:
-	QRect rect;
-	QString key;
-	QString value;
+	CvRect rect;
+	std::string key;
+	std::string value;
 
 	OCRMask();
 };
