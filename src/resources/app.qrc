@@ -11,5 +11,6 @@
     <file>mesure.png</file>
     <file>chinese.png</file>
     <file>cube.png</file>
+    <file>scan.png</file>
   </qresource>
 </RCC>

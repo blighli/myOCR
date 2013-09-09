@@ -137,6 +137,7 @@ void MainWindow::buildUI()
 
 	actionOpenImage->setIcon(QIcon(":/open.png"));
 	actionSaveImage->setIcon(QIcon(":/save.png"));
+	actionScan->setIcon(QIcon(":/scan.png"));
 	actionRecognizeText->setIcon(QIcon(":/ocr.png"));
 	actionProcessImage->setIcon(QIcon(":/paint.png"));
 	actionEnableMasks->setIcon(QIcon(":/new2.png"));
@@ -160,9 +161,9 @@ void MainWindow::buildUI()
 	connect(actionShowCube, SIGNAL(triggered()), this, SLOT(showCube()));
 	connect(actionScan, SIGNAL(triggered()), this, SLOT(scanImage()));
 
+	menuFile->addAction(actionScan);
 	menuFile->addAction(actionOpenImage);
 	menuFile->addAction(actionSaveImage);
-	menuFile->addAction(actionScan);
 	menuImage->addAction(actionEnableMesure);
 	menuImage->addSeparator();
 	menuImage->addAction(actionEnableMasks);
@@ -177,21 +178,22 @@ void MainWindow::buildUI()
 	menuImage->addAction(actionShowCube);
 	menuHelp->addAction(actionAbout);
 
+	toolBarFile->addAction(actionScan);
 	toolBarFile->addAction(actionOpenImage);
 	toolBarFile->addAction(actionSaveImage);
-	toolBarFile->addAction(actionScan);
+	toolBarImage->addSeparator();
 	toolBarImage->addAction(actionEnableMesure);
 	toolBarImage->addSeparator();
 	toolBarImage->addAction(actionEnableMasks);
 	toolBarImage->addAction(actionSaveMasks);
 	toolBarImage->addAction(actionLoadMasks);
 	toolBarImage->addAction(actionClearMasks);
-	toolBarImage->addSeparator();
 	toolBarImage->addAction(actionProcessImage);
-	toolBarImage->addAction(actionRecognizeText);
 	toolBarImage->addSeparator();
-	toolBarImage->addAction(actionEnableChinese);
-	toolBarImage->addAction(actionShowCube);
+	toolBarImage->addAction(actionRecognizeText);
+	//toolBarImage->addSeparator();
+	//toolBarImage->addAction(actionEnableChinese);
+	//toolBarImage->addAction(actionShowCube);
 
 	connect(mTwain, SIGNAL(dibAcquired(CDIB*)), this, SLOT(onDibAcquired(CDIB*))); 
 
