@@ -19,6 +19,7 @@
 		8B12610B17E6F96000D86E76 /* PhotoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B12610A17E6F96000D86E76 /* PhotoViewController.m */; };
 		8B12610D17E6FA7900D86E76 /* PhotoViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8B12610C17E6FA7900D86E76 /* PhotoViewController.xib */; };
 		8B12610F17E7049C00D86E76 /* opencv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B12610E17E7049C00D86E76 /* opencv2.framework */; };
+		8B12611817E714C000D86E76 /* ImageAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B12611717E714C000D86E76 /* ImageAdapter.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,6 +40,8 @@
 		8B12610A17E6F96000D86E76 /* PhotoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhotoViewController.m; sourceTree = "<group>"; };
 		8B12610C17E6FA7900D86E76 /* PhotoViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PhotoViewController.xib; sourceTree = "<group>"; };
 		8B12610E17E7049C00D86E76 /* opencv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = opencv2.framework; sourceTree = "<group>"; };
+		8B12611617E714C000D86E76 /* ImageAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageAdapter.h; sourceTree = "<group>"; };
+		8B12611717E714C000D86E76 /* ImageAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageAdapter.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,6 +96,8 @@
 				8B12610917E6F96000D86E76 /* PhotoViewController.h */,
 				8B12610A17E6F96000D86E76 /* PhotoViewController.m */,
 				8B12610C17E6FA7900D86E76 /* PhotoViewController.xib */,
+				8B12611617E714C000D86E76 /* ImageAdapter.h */,
+				8B12611717E714C000D86E76 /* ImageAdapter.m */,
 			);
 			path = iOCR;
 			sourceTree = "<group>";
@@ -180,6 +185,7 @@
 				8B1260CA17E6E4C500D86E76 /* main.m in Sources */,
 				8B1260CE17E6E4C500D86E76 /* AppDelegate.m in Sources */,
 				8B12610B17E6F96000D86E76 /* PhotoViewController.m in Sources */,
+				8B12611817E714C000D86E76 /* ImageAdapter.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -260,6 +266,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
 				);
+				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "iOCR/iOCR-Prefix.pch";
 				INFOPLIST_FILE = "iOCR/iOCR-Info.plist";
@@ -275,6 +282,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
 				);
+				GCC_INPUT_FILETYPE = sourcecode.cpp.objcpp;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "iOCR/iOCR-Prefix.pch";
 				INFOPLIST_FILE = "iOCR/iOCR-Info.plist";

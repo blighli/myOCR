@@ -7,6 +7,8 @@
 //
 
 #import "PhotoViewController.h"
+#import <opencv2/opencv.hpp>
+#import "ImageAdapter.h"
 
 @interface PhotoViewController ()
 
@@ -48,6 +50,13 @@
     UIImage* image = info[UIImagePickerControllerOriginalImage];
     if(image)
     {
+        ImageAdapter* adapter = [ImageAdapter new];
+        IplImage* cvImage = [adapter convertToIplImage:image];
+        
+        IplImage* grayImage = cvCreateImage( cvGetSize(cvImage), 8, 1);
+        cvCvtColor(cvImage, grayImage, CV_BGR2GRAY);
+        
+        image = [adapter convertToUIImage: grayImage];
         self.imageView.image = image;
     }
     [self dismissViewControllerAnimated:YES completion:nil];
