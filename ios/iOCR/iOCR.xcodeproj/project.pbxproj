@@ -18,6 +18,7 @@
 		8B1260D417E6E4C500D86E76 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B1260D317E6E4C500D86E76 /* Default-568h@2x.png */; };
 		8B12610B17E6F96000D86E76 /* PhotoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B12610A17E6F96000D86E76 /* PhotoViewController.m */; };
 		8B12610D17E6FA7900D86E76 /* PhotoViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8B12610C17E6FA7900D86E76 /* PhotoViewController.xib */; };
+		8B12610F17E7049C00D86E76 /* opencv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B12610E17E7049C00D86E76 /* opencv2.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,6 +38,7 @@
 		8B12610917E6F96000D86E76 /* PhotoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhotoViewController.h; sourceTree = "<group>"; };
 		8B12610A17E6F96000D86E76 /* PhotoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhotoViewController.m; sourceTree = "<group>"; };
 		8B12610C17E6FA7900D86E76 /* PhotoViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PhotoViewController.xib; sourceTree = "<group>"; };
+		8B12610E17E7049C00D86E76 /* opencv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = opencv2.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,6 +49,7 @@
 				8B1260BE17E6E4C500D86E76 /* UIKit.framework in Frameworks */,
 				8B1260C017E6E4C500D86E76 /* Foundation.framework in Frameworks */,
 				8B1260C217E6E4C500D86E76 /* CoreGraphics.framework in Frameworks */,
+				8B12610F17E7049C00D86E76 /* opencv2.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -73,6 +76,7 @@
 		8B1260BC17E6E4C500D86E76 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8B12610E17E7049C00D86E76 /* opencv2.framework */,
 				8B1260BD17E6E4C500D86E76 /* UIKit.framework */,
 				8B1260BF17E6E4C500D86E76 /* Foundation.framework */,
 				8B1260C117E6E4C500D86E76 /* CoreGraphics.framework */,
@@ -252,6 +256,10 @@
 		8B1260D817E6E4C500D86E76 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "iOCR/iOCR-Prefix.pch";
 				INFOPLIST_FILE = "iOCR/iOCR-Info.plist";
@@ -263,6 +271,10 @@
 		8B1260D917E6E4C500D86E76 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "iOCR/iOCR-Prefix.pch";
 				INFOPLIST_FILE = "iOCR/iOCR-Info.plist";
