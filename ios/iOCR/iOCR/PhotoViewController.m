@@ -57,14 +57,48 @@
         
         
         ImageProcess* imageProcess = new ImageProcess();
+        imageProcess->setImage(cvImage);
+        
+        
+        ImageProcessParam param;
+        param.debug = true;
+        param.gray = true;
+        
+        param.threshold = true;
+        param.thresholdBlockSize = 100;
+        param.thresholdMeanBias = 1;
+        
+        param.hough = true;
+        param.houghRho = 1;
+        param.houghTheta = 1;
+        param.houghThreshold = 50;
+        param.houghParam1 = 50;
+        param.houghParam2 = 1;
+        
+        param.corner = true;
+        param.cornerDegree = 80;
+        param.cornerGap = 50;
+        
+        param.background = false;
+        
+        param.normalize = false;
+        param.normalizeTopMargin = 300;
+        param.normalizeSideMargin = 100;
+        param.normalizeWidth = 2000;
+        param.normalizeHeight = 940;
+        
+        param.blueText =  false;
+        param.blueTextMin = 100;
+        param.blueTextMax = 1;
+        
+        //mImageProcess->setMasks(mOCRMasks);
+        
+        imageProcess->run(&param);
+
+        
+        image = [adapter convertToUIImage: imageProcess->getProcessedImage()];
         delete imageProcess;
         
-        IplImage* grayImage = cvCreateImage( cvGetSize(cvImage), 8, 1);
-        cvCvtColor(cvImage, grayImage, CV_BGR2GRAY);
-        cvReleaseImage(&cvImage);
-        cvImage = grayImage;
-        
-        image = [adapter convertToUIImage: cvImage];
         self.imageView.image = image;
     }
     [self dismissViewControllerAnimated:YES completion:nil];

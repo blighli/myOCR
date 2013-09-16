@@ -397,9 +397,9 @@ int ImageProcess::run( ImageProcessParam* param )
 					}
 
 					int radius = 30;
-					cvCircle(outImage, point, radius, CV_RGB(255, 0, 0));
-					cvLine( outImage, cvPoint(point.x - radius/2, point.y), cvPoint(point.x + radius/2, point.y), CV_RGB(255, 0, 0), 1, CV_AA );
-					cvLine( outImage, cvPoint(point.x, point.y - radius/2), cvPoint(point.x, point.y + radius/2), CV_RGB(255, 0, 0), 1, CV_AA );
+					cvCircle(outImage, point, radius, CV_RGB(255, 0, 0), 5);
+					cvLine( outImage, cvPoint(point.x - radius/2, point.y), cvPoint(point.x + radius/2, point.y), CV_RGB(255, 0, 0), 5, CV_AA );
+					cvLine( outImage, cvPoint(point.x, point.y - radius/2), cvPoint(point.x, point.y + radius/2), CV_RGB(255, 0, 0), 5, CV_AA );
 				}
 			}
 		}
