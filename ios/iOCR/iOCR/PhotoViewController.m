@@ -8,6 +8,7 @@
 
 #import "PhotoViewController.h"
 #import <opencv2/opencv.hpp>
+#import "tesseract/baseapi.h"
 #import "ImageAdapter.h"
 
 @interface PhotoViewController ()
@@ -55,8 +56,10 @@
         
         IplImage* grayImage = cvCreateImage( cvGetSize(cvImage), 8, 1);
         cvCvtColor(cvImage, grayImage, CV_BGR2GRAY);
+        cvReleaseImage(&cvImage);
+        cvImage = grayImage;
         
-        image = [adapter convertToUIImage: grayImage];
+        image = [adapter convertToUIImage: cvImage];
         self.imageView.image = image;
     }
     [self dismissViewControllerAnimated:YES completion:nil];
