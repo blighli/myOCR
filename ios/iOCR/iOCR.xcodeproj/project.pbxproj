@@ -16,6 +16,8 @@
 		8B1260D017E6E4C500D86E76 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B1260CF17E6E4C500D86E76 /* Default.png */; };
 		8B1260D217E6E4C500D86E76 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B1260D117E6E4C500D86E76 /* Default@2x.png */; };
 		8B1260D417E6E4C500D86E76 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B1260D317E6E4C500D86E76 /* Default-568h@2x.png */; };
+		8B12610B17E6F96000D86E76 /* PhotoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B12610A17E6F96000D86E76 /* PhotoViewController.m */; };
+		8B12610D17E6FA7900D86E76 /* PhotoViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8B12610C17E6FA7900D86E76 /* PhotoViewController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +34,9 @@
 		8B1260CF17E6E4C500D86E76 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		8B1260D117E6E4C500D86E76 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		8B1260D317E6E4C500D86E76 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		8B12610917E6F96000D86E76 /* PhotoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhotoViewController.h; sourceTree = "<group>"; };
+		8B12610A17E6F96000D86E76 /* PhotoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhotoViewController.m; sourceTree = "<group>"; };
+		8B12610C17E6FA7900D86E76 /* PhotoViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PhotoViewController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,6 +86,9 @@
 				8B1260CC17E6E4C500D86E76 /* AppDelegate.h */,
 				8B1260CD17E6E4C500D86E76 /* AppDelegate.m */,
 				8B1260C417E6E4C500D86E76 /* Supporting Files */,
+				8B12610917E6F96000D86E76 /* PhotoViewController.h */,
+				8B12610A17E6F96000D86E76 /* PhotoViewController.m */,
+				8B12610C17E6FA7900D86E76 /* PhotoViewController.xib */,
 			);
 			path = iOCR;
 			sourceTree = "<group>";
@@ -154,6 +162,7 @@
 				8B1260D017E6E4C500D86E76 /* Default.png in Resources */,
 				8B1260D217E6E4C500D86E76 /* Default@2x.png in Resources */,
 				8B1260D417E6E4C500D86E76 /* Default-568h@2x.png in Resources */,
+				8B12610D17E6FA7900D86E76 /* PhotoViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -166,6 +175,7 @@
 			files = (
 				8B1260CA17E6E4C500D86E76 /* main.m in Sources */,
 				8B1260CE17E6E4C500D86E76 /* AppDelegate.m in Sources */,
+				8B12610B17E6F96000D86E76 /* PhotoViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -280,6 +290,7 @@
 				8B1260D917E6E4C500D86E76 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

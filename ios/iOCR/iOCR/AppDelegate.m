@@ -14,6 +14,10 @@
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
+    self.photoViewController = [[PhotoViewController alloc] init];
+    self.window.rootViewController = self.photoViewController;
+    [self.window addSubview: self.photoViewController.view];
+    
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
     return YES;
