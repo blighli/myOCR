@@ -10,6 +10,7 @@
 #import <opencv2/opencv.hpp>
 #import "tesseract/baseapi.h"
 #import "ImageAdapter.h"
+#import "share/ImageProcess.h"
 
 @interface PhotoViewController ()
 
@@ -53,6 +54,10 @@
     {
         ImageAdapter* adapter = [ImageAdapter new];
         IplImage* cvImage = [adapter convertToIplImage:image];
+        
+        
+        ImageProcess* imageProcess = new ImageProcess();
+        delete imageProcess;
         
         IplImage* grayImage = cvCreateImage( cvGetSize(cvImage), 8, 1);
         cvCvtColor(cvImage, grayImage, CV_BGR2GRAY);

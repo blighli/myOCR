@@ -23,6 +23,11 @@
 		8B12612417E71D0900D86E76 /* lib in Resources */ = {isa = PBXBuildFile; fileRef = 8B12612317E71D0900D86E76 /* lib */; };
 		8B12612717E7233600D86E76 /* leptonica in Resources */ = {isa = PBXBuildFile; fileRef = 8B12612517E7233600D86E76 /* leptonica */; };
 		8B12612817E7233600D86E76 /* tesseract in Resources */ = {isa = PBXBuildFile; fileRef = 8B12612617E7233600D86E76 /* tesseract */; };
+		8B12616B17E7284F00D86E76 /* ImageProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8B12616017E7284F00D86E76 /* ImageProcess.cpp */; };
+		8B12616C17E7284F00D86E76 /* LineSegment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8B12616217E7284F00D86E76 /* LineSegment.cpp */; };
+		8B12616D17E7284F00D86E76 /* OCRMask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8B12616417E7284F00D86E76 /* OCRMask.cpp */; };
+		8B12616E17E7284F00D86E76 /* TesseractOCR.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8B12616617E7284F00D86E76 /* TesseractOCR.cpp */; };
+		8B12617117E7295200D86E76 /* AppInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8B12616F17E7295200D86E76 /* AppInfo.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -48,6 +53,17 @@
 		8B12612317E71D0900D86E76 /* lib */ = {isa = PBXFileReference; lastKnownFileType = folder; path = lib; sourceTree = "<group>"; };
 		8B12612517E7233600D86E76 /* leptonica */ = {isa = PBXFileReference; lastKnownFileType = folder; path = leptonica; sourceTree = "<group>"; };
 		8B12612617E7233600D86E76 /* tesseract */ = {isa = PBXFileReference; lastKnownFileType = folder; path = tesseract; sourceTree = "<group>"; };
+		8B12615D17E7284F00D86E76 /* Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Common.h; sourceTree = "<group>"; };
+		8B12616017E7284F00D86E76 /* ImageProcess.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageProcess.cpp; sourceTree = "<group>"; };
+		8B12616117E7284F00D86E76 /* ImageProcess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageProcess.h; sourceTree = "<group>"; };
+		8B12616217E7284F00D86E76 /* LineSegment.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LineSegment.cpp; sourceTree = "<group>"; };
+		8B12616317E7284F00D86E76 /* LineSegment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LineSegment.h; sourceTree = "<group>"; };
+		8B12616417E7284F00D86E76 /* OCRMask.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OCRMask.cpp; sourceTree = "<group>"; };
+		8B12616517E7284F00D86E76 /* OCRMask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCRMask.h; sourceTree = "<group>"; };
+		8B12616617E7284F00D86E76 /* TesseractOCR.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TesseractOCR.cpp; sourceTree = "<group>"; };
+		8B12616717E7284F00D86E76 /* TesseractOCR.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TesseractOCR.h; sourceTree = "<group>"; };
+		8B12616F17E7295200D86E76 /* AppInfo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AppInfo.cpp; sourceTree = "<group>"; };
+		8B12617017E7295200D86E76 /* AppInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppInfo.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,6 +113,7 @@
 		8B1260C317E6E4C500D86E76 /* iOCR */ = {
 			isa = PBXGroup;
 			children = (
+				8B12615817E7284F00D86E76 /* share */,
 				8B12612517E7233600D86E76 /* leptonica */,
 				8B12612617E7233600D86E76 /* tesseract */,
 				8B1260CC17E6E4C500D86E76 /* AppDelegate.h */,
@@ -123,6 +140,24 @@
 				8B1260D317E6E4C500D86E76 /* Default-568h@2x.png */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		8B12615817E7284F00D86E76 /* share */ = {
+			isa = PBXGroup;
+			children = (
+				8B12616F17E7295200D86E76 /* AppInfo.cpp */,
+				8B12617017E7295200D86E76 /* AppInfo.h */,
+				8B12615D17E7284F00D86E76 /* Common.h */,
+				8B12616017E7284F00D86E76 /* ImageProcess.cpp */,
+				8B12616117E7284F00D86E76 /* ImageProcess.h */,
+				8B12616217E7284F00D86E76 /* LineSegment.cpp */,
+				8B12616317E7284F00D86E76 /* LineSegment.h */,
+				8B12616417E7284F00D86E76 /* OCRMask.cpp */,
+				8B12616517E7284F00D86E76 /* OCRMask.h */,
+				8B12616617E7284F00D86E76 /* TesseractOCR.cpp */,
+				8B12616717E7284F00D86E76 /* TesseractOCR.h */,
+			);
+			path = share;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -198,6 +233,11 @@
 				8B1260CE17E6E4C500D86E76 /* AppDelegate.m in Sources */,
 				8B12610B17E6F96000D86E76 /* PhotoViewController.m in Sources */,
 				8B12611817E714C000D86E76 /* ImageAdapter.m in Sources */,
+				8B12616B17E7284F00D86E76 /* ImageProcess.cpp in Sources */,
+				8B12616C17E7284F00D86E76 /* LineSegment.cpp in Sources */,
+				8B12616D17E7284F00D86E76 /* OCRMask.cpp in Sources */,
+				8B12616E17E7284F00D86E76 /* TesseractOCR.cpp in Sources */,
+				8B12617117E7295200D86E76 /* AppInfo.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
