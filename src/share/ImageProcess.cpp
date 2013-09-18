@@ -277,6 +277,20 @@ void ImageProcess::findCornerRects(CvRect* cornerRects, const CvRect& rect, floa
 	cornerRects[3] = makeRect(rect.x, rect.y + rect.height, cornerRectWidth, cornerRectWidth);
 }
 
+void findBorder(IplImage* image)
+{
+	int borderWidth = 4;
+	for(int y=0; y<image->height; y++)
+	{
+		for(int x=0; x<image->width; x++)
+		{
+			uchar* ptr = (uchar*)(image->imageData + y * image->widthStep + x);
+
+
+		}
+	}
+}
+
 
 int ImageProcess::run( ImageProcessParam* param )
 {
