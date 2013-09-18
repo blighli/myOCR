@@ -20,7 +20,6 @@
 		8B12610D17E6FA7900D86E76 /* PhotoViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8B12610C17E6FA7900D86E76 /* PhotoViewController.xib */; };
 		8B12610F17E7049C00D86E76 /* opencv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B12610E17E7049C00D86E76 /* opencv2.framework */; };
 		8B12611817E714C000D86E76 /* ImageAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B12611717E714C000D86E76 /* ImageAdapter.m */; };
-		8B12612417E71D0900D86E76 /* lib in Resources */ = {isa = PBXBuildFile; fileRef = 8B12612317E71D0900D86E76 /* lib */; };
 		8B12612717E7233600D86E76 /* leptonica in Resources */ = {isa = PBXBuildFile; fileRef = 8B12612517E7233600D86E76 /* leptonica */; };
 		8B12612817E7233600D86E76 /* tesseract in Resources */ = {isa = PBXBuildFile; fileRef = 8B12612617E7233600D86E76 /* tesseract */; };
 		8B12616B17E7284F00D86E76 /* ImageProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8B12616017E7284F00D86E76 /* ImageProcess.cpp */; };
@@ -28,6 +27,8 @@
 		8B12616D17E7284F00D86E76 /* OCRMask.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8B12616417E7284F00D86E76 /* OCRMask.cpp */; };
 		8B12616E17E7284F00D86E76 /* TesseractOCR.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8B12616617E7284F00D86E76 /* TesseractOCR.cpp */; };
 		8B12617117E7295200D86E76 /* AppInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8B12616F17E7295200D86E76 /* AppInfo.cpp */; };
+		8B2F79E817E9A5AB00C0F290 /* liblept.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2F79E617E9A5AB00C0F290 /* liblept.a */; };
+		8B2F79E917E9A5AB00C0F290 /* libtesseract_all.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2F79E717E9A5AB00C0F290 /* libtesseract_all.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -50,7 +51,6 @@
 		8B12610E17E7049C00D86E76 /* opencv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = opencv2.framework; sourceTree = "<group>"; };
 		8B12611617E714C000D86E76 /* ImageAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageAdapter.h; sourceTree = "<group>"; };
 		8B12611717E714C000D86E76 /* ImageAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageAdapter.m; sourceTree = "<group>"; };
-		8B12612317E71D0900D86E76 /* lib */ = {isa = PBXFileReference; lastKnownFileType = folder; path = lib; sourceTree = "<group>"; };
 		8B12612517E7233600D86E76 /* leptonica */ = {isa = PBXFileReference; lastKnownFileType = folder; path = leptonica; sourceTree = "<group>"; };
 		8B12612617E7233600D86E76 /* tesseract */ = {isa = PBXFileReference; lastKnownFileType = folder; path = tesseract; sourceTree = "<group>"; };
 		8B12615D17E7284F00D86E76 /* Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Common.h; sourceTree = "<group>"; };
@@ -64,6 +64,8 @@
 		8B12616717E7284F00D86E76 /* TesseractOCR.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TesseractOCR.h; sourceTree = "<group>"; };
 		8B12616F17E7295200D86E76 /* AppInfo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AppInfo.cpp; sourceTree = "<group>"; };
 		8B12617017E7295200D86E76 /* AppInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppInfo.h; sourceTree = "<group>"; };
+		8B2F79E617E9A5AB00C0F290 /* liblept.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = liblept.a; sourceTree = "<group>"; };
+		8B2F79E717E9A5AB00C0F290 /* libtesseract_all.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtesseract_all.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,6 +77,8 @@
 				8B1260C017E6E4C500D86E76 /* Foundation.framework in Frameworks */,
 				8B1260C217E6E4C500D86E76 /* CoreGraphics.framework in Frameworks */,
 				8B12610F17E7049C00D86E76 /* opencv2.framework in Frameworks */,
+				8B2F79E817E9A5AB00C0F290 /* liblept.a in Frameworks */,
+				8B2F79E917E9A5AB00C0F290 /* libtesseract_all.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -101,7 +105,8 @@
 		8B1260BC17E6E4C500D86E76 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				8B12612317E71D0900D86E76 /* lib */,
+				8B2F79E617E9A5AB00C0F290 /* liblept.a */,
+				8B2F79E717E9A5AB00C0F290 /* libtesseract_all.a */,
 				8B12610E17E7049C00D86E76 /* opencv2.framework */,
 				8B1260BD17E6E4C500D86E76 /* UIKit.framework */,
 				8B1260BF17E6E4C500D86E76 /* Foundation.framework */,
@@ -216,7 +221,6 @@
 				8B1260D217E6E4C500D86E76 /* Default@2x.png in Resources */,
 				8B1260D417E6E4C500D86E76 /* Default-568h@2x.png in Resources */,
 				8B12610D17E6FA7900D86E76 /* PhotoViewController.xib in Resources */,
-				8B12612417E71D0900D86E76 /* lib in Resources */,
 				8B12612717E7233600D86E76 /* leptonica in Resources */,
 				8B12612817E7233600D86E76 /* tesseract in Resources */,
 			);
@@ -322,6 +326,10 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "iOCR/iOCR-Prefix.pch";
 				INFOPLIST_FILE = "iOCR/iOCR-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -338,6 +346,10 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "iOCR/iOCR-Prefix.pch";
 				INFOPLIST_FILE = "iOCR/iOCR-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
