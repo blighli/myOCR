@@ -7,14 +7,14 @@ LEPTON_LIB="`pwd`/leptonica-1.69"
 TESSERACT_LIB="`pwd`/tesseract-ocr"
 
 IOS_BASE_SDK="6.1"
-IOS_DEPLOY_TGT="4.2"
+IOS_DEPLOY_TGT="5.0"
 
 setenv_all()
 {
 	# Add internal libs
 	export CFLAGS="$CFLAGS -I$GLOBAL_OUTDIR/include -L$GLOBAL_OUTDIR/lib"
 	
-	export CXX="$DEVROOT/usr/bin/llvm-g++"
+	export CXX="/usr/bin/clang"
 	export CC="$DEVROOT/usr/bin/llvm-gcc"
 
 	export LD=$DEVROOT/usr/bin/ld
@@ -25,7 +25,7 @@ setenv_all()
 	export LDFLAGS="-L$SDKROOT/usr/lib/"
 	
 	export CPPFLAGS=$CFLAGS
-	export CXXFLAGS=$CFLAGS
+	export CXXFLAGS="$CFLAGS -stdlib=libc++"
 }
 
 setenv_arm7()
