@@ -7,7 +7,7 @@ class LineSegment
 {
 public:
 	LineSegment(CvPoint* point);
-	bool cross(const LineSegment& lineSeg, CvPoint* crossPoint);
+	bool cross(const LineSegment& lineSeg, CvPoint* crossPoint, int degree, int gap);
 
 private:
 	float distance(const CvPoint& p0, const CvPoint& p1);

@@ -378,7 +378,7 @@ int ImageProcess::run( ImageProcessParam* param )
 		if(param->corner && param->hough && param->threshold && param->gray)
 		{
 			CvPoint point;
-			if(findCornerPoint(param, lines, &point))
+			if(findCornerPoint(param, lines, &point, param->cornerDegree, param->cornerGap))
 			{
 				cornerPoints[i] = new CvPoint;
 				cornerPoints[i]->x = point.x;
@@ -480,7 +480,7 @@ CvSeq* ImageProcess::hough(IplImage* image, ImageProcessParam* param )
 	return lines;
 }
 
-bool ImageProcess::findCornerPoint(ImageProcessParam* param, CvSeq* lines, CvPoint* point)
+bool ImageProcess::findCornerPoint(ImageProcessParam* param, CvSeq* lines, CvPoint* point, int degree, int gap)
 {
 	int left = 9999;
 	int found = false;
@@ -495,7 +495,7 @@ bool ImageProcess::findCornerPoint(ImageProcessParam* param, CvSeq* lines, CvPoi
 				LineSegment lineB(( CvPoint* )cvGetSeqElem( lines, j ));
 
 				CvPoint crossPoint;
-				if( lineA.cross(lineB, &crossPoint) )
+				if( lineA.cross(lineB, &crossPoint, degree, gap) )
 				{
 					found = true;
 					if(crossPoint.x < left)

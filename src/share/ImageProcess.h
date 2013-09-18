@@ -73,7 +73,7 @@ private:
 	void findCornerRects(CvRect* cornerRects, const CvRect& rect, float rate);
 
 	CvSeq* hough(IplImage* image, ImageProcessParam* param );
-	bool findCornerPoint(ImageProcessParam* param, CvSeq* lines, CvPoint* point);
+	bool findCornerPoint(ImageProcessParam* param, CvSeq* lines, CvPoint* point, int degree, int gap);
 	void normalize( ImageProcessParam* param, CvPoint** cornerPoints);
 
 	std::vector<OCRMask>* mMasks;

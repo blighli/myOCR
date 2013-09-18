@@ -18,7 +18,7 @@ float LineSegment::minValue(float a, float b)
 	return a<b?a:b;
 }
 
-bool LineSegment::cross(const LineSegment& lineSeg, CvPoint* crossPoint)
+bool LineSegment::cross(const LineSegment& lineSeg, CvPoint* crossPoint, int degree, int gap)
 {
 	float len1 = distance(point[0], point[1]);
 	float len2 = distance(lineSeg.point[0], lineSeg.point[1]);
@@ -30,7 +30,7 @@ bool LineSegment::cross(const LineSegment& lineSeg, CvPoint* crossPoint)
 
 	float cosTheta = (dx1 * dx2 + dy1 * dy2) / (len1 * len2);
 
-	if( abs(cosTheta) > 0.17)
+	if( abs(cosTheta) > cos(CV_PI/180.0*degree))
 	{
 		return false;
 	}
@@ -41,7 +41,7 @@ bool LineSegment::cross(const LineSegment& lineSeg, CvPoint* crossPoint)
 	float d4 = distance(point[1], lineSeg.point[1]);
 
 	float minDistance = minValue(minValue(d1,d2),minValue(d3,d4));
-	if(minDistance > 10)
+	if(minDistance > gap)
 	{
 		return false;
 	}

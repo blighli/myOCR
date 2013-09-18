@@ -9,19 +9,19 @@ ParamWidget::ParamWidget()
 	grayGroup = addGroup(tr("Gray"));
 
 	threshold = addGroup(tr("Threshold"));
-	thresholdBlockSize = addParam(tr("BlockSize"),1, 1000, 100);
+	thresholdBlockSize = addParam(tr("BlockSize"),1, 1000, 120);
 	thresholdMeanBias = addParam(tr("MeanBias"),1, 1000, 1);
 	
 	houghGroup = addGroup(tr("Hough"));
 	houghRho = addParam(tr("Rho"),1,100, 1);
 	houghTheta = addParam(tr("Theta"),1,90, 1);
-	houghThreshold = addParam(tr("Threshold"),1,1000, 50);
-	houghParam1 = addParam(tr("Param1"),1, 1000, 50);
+	houghThreshold = addParam(tr("Threshold"),1,1000, 30);
+	houghParam1 = addParam(tr("Param1"),1, 1000, 40);
 	houghParam2 = addParam(tr("Param2"),1, 100, 1);
 
 	cornerGroup = addGroup(tr("Corner"));
 	cornerDegree = addParam(tr("Degree"),0, 90, 80);
-	cornerGap = addParam(tr("Gap"),0, 100, 10);
+	cornerGap = addParam(tr("Gap"),0, 100, 20);
 
 	backgroundGroup =  addGroup(tr("Background"));
 
@@ -32,7 +32,7 @@ ParamWidget::ParamWidget()
 	normalizeHeight = addParam(tr("Height"),0, 4000, 940);
 
 	blueTextGroup =  addGroup(tr("Full Threshold"));
-	blueTextMin = addParam(tr("BlockSize"),1, 1000, 100);
+	blueTextMin = addParam(tr("BlockSize"),1, 1000, 120);
 	blueTextMax = addParam(tr("MeanBias"),1, 1000, 1);
 
 	setFixedSize(sizeHint());
