@@ -8,10 +8,13 @@
 
 #import "HomeViewController.h"
 #import "CameraViewController.h"
+#import "ImagePreviewViewController.h"
+#import "ImageAdapter.h"
 
 @interface HomeViewController ()
 @property (strong, nonatomic) CameraViewController* cameraView;
 @property (strong, nonatomic) UIImagePickerController* imagePicker;
+@property (strong, nonatomic) ImagePreviewViewController* imagePreviewController;
 @end
 
 @implementation HomeViewController
@@ -20,6 +23,8 @@
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
+        self.imagePreviewController = [[ImagePreviewViewController alloc] init];
+        
         self.cameraView = [[CameraViewController alloc] init];
         
         self.imagePicker = [[UIImagePickerController alloc] init];
@@ -71,7 +76,13 @@
     UIImage* image = info[UIImagePickerControllerOriginalImage];
     NSLog(@"width = %f",image.size.width);
     NSLog(@"height = %f",image.size.height);
-    [self dismissViewControllerAnimated:YES completion:nil];
+    
+    [self dismissViewControllerAnimated:YES completion:^{
+        ImageAdapter *adapter = [[ImageAdapter alloc] init];
+        self.imagePreviewController.cvImage = [adapter normalToIplImage: image];
+        [self presentViewController:self.imagePreviewController animated:NO completion:nil];
+    }];
+    
 }
 
 @end

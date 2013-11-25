@@ -11,6 +11,8 @@
 
 @interface ImageAdapter : NSObject
 
+- (IplImage *)normalToIplImage:(UIImage *)image;
+
 - (IplImage *)convertToIplImage:(UIImage *)image;
 
 - (UIImage *)convertToUIImage:(IplImage *)image;

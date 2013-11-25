@@ -7,7 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <opencv2/opencv.hpp>
 
 @interface ImagePreviewViewController : UIViewController
-
+@property IplImage* cvImage;
 @end

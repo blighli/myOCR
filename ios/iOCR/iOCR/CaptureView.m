@@ -28,7 +28,7 @@
     CGContextSetLineWidth(context, 2.0);
     CGContextSetStrokeColorWithColor(context, [UIColor redColor].CGColor);
     
-    CGRect theRect = CGRectMake(20,10,400,300);
+    CGRect theRect = CGRectMake(15,60,400,200);
     CGContextAddRect(context, theRect);
     CGContextDrawPath(context, kCGPathStroke);
     

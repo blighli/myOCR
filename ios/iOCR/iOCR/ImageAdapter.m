@@ -12,6 +12,42 @@
 #pragma mark -
 #pragma mark OpenCV Support Methods
 
+- (IplImage *)normalToIplImage:(UIImage *)image {
+    
+    UIImage *normalizedImage = image;
+    if (image.imageOrientation != UIImageOrientationUp)
+    {
+        UIGraphicsBeginImageContextWithOptions(image.size, NO, image.scale);
+        [image drawInRect:(CGRect){{0, 0}, image.size}];
+        normalizedImage = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+    }
+    
+    IplImage* cvImage = [self convertToIplImage: normalizedImage];
+    
+    if(image.imageOrientation == UIImageOrientationDown)
+    {
+        cvFlip(cvImage, cvImage, -1);
+    }
+    else if (image.imageOrientation != UIImageOrientationUp)
+    {
+        IplImage* transposedImage = cvCreateImage(cvSize(cvImage->height, cvImage->width), 8, 3);
+        cvTranspose(cvImage, transposedImage);
+        if( image.imageOrientation == UIImageOrientationLeft)
+        {
+            cvFlip(transposedImage, transposedImage, 1);
+        }
+        else if( image.imageOrientation == UIImageOrientationRight)
+        {
+            cvFlip(transposedImage, transposedImage, 0);
+        }
+        cvReleaseImage(&cvImage);
+        cvImage = transposedImage;
+    }
+    
+    return cvImage;
+}
+
 // 把UIImage类型转换成IplImage类型.
 // NOTE you SHOULD cvReleaseImage() for the return value when end of the code.
 - (IplImage *)convertToIplImage:(UIImage *)image {
