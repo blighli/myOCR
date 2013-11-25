@@ -8,10 +8,12 @@
 
 #import <UIKit/UIKit.h>
 #import "PhotoViewController.h"
+#import "HomeViewController.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
 @property (strong, nonatomic) PhotoViewController* photoViewController;
+@property (strong, nonatomic) HomeViewController* homeViewController;
 
 @end

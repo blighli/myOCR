@@ -29,6 +29,13 @@
 		8B12617117E7295200D86E76 /* AppInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8B12616F17E7295200D86E76 /* AppInfo.cpp */; };
 		8B2F79E817E9A5AB00C0F290 /* liblept.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2F79E617E9A5AB00C0F290 /* liblept.a */; };
 		8B2F79E917E9A5AB00C0F290 /* libtesseract_all.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2F79E717E9A5AB00C0F290 /* libtesseract_all.a */; };
+		F4CE8997183A1146005EB0FB /* ImagePreviewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4CE8995183A1145005EB0FB /* ImagePreviewViewController.m */; };
+		F4CE8998183A1146005EB0FB /* ImagePreviewViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4CE8996183A1145005EB0FB /* ImagePreviewViewController.xib */; };
+		F4E5A7F41839E25900CDDC43 /* HomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4E5A7F21839E25900CDDC43 /* HomeViewController.m */; };
+		F4E5A7F51839E25900CDDC43 /* HomeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4E5A7F31839E25900CDDC43 /* HomeViewController.xib */; };
+		F4EAEB23183F21D800725853 /* CameraViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4EAEB21183F21D800725853 /* CameraViewController.m */; };
+		F4EAEB24183F21D800725853 /* CameraViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4EAEB22183F21D800725853 /* CameraViewController.xib */; };
+		F4EAEB27183F4B9200725853 /* CaptureView.m in Sources */ = {isa = PBXBuildFile; fileRef = F4EAEB26183F4B9200725853 /* CaptureView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -66,6 +73,17 @@
 		8B12617017E7295200D86E76 /* AppInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppInfo.h; sourceTree = "<group>"; };
 		8B2F79E617E9A5AB00C0F290 /* liblept.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = liblept.a; sourceTree = "<group>"; };
 		8B2F79E717E9A5AB00C0F290 /* libtesseract_all.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtesseract_all.a; sourceTree = "<group>"; };
+		F4CE8994183A1145005EB0FB /* ImagePreviewViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ImagePreviewViewController.h; path = ../ImagePreviewViewController.h; sourceTree = "<group>"; };
+		F4CE8995183A1145005EB0FB /* ImagePreviewViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ImagePreviewViewController.m; path = ../ImagePreviewViewController.m; sourceTree = "<group>"; };
+		F4CE8996183A1145005EB0FB /* ImagePreviewViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = ImagePreviewViewController.xib; path = ../ImagePreviewViewController.xib; sourceTree = "<group>"; };
+		F4E5A7F11839E25900CDDC43 /* HomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HomeViewController.h; sourceTree = "<group>"; };
+		F4E5A7F21839E25900CDDC43 /* HomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HomeViewController.m; sourceTree = "<group>"; };
+		F4E5A7F31839E25900CDDC43 /* HomeViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = HomeViewController.xib; sourceTree = "<group>"; };
+		F4EAEB20183F21D800725853 /* CameraViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CameraViewController.h; sourceTree = "<group>"; };
+		F4EAEB21183F21D800725853 /* CameraViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CameraViewController.m; sourceTree = "<group>"; };
+		F4EAEB22183F21D800725853 /* CameraViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CameraViewController.xib; sourceTree = "<group>"; };
+		F4EAEB25183F4B9200725853 /* CaptureView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CaptureView.h; sourceTree = "<group>"; };
+		F4EAEB26183F4B9200725853 /* CaptureView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CaptureView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -118,17 +136,28 @@
 		8B1260C317E6E4C500D86E76 /* iOCR */ = {
 			isa = PBXGroup;
 			children = (
-				8B12615817E7284F00D86E76 /* share */,
-				8B12612517E7233600D86E76 /* leptonica */,
+				8B1260C417E6E4C500D86E76 /* Supporting Files */,
 				8B12612617E7233600D86E76 /* tesseract */,
+				8B12612517E7233600D86E76 /* leptonica */,
+				8B12615817E7284F00D86E76 /* share */,
 				8B1260CC17E6E4C500D86E76 /* AppDelegate.h */,
 				8B1260CD17E6E4C500D86E76 /* AppDelegate.m */,
-				8B1260C417E6E4C500D86E76 /* Supporting Files */,
 				8B12610917E6F96000D86E76 /* PhotoViewController.h */,
 				8B12610A17E6F96000D86E76 /* PhotoViewController.m */,
 				8B12610C17E6FA7900D86E76 /* PhotoViewController.xib */,
 				8B12611617E714C000D86E76 /* ImageAdapter.h */,
 				8B12611717E714C000D86E76 /* ImageAdapter.m */,
+				F4E5A7F11839E25900CDDC43 /* HomeViewController.h */,
+				F4E5A7F21839E25900CDDC43 /* HomeViewController.m */,
+				F4E5A7F31839E25900CDDC43 /* HomeViewController.xib */,
+				F4CE8994183A1145005EB0FB /* ImagePreviewViewController.h */,
+				F4CE8995183A1145005EB0FB /* ImagePreviewViewController.m */,
+				F4CE8996183A1145005EB0FB /* ImagePreviewViewController.xib */,
+				F4EAEB20183F21D800725853 /* CameraViewController.h */,
+				F4EAEB21183F21D800725853 /* CameraViewController.m */,
+				F4EAEB22183F21D800725853 /* CameraViewController.xib */,
+				F4EAEB25183F4B9200725853 /* CaptureView.h */,
+				F4EAEB26183F4B9200725853 /* CaptureView.m */,
 			);
 			path = iOCR;
 			sourceTree = "<group>";
@@ -218,11 +247,14 @@
 			files = (
 				8B1260C817E6E4C500D86E76 /* InfoPlist.strings in Resources */,
 				8B1260D017E6E4C500D86E76 /* Default.png in Resources */,
+				F4CE8998183A1146005EB0FB /* ImagePreviewViewController.xib in Resources */,
 				8B1260D217E6E4C500D86E76 /* Default@2x.png in Resources */,
 				8B1260D417E6E4C500D86E76 /* Default-568h@2x.png in Resources */,
 				8B12610D17E6FA7900D86E76 /* PhotoViewController.xib in Resources */,
 				8B12612717E7233600D86E76 /* leptonica in Resources */,
 				8B12612817E7233600D86E76 /* tesseract in Resources */,
+				F4E5A7F51839E25900CDDC43 /* HomeViewController.xib in Resources */,
+				F4EAEB24183F21D800725853 /* CameraViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -235,11 +267,15 @@
 			files = (
 				8B1260CA17E6E4C500D86E76 /* main.m in Sources */,
 				8B1260CE17E6E4C500D86E76 /* AppDelegate.m in Sources */,
+				F4EAEB27183F4B9200725853 /* CaptureView.m in Sources */,
 				8B12610B17E6F96000D86E76 /* PhotoViewController.m in Sources */,
+				F4E5A7F41839E25900CDDC43 /* HomeViewController.m in Sources */,
 				8B12611817E714C000D86E76 /* ImageAdapter.m in Sources */,
 				8B12616B17E7284F00D86E76 /* ImageProcess.cpp in Sources */,
 				8B12616C17E7284F00D86E76 /* LineSegment.cpp in Sources */,
 				8B12616D17E7284F00D86E76 /* OCRMask.cpp in Sources */,
+				F4CE8997183A1146005EB0FB /* ImagePreviewViewController.m in Sources */,
+				F4EAEB23183F21D800725853 /* CameraViewController.m in Sources */,
 				8B12616E17E7284F00D86E76 /* TesseractOCR.cpp in Sources */,
 				8B12617117E7295200D86E76 /* AppInfo.cpp in Sources */,
 			);

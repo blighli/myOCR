@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>FE0F7D72-5C38-4860-A370-AAE50D800D85</string>
+	<key>IDESourceControlProjectName</key>
+	<string>iOCR</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>9BD826CA-0326-4568-B94D-B0AAEADEDBA6</key>
+		<string>https://github.com/blighli/myOCR.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>ios/iOCR/iOCR.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>9BD826CA-0326-4568-B94D-B0AAEADEDBA6</key>
+		<string>../../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/blighli/myOCR.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>9BD826CA-0326-4568-B94D-B0AAEADEDBA6</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>9BD826CA-0326-4568-B94D-B0AAEADEDBA6</string>
+			<key>IDESourceControlWCCName</key>
+			<string>myOCR</string>
+		</dict>
+	</array>
+</dict>
+</plist>
