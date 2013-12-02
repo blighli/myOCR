@@ -7,11 +7,11 @@
 //
 
 #import "ImagePreviewViewController.h"
+#import "ImageView.h"
 #import "ImageAdapter.h"
-
+#import "ImageProcess.h"
 
 @interface ImagePreviewViewController ()
-@property (weak, nonatomic) IBOutlet UIImageView *imageView;
 
 @end
 
@@ -35,10 +35,12 @@
 
 - (void) viewWillAppear:(BOOL)animated
 {
+    ImageView* imageView = (ImageView*)self.view;
     ImageAdapter *adapter = [[ImageAdapter alloc] init];
-    UIImage* image = [adapter convertToUIImage: self.cvImage];
-    self.imageView.image = image;
+    imageView.image = [adapter convertToUIImage: self.cvImage];
 }
+
+
 
 - (void)didReceiveMemoryWarning
 {

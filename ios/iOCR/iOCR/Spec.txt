@@ -1,0 +1,27 @@
+发票规格：
+
+外框
+width = 203mm
+height = 95mm
+
+1st line = 22mm
+2nd line = 66mm
+3rd line = 75mm
+
+
+1st vline = 8mm
+2nd vline = 116mm
+3rd vline = 121mm
+
+1st(2) vline = 53mm
+2nd vline = 78mm
+3rd vline = 91mm
+4th vline = 111mm
+5th vline = 131mm
+6th vline = 162mm
+7th vline = 173mm
+
+1st = 7mm
+2nd = 116mm
+3rd = 121mm
+

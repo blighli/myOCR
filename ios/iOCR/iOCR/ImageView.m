@@ -1,14 +1,14 @@
 //
-//  CaptureView.m
+//  ImageView.m
 //  iOCR
 //
-//  Created by liqilei on 11/22/13.
+//  Created by liqilei on 12/2/13.
 //  Copyright (c) 2013 liqilei. All rights reserved.
 //
 
-#import "CaptureView.h"
+#import "ImageView.h"
 
-@implementation CaptureView
+@implementation ImageView
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -19,11 +19,10 @@
     return self;
 }
 
-- (void)drawRect:(CGRect)rect {
-    
-    NSLog(@"drawRect");
-    
+- (void)drawRect:(CGRect)rect
+{
     CGContextRef context = UIGraphicsGetCurrentContext();
+    [self.image drawInRect: CGRectMake(10, 10, 360, 270)];
     
     CGContextSetLineWidth(context, 2.0);
     CGContextSetStrokeColorWithColor(context, [UIColor redColor].CGColor);
@@ -111,7 +110,7 @@
     
     CGContextMoveToPoint(context, vLine27, hLine1);
     CGContextAddLineToPoint(context, vLine27, hLine2);
-
+    
     
     //3rd row
     CGFloat vLine31 = leftMost + 8.0 * scale;
@@ -128,7 +127,6 @@
     CGContextAddLineToPoint(context, vLine33, hLine4);
     
     CGContextStrokePath(context);
-    
 }
 
 @end
