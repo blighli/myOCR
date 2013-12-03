@@ -10,6 +10,7 @@
 #import "CameraViewController.h"
 #import "ImagePreviewViewController.h"
 #import "ImageAdapter.h"
+#import "share/Common.h"
 
 @interface HomeViewController ()
 @property (strong, nonatomic) CameraViewController* cameraView;
@@ -22,7 +23,7 @@
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
+    if (self  && [UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera] ) {
         self.imagePreviewController = [[ImagePreviewViewController alloc] init];
         
         self.cameraView = [[CameraViewController alloc] init];
@@ -48,7 +49,23 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    // Do any additional setup after loading the view from its nib.
+    
+    
+    NSString *bundlePath = [[NSBundle mainBundle] bundlePath];
+    NSString *tessdataPath = [bundlePath stringByAppendingPathComponent:@"tessdata"];
+    NSLog(@"%@",tessdataPath);
+    
+    setenv("TESSDATA_PREFIX", [[bundlePath stringByAppendingString:@"/"] UTF8String], 1);
+    // init the tesseract engine.
+    tesseract::TessBaseAPI* tesseract = new tesseract::TessBaseAPI();
+    if(tesseract->Init(NULL, "chi_sim+eng"))
+    {
+        NSLog(@"Failed");
+    }
+    else
+    {
+        NSLog(@"OK");
+    }
 }
 
 - (void)didReceiveMemoryWarning

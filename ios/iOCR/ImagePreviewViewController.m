@@ -38,6 +38,8 @@
     ImageView* imageView = (ImageView*)self.view;
     ImageAdapter *adapter = [[ImageAdapter alloc] init];
     imageView.image = [adapter convertToUIImage: self.cvImage];
+    
+    
 }
 
 
