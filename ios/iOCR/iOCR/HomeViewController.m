@@ -56,16 +56,7 @@
     NSLog(@"%@",tessdataPath);
     
     setenv("TESSDATA_PREFIX", [[bundlePath stringByAppendingString:@"/"] UTF8String], 1);
-    // init the tesseract engine.
-    tesseract::TessBaseAPI* tesseract = new tesseract::TessBaseAPI();
-    if(tesseract->Init(NULL, "chi_sim+eng"))
-    {
-        NSLog(@"Failed");
-    }
-    else
-    {
-        NSLog(@"OK");
-    }
+    
 }
 
 - (void)didReceiveMemoryWarning
