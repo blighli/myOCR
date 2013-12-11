@@ -14,23 +14,136 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        // Initialization code
+
     }
     return self;
+}
+
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    NSLog(@"TouchBegin");
+    UITouch* touch = [touches anyObject];
+    self.lastTouch = [touch locationInView: self];
+    self.firstTouch = self.lastTouch;
+}
+
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    NSLog(@"TouchEnd");
+}
+
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    NSLog(@"TouchMove");
+    UITouch* touch = [touches anyObject];
+    self.lastTouch = [touch locationInView: self];
+    [self reDrawAll];
+    self.firstTouch = self.lastTouch;
+}
+
+- (void) reDrawAll
+{
+    CGFloat smooth = 0.05;
+    self.offsetX += (self.lastTouch.x - self.firstTouch.x) * smooth;
+    self.offsetY += (self.lastTouch.y - self.firstTouch.y) * smooth;
+    
+    [self setNeedsDisplay];
+}
+
+- (void) setMode:(int)mode
+{
+    if(_mode != mode)
+    {
+        _mode = mode;
+        [self setNeedsDisplay];
+    }
 }
 
 - (void)drawRect:(CGRect)rect
 {
     CGContextRef context = UIGraphicsGetCurrentContext();
-    [self.image drawInRect: CGRectMake(10, 10, 360, 270)];
+    [self.image drawInRect: CGRectMake(0, 0, 427, 320)];
     
-    CGContextSetLineWidth(context, 2.0);
+    CGContextSetLineWidth(context, 1.0);
     CGContextSetStrokeColorWithColor(context, [UIColor redColor].CGColor);
     
     CGFloat leftMost = 10.0;
     CGFloat topMost = 100.0;
     
     CGFloat scale = 2.0;
+    
+    
+    self.gsbhX = leftMost + 35 * scale + self.offsetX * scale;
+    self.gsbhY = topMost + 6 * scale + self.offsetY * scale;
+    self.gsbhW = 50 * scale;
+    self.gsbhH = 5 * scale;
+    CGContextAddRect(context, CGRectMake(self.gsbhX, self.gsbhY, self.gsbhW, self.gsbhH));
+    
+    self.xsbhX = leftMost + 35 * scale + self.offsetX * scale;
+    self.xsbhY = topMost + 81 * scale + self.offsetY * scale;
+    self.xsbhW = 50 * scale;
+    self.xsbhH = 5 * scale;
+    CGContextAddRect(context, CGRectMake(self.xsbhX, self.xsbhY, self.xsbhW, self.xsbhH));
+    
+    self.kprqX = leftMost + 170 * scale + self.offsetX * scale;
+    self.kprqY = topMost - 7 * scale + self.offsetY * scale;
+    self.kprqW = 30 * scale;
+    self.kprqH = 5 * scale;
+    CGContextAddRect(context, CGRectMake(self.kprqX, self.kprqY, self.kprqW, self.kprqH));
+    
+    self.jeX = leftMost + 131 * scale + self.offsetX * scale;
+    self.jeY = topMost + 60 * scale + self.offsetY * scale;
+    self.jeW = 30 * scale;
+    self.jeH = 5 * scale;
+    CGContextAddRect(context, CGRectMake(self.jeX, self.jeY, self.jeW, self.jeH));
+    
+    self.seX = leftMost + 173 * scale + self.offsetX * scale;
+    self.seY = topMost + 60 * scale + self.offsetY * scale;
+    self.seW = 30 * scale;
+    self.seH = 5 * scale;
+    CGContextAddRect(context, CGRectMake(self.seX, self.seY, self.seW, self.seH));
+    
+    if(_mode != 84)
+    {
+        self.mmX = leftMost + 122 * scale + self.offsetX * scale;
+        self.mmY = topMost + 2 * scale + self.offsetY * scale;
+        self.mmW = 72 * scale;
+        self.mmH = 18 * scale;
+        CGContextAddRect(context, CGRectMake(self.mmX, self.mmY, self.mmW, self.mmH));
+        
+        self.fpdmX = leftMost + 183 * scale + self.offsetX * scale;
+        self.fpdmY = topMost - 18 * scale + self.offsetY * scale;
+        self.fpdmW = 20 * scale;
+        self.fpdmH = 5 * scale;
+        CGContextAddRect(context, CGRectMake(self.fpdmX, self.fpdmY, self.fpdmW, self.fpdmH));
+        
+        self.fphmX = leftMost + 183 * scale + self.offsetX * scale;
+        self.fphmY = topMost - 13 * scale + self.offsetY * scale;
+        self.fphmW = 20 * scale;
+        self.fphmH = 5 * scale;
+        CGContextAddRect(context, CGRectMake(self.fphmX, self.fphmY, self.fphmW, self.fphmH));
+    }
+    else
+    {
+        self.mmX = leftMost + 122 * scale + self.offsetX * scale;
+        self.mmY = topMost + 2 * scale + self.offsetY * scale;
+        self.mmW = 56 * scale;
+        self.mmH = 18 * scale;
+        CGContextAddRect(context, CGRectMake(self.mmX, self.mmY, self.mmW, self.mmH));
+        
+        self.fpdmX = leftMost + 179 * scale + self.offsetX * scale;
+        self.fpdmY = topMost + 10 * scale + self.offsetY * scale;
+        self.fpdmW = 20 * scale;
+        self.fpdmH = 5 * scale;
+        CGContextAddRect(context, CGRectMake(self.fpdmX, self.fpdmY, self.fpdmW, self.fpdmH));
+        
+        self.fphmX = leftMost + 179 * scale + self.offsetX * scale;
+        self.fphmY = topMost + 15 * scale + self.offsetY * scale;
+        self.fphmW = 20 * scale;
+        self.fphmH = 5 * scale;
+        CGContextAddRect(context, CGRectMake(self.fphmX, self.fphmY, self.fphmW, self.fphmH));
+        
+    }
     
     CGFloat width = 203.0 * scale;
     CGFloat height = 95.0 * scale;
@@ -43,6 +156,14 @@
     CGFloat hLine2 = topMost + 65.0 * scale;
     CGFloat hLine3 = topMost + 75.0 * scale;
     CGFloat hLine4 = topMost + height;
+    
+
+    CGFloat redWidth = 30 * scale;
+    CGFloat redHeight = 20 * scale;
+    CGFloat redX = leftMost + 101 * scale - redWidth * 0.5;
+    CGFloat redY = topMost - 2 * scale - redHeight;
+    //Draw red stamp
+    CGContextAddEllipseInRect(context, CGRectMake(redX, redY, redWidth, redHeight));
     
     //Draw 5 horizonal lines
     CGContextMoveToPoint(context, leftMost, hLine0);

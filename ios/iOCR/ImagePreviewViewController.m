@@ -26,6 +26,22 @@
     return self;
 }
 
+- (IBAction)set84:(id)sender {
+    ImageView* imageView = (ImageView*)self.view;
+    [imageView setMode: 84];
+}
+
+- (IBAction)set108:(id)sender {
+    ImageView* imageView = (ImageView*)self.view;
+    [imageView setMode: 108];
+}
+
+- (IBAction)processImage:(id)sender {
+    
+    
+    
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -42,8 +58,6 @@
     
 }
 
-
-
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -57,5 +71,7 @@
 - (IBAction)close:(id)sender {
     [self dismissViewControllerAnimated:NO completion:nil];
 }
+
+
 
 @end

@@ -25,3 +25,8 @@ height = 95mm
 2nd = 116mm
 3rd = 121mm
 
+redX = 101cm
+redY = 12
+redWidth = 30
+redHeight = 20
+

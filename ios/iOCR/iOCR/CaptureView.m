@@ -25,7 +25,7 @@
     
     CGContextRef context = UIGraphicsGetCurrentContext();
     
-    CGContextSetLineWidth(context, 2.0);
+    CGContextSetLineWidth(context, 1.0);
     CGContextSetStrokeColorWithColor(context, [UIColor redColor].CGColor);
     
     CGFloat leftMost = 10.0;
@@ -44,6 +44,13 @@
     CGFloat hLine2 = topMost + 65.0 * scale;
     CGFloat hLine3 = topMost + 75.0 * scale;
     CGFloat hLine4 = topMost + height;
+    
+    CGFloat redWidth = 30 * scale;
+    CGFloat redHeight = 20 * scale;
+    CGFloat redX = leftMost + 101 * scale - redWidth * 0.5;
+    CGFloat redY = topMost - 2 * scale - redHeight;
+    //Draw red stamp
+    CGContextAddEllipseInRect(context, CGRectMake(redX, redY, redWidth, redHeight));
     
     //Draw 5 horizonal lines
     CGContextMoveToPoint(context, leftMost, hLine0);
