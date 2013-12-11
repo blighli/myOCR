@@ -29,12 +29,12 @@
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    NSLog(@"TouchEnd");
+    //NSLog(@"TouchEnd");
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    NSLog(@"TouchMove");
+    //NSLog(@"TouchMove");
     UITouch* touch = [touches anyObject];
     self.lastTouch = [touch locationInView: self];
     [self reDrawAll];
@@ -80,30 +80,30 @@
     CGContextAddRect(context, CGRectMake(self.gsbhX, self.gsbhY, self.gsbhW, self.gsbhH));
     
     self.xsbhX = leftMost + 35 * scale + self.offsetX * scale;
-    self.xsbhY = topMost + 81 * scale + self.offsetY * scale;
+    self.xsbhY = topMost + 82 * scale + self.offsetY * scale;
     self.xsbhW = 50 * scale;
     self.xsbhH = 5 * scale;
     CGContextAddRect(context, CGRectMake(self.xsbhX, self.xsbhY, self.xsbhW, self.xsbhH));
     
-    self.kprqX = leftMost + 170 * scale + self.offsetX * scale;
+    self.kprqX = leftMost + 168 * scale + self.offsetX * scale;
     self.kprqY = topMost - 7 * scale + self.offsetY * scale;
     self.kprqW = 30 * scale;
     self.kprqH = 5 * scale;
     CGContextAddRect(context, CGRectMake(self.kprqX, self.kprqY, self.kprqW, self.kprqH));
     
-    self.jeX = leftMost + 131 * scale + self.offsetX * scale;
-    self.jeY = topMost + 60 * scale + self.offsetY * scale;
-    self.jeW = 30 * scale;
+    self.jeX = leftMost + 136 * scale + self.offsetX * scale;
+    self.jeY = topMost + 62 * scale + self.offsetY * scale;
+    self.jeW = 25 * scale;
     self.jeH = 5 * scale;
     CGContextAddRect(context, CGRectMake(self.jeX, self.jeY, self.jeW, self.jeH));
     
-    self.seX = leftMost + 173 * scale + self.offsetX * scale;
-    self.seY = topMost + 60 * scale + self.offsetY * scale;
-    self.seW = 30 * scale;
+    self.seX = leftMost + 178 * scale + self.offsetX * scale;
+    self.seY = topMost + 62 * scale + self.offsetY * scale;
+    self.seW = 25 * scale;
     self.seH = 5 * scale;
     CGContextAddRect(context, CGRectMake(self.seX, self.seY, self.seW, self.seH));
     
-    if(_mode != 84)
+    if(_mode == 108)
     {
         self.mmX = leftMost + 122 * scale + self.offsetX * scale;
         self.mmY = topMost + 2 * scale + self.offsetY * scale;
