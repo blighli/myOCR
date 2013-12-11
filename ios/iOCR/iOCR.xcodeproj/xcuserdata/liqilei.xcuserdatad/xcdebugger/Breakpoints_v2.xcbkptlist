@@ -2,4 +2,274 @@
 <Bucket
    type = "1"
    version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "iOCR/ResultViewController.m"
+            timestampString = "408477317.410484"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "19"
+            endingLineNumber = "19"
+            landmarkName = "-initWithNibName:bundle:"
+            landmarkType = "5">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[ResultViewController initWithNibName:bundle:]"
+                  moduleName = "&#21457;&#31080;&#35748;&#35777;"
+                  urlString = "file://localhost/Users/liqilei/myOCR/ios/iOCR/iOCR/ResultViewController.m"
+                  timestampString = "408477317.499796"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "19"
+                  endingLineNumber = "19"
+                  offsetFromSymbolStart = "62">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[ResultViewController initWithNibName:bundle:]"
+                  moduleName = "&#21457;&#31080;&#35748;&#35777;"
+                  urlString = "file://localhost/Users/liqilei/myOCR/ios/iOCR/iOCR/ResultViewController.m"
+                  timestampString = "408477317.503251"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "19"
+                  endingLineNumber = "19"
+                  offsetFromSymbolStart = "1348">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[ResultViewController initWithNibName:bundle:]"
+                  moduleName = "&#21457;&#31080;&#35748;&#35777;"
+                  urlString = "file://localhost/Users/liqilei/myOCR/ios/iOCR/iOCR/ResultViewController.m"
+                  timestampString = "408477317.503867"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "19"
+                  endingLineNumber = "19"
+                  offsetFromSymbolStart = "1600">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "iOCR/ResultViewController.m"
+            timestampString = "408483582.398336"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "99"
+            endingLineNumber = "99"
+            landmarkName = "-connection:didReceiveData:"
+            landmarkType = "5">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[ResultViewController connection:didReceiveData:]"
+                  moduleName = "&#21457;&#31080;&#35748;&#35777;"
+                  urlString = "file://localhost/Users/liqilei/myOCR/ios/iOCR/iOCR/ResultViewController.m"
+                  timestampString = "408482457.924217"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "92"
+                  endingLineNumber = "92"
+                  offsetFromSymbolStart = "62">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[ResultViewController connection:didReceiveData:]"
+                  moduleName = "&#21457;&#31080;&#35748;&#35777;"
+                  urlString = "file://localhost/Users/liqilei/myOCR/ios/iOCR/iOCR/ResultViewController.m"
+                  timestampString = "408482457.924861"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "92"
+                  endingLineNumber = "92"
+                  offsetFromSymbolStart = "398">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[ResultViewController connection:didReceiveData:]"
+                  moduleName = "&#21457;&#31080;&#35748;&#35777;"
+                  urlString = "file://localhost/Users/liqilei/myOCR/ios/iOCR/iOCR/ResultViewController.m"
+                  timestampString = "408482457.925392"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "92"
+                  endingLineNumber = "92"
+                  offsetFromSymbolStart = "462">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[ResultViewController connection:didReceiveData:]"
+                  moduleName = "&#21457;&#31080;&#35748;&#35777;"
+                  urlString = "file://localhost/Users/liqilei/myOCR/ios/iOCR/iOCR/ResultViewController.m"
+                  timestampString = "408482457.925926"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "92"
+                  endingLineNumber = "92"
+                  offsetFromSymbolStart = "516">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "iOCR/ResultViewController.m"
+            timestampString = "408482502.640147"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "57"
+            endingLineNumber = "57"
+            landmarkName = "-connection:canAuthenticateAgainstProtectionSpace:"
+            landmarkType = "5">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[ResultViewController connection:canAuthenticateAgainstProtectionSpace:]"
+                  moduleName = "&#21457;&#31080;&#35748;&#35777;"
+                  urlString = "file://localhost/Users/liqilei/myOCR/ios/iOCR/iOCR/ResultViewController.m"
+                  timestampString = "408482502.656094"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "57"
+                  endingLineNumber = "57"
+                  offsetFromSymbolStart = "62">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[ResultViewController connection:canAuthenticateAgainstProtectionSpace:]"
+                  moduleName = "&#21457;&#31080;&#35748;&#35777;"
+                  urlString = "file://localhost/Users/liqilei/myOCR/ios/iOCR/iOCR/ResultViewController.m"
+                  timestampString = "408482502.656866"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "57"
+                  endingLineNumber = "57"
+                  offsetFromSymbolStart = "282">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[ResultViewController connection:canAuthenticateAgainstProtectionSpace:]"
+                  moduleName = "&#21457;&#31080;&#35748;&#35777;"
+                  urlString = "file://localhost/Users/liqilei/myOCR/ios/iOCR/iOCR/ResultViewController.m"
+                  timestampString = "408482502.657414"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "57"
+                  endingLineNumber = "57"
+                  offsetFromSymbolStart = "332">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "iOCR/ResultViewController.m"
+            timestampString = "408482504.634732"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "61"
+            endingLineNumber = "61"
+            landmarkName = "-connection:didReceiveAuthenticationChallenge:"
+            landmarkType = "5">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[ResultViewController connection:didReceiveAuthenticationChallenge:]"
+                  moduleName = "&#21457;&#31080;&#35748;&#35777;"
+                  urlString = "file://localhost/Users/liqilei/myOCR/ios/iOCR/iOCR/ResultViewController.m"
+                  timestampString = "408482504.646596"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "61"
+                  endingLineNumber = "61"
+                  offsetFromSymbolStart = "62">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[ResultViewController connection:didReceiveAuthenticationChallenge:]"
+                  moduleName = "&#21457;&#31080;&#35748;&#35777;"
+                  urlString = "file://localhost/Users/liqilei/myOCR/ios/iOCR/iOCR/ResultViewController.m"
+                  timestampString = "408482504.647376"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "61"
+                  endingLineNumber = "61"
+                  offsetFromSymbolStart = "502">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[ResultViewController connection:didReceiveAuthenticationChallenge:]"
+                  moduleName = "&#21457;&#31080;&#35748;&#35777;"
+                  urlString = "file://localhost/Users/liqilei/myOCR/ios/iOCR/iOCR/ResultViewController.m"
+                  timestampString = "408482504.648017"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "61"
+                  endingLineNumber = "61"
+                  offsetFromSymbolStart = "704">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[ResultViewController connection:didReceiveAuthenticationChallenge:]"
+                  moduleName = "&#21457;&#31080;&#35748;&#35777;"
+                  urlString = "file://localhost/Users/liqilei/myOCR/ios/iOCR/iOCR/ResultViewController.m"
+                  timestampString = "408482504.648689"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "61"
+                  endingLineNumber = "61"
+                  offsetFromSymbolStart = "768">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
 </Bucket>

@@ -16,6 +16,8 @@
 @property (strong, nonatomic) CameraViewController* cameraView;
 @property (strong, nonatomic) UIImagePickerController* imagePicker;
 @property (strong, nonatomic) ImagePreviewViewController* imagePreviewController;
+
+//@property (nonatomic) ResultViewController* resultViewController;
 @end
 
 @implementation HomeViewController
@@ -41,6 +43,8 @@
         
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(takePhotoDone) name:@"MyTakePhoto" object:nil];
+        
+        //self.resultViewController = [[ResultViewController alloc] init];
 
     }
     return self;
@@ -72,6 +76,10 @@
 
 - (IBAction)takePhoto:(id)sender {
     [self presentViewController:self.imagePicker animated:NO completion:nil];
+    
+    //[self presentViewController:self.resultViewController animated:NO completion:nil];
+    //self.resultViewController.fpdm.text = @"ASFAFASFASF";
+
 }
 
 - (void) takePhotoDone

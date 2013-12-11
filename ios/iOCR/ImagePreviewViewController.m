@@ -25,6 +25,7 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
+        self.resultViewController = [[ResultViewController alloc] init];
     }
     return self;
 }
@@ -81,6 +82,7 @@
     gsbhStr = [gsbhStr stringByReplacingOccurrencesOfString:@"\n" withString:@""];
     NSLog(@"购货单位：%@", gsbhStr);
     
+    
     int xsbhX = imageView.xsbhX * rate;
     int xsbhY = imageView.xsbhY * rate;
     int xsbhW = imageView.xsbhW * rate;
@@ -93,6 +95,7 @@
     xsbhStr = [xsbhStr stringByReplacingOccurrencesOfString:@"\n" withString:@""];
     NSLog(@"销货单位：%@", xsbhStr);
     
+    
     int fpdmX = imageView.fpdmX* rate;
     int fpdmY = imageView.fpdmY * rate;
     int fpdmW = imageView.fpdmW * rate;
@@ -104,6 +107,8 @@
     fpdmStr = [fpdmStr stringByReplacingOccurrencesOfString:@" " withString:@""];
     fpdmStr = [fpdmStr stringByReplacingOccurrencesOfString:@"\n" withString:@""];
     NSLog(@"发票代码：%@", fpdmStr);
+    
+    
     
     int fphmX = imageView.fphmX * rate;
     int fphmY = imageView.fphmY * rate;
@@ -126,7 +131,10 @@
     tesseract->SetVariable("tessedit_char_whitelist", [whiteChars UTF8String]);
     char* kprqUTF8 = tesseract->GetUTF8Text();
     NSString* kprqStr = [NSString stringWithUTF8String: kprqUTF8];
+    kprqStr = [kprqStr stringByReplacingOccurrencesOfString:@" " withString:@""];
+    kprqStr = [kprqStr stringByReplacingOccurrencesOfString:@"\n" withString:@""];
     NSLog(@"开票日期：%@", kprqStr);
+    
     
     int jeX = imageView.jeX * rate;
     int jeY = imageView.jeY * rate;
@@ -168,6 +176,40 @@
     NSLog(@"密码：%@", mmStr);
     
     
+    [self presentViewController:self.resultViewController animated:NO completion:nil];
+    self.resultViewController.fpdm.text = fpdmStr;
+    self.resultViewController.fphm.text = fphmStr;
+    self.resultViewController.gsbh.text = gsbhStr;
+    self.resultViewController.xsbh.text = xsbhStr;
+    self.resultViewController.jine.text = jeStr;
+    self.resultViewController.shuie.text = seStr;
+
+    
+    if(kprqStr.length >= 4)
+        self.resultViewController.year.text = [kprqStr substringWithRange: NSMakeRange(0, 4)];
+    if(kprqStr.length >= 7)
+        self.resultViewController.month.text = [kprqStr substringWithRange: NSMakeRange(5, 2)];
+    if(kprqStr.length >= 10)
+        self.resultViewController.day.text = [kprqStr substringWithRange: NSMakeRange(8, 2)];
+    
+    
+    NSArray* mms = [mmStr componentsSeparatedByString:@"\n"];
+    if(mms.count > 0)
+    {
+        self.resultViewController.mm1.text = mms[0];
+    }
+    if(mms.count > 1)
+    {
+        self.resultViewController.mm2.text = mms[1];
+    }
+    if(mms.count > 2)
+    {
+        self.resultViewController.mm3.text = mms[2];
+    }
+    if(mms.count > 3)
+    {
+        self.resultViewController.mm4.text = mms[3];
+    }
 }
 
 - (void)viewDidLoad

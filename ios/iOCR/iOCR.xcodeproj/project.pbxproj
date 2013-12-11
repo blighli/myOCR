@@ -27,6 +27,8 @@
 		8B12617117E7295200D86E76 /* AppInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8B12616F17E7295200D86E76 /* AppInfo.cpp */; };
 		8B2F79E817E9A5AB00C0F290 /* liblept.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2F79E617E9A5AB00C0F290 /* liblept.a */; };
 		8B2F79E917E9A5AB00C0F290 /* libtesseract_all.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B2F79E717E9A5AB00C0F290 /* libtesseract_all.a */; };
+		F4AD00371858CD8900399618 /* ResultViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4AD00351858CD8900399618 /* ResultViewController.m */; };
+		F4AD00381858CD8900399618 /* ResultViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4AD00361858CD8900399618 /* ResultViewController.xib */; };
 		F4CE8997183A1146005EB0FB /* ImagePreviewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4CE8995183A1145005EB0FB /* ImagePreviewViewController.m */; };
 		F4CE8998183A1146005EB0FB /* ImagePreviewViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F4CE8996183A1145005EB0FB /* ImagePreviewViewController.xib */; };
 		F4E5A7F41839E25900CDDC43 /* HomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F4E5A7F21839E25900CDDC43 /* HomeViewController.m */; };
@@ -71,6 +73,9 @@
 		8B12617017E7295200D86E76 /* AppInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppInfo.h; sourceTree = "<group>"; };
 		8B2F79E617E9A5AB00C0F290 /* liblept.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = liblept.a; sourceTree = "<group>"; };
 		8B2F79E717E9A5AB00C0F290 /* libtesseract_all.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtesseract_all.a; sourceTree = "<group>"; };
+		F4AD00341858CD8900399618 /* ResultViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResultViewController.h; sourceTree = "<group>"; };
+		F4AD00351858CD8900399618 /* ResultViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ResultViewController.m; sourceTree = "<group>"; };
+		F4AD00361858CD8900399618 /* ResultViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ResultViewController.xib; sourceTree = "<group>"; };
 		F4CE8994183A1145005EB0FB /* ImagePreviewViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ImagePreviewViewController.h; path = ../ImagePreviewViewController.h; sourceTree = "<group>"; };
 		F4CE8995183A1145005EB0FB /* ImagePreviewViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ImagePreviewViewController.m; path = ../ImagePreviewViewController.m; sourceTree = "<group>"; };
 		F4CE8996183A1145005EB0FB /* ImagePreviewViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = ImagePreviewViewController.xib; path = ../ImagePreviewViewController.xib; sourceTree = "<group>"; };
@@ -215,6 +220,9 @@
 				F4EAEB2818460B4700725853 /* Spec.txt */,
 				F4EAEB5F184C527200725853 /* ImageView.h */,
 				F4EAEB60184C527200725853 /* ImageView.m */,
+				F4AD00341858CD8900399618 /* ResultViewController.h */,
+				F4AD00351858CD8900399618 /* ResultViewController.m */,
+				F4AD00361858CD8900399618 /* ResultViewController.xib */,
 			);
 			path = iOCR;
 			sourceTree = "<group>";
@@ -319,9 +327,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		8B1260B917E6E4C500D86E76 /* iOCR */ = {
+		8B1260B917E6E4C500D86E76 /* 发票认证 */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 8B1260D717E6E4C500D86E76 /* Build configuration list for PBXNativeTarget "iOCR" */;
+			buildConfigurationList = 8B1260D717E6E4C500D86E76 /* Build configuration list for PBXNativeTarget "发票认证" */;
 			buildPhases = (
 				8B1260B617E6E4C500D86E76 /* Sources */,
 				8B1260B717E6E4C500D86E76 /* Frameworks */,
@@ -331,7 +339,7 @@
 			);
 			dependencies = (
 			);
-			name = iOCR;
+			name = "发票认证";
 			productName = iOCR;
 			productReference = 8B1260BA17E6E4C500D86E76 /* iOCR.app */;
 			productType = "com.apple.product-type.application";
@@ -357,7 +365,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				8B1260B917E6E4C500D86E76 /* iOCR */,
+				8B1260B917E6E4C500D86E76 /* 发票认证 */,
 			);
 		};
 /* End PBXProject section */
@@ -370,6 +378,7 @@
 				8B1260C817E6E4C500D86E76 /* InfoPlist.strings in Resources */,
 				8B1260D017E6E4C500D86E76 /* Default.png in Resources */,
 				F4EAEB63184DAF2500725853 /* tessdata in Resources */,
+				F4AD00381858CD8900399618 /* ResultViewController.xib in Resources */,
 				F4CE8998183A1146005EB0FB /* ImagePreviewViewController.xib in Resources */,
 				8B1260D217E6E4C500D86E76 /* Default@2x.png in Resources */,
 				8B1260D417E6E4C500D86E76 /* Default-568h@2x.png in Resources */,
@@ -394,6 +403,7 @@
 				F4E5A7F41839E25900CDDC43 /* HomeViewController.m in Sources */,
 				8B12611817E714C000D86E76 /* ImageAdapter.m in Sources */,
 				8B12616B17E7284F00D86E76 /* ImageProcess.cpp in Sources */,
+				F4AD00371858CD8900399618 /* ResultViewController.m in Sources */,
 				8B12616C17E7284F00D86E76 /* LineSegment.cpp in Sources */,
 				8B12616D17E7284F00D86E76 /* OCRMask.cpp in Sources */,
 				F4CE8997183A1146005EB0FB /* ImagePreviewViewController.m in Sources */,
@@ -525,7 +535,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		8B1260D717E6E4C500D86E76 /* Build configuration list for PBXNativeTarget "iOCR" */ = {
+		8B1260D717E6E4C500D86E76 /* Build configuration list for PBXNativeTarget "发票认证" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				8B1260D817E6E4C500D86E76 /* Debug */,
